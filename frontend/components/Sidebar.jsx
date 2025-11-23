@@ -4,7 +4,7 @@ function Sidebar({page,setPage,open,setOpen}){
     React.createElement('div',{className:'flex items-center justify-between mb-6'},[
       React.createElement('div',{className:'flex items-center gap-4'},[
         React.createElement('div',{className:'w-12 h-12 rounded-full overflow-hidden ring-2 ring-white/10 bg-transparent shadow-sm transition'},
-          React.createElement('img',{src:'../img/GRUPO_MONTAGEM_FUN.png',alt:'LMFUN',onError:(e)=>{ try{ e.target.onerror=null; e.target.src='../img/LOGO.svg' }catch(_){} },className:'w-full h-full object-cover'})
+          React.createElement('img',{src:'./img/LOGO.svg',alt:'LMFUN',className:'w-full h-full object-cover'})
         ),
         React.createElement('div',{className:'font-bold tracking-wide'},[
           React.createElement('span',{className:'text-red-500'},'LM'),
