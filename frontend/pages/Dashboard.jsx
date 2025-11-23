@@ -406,10 +406,6 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       React.createElement('div',{className:'relative z-0 h-[34vh] sm:h-[36vh] md:h-[40vh] lg:h-[42vh]'},[
         React.createElement('canvas',{ref:canvasRef})
       ])
-      ,
-      React.createElement('div',{className:'mt-2'},[
-        React.createElement('button',{onClick:()=>exportPng(),className:'px-3 py-1.5 rounded bg-gray-200 hover:bg-gray-300 text-sm w-full sm:w-auto'},'Baixar PNG')
-      ])
       ]),
       (()=>{ const cfg=(modelConfigs||{})[selectedModel]||{}; const src=Array.isArray(rows)? rows : []; const turnoVal = turnoSel==='2' ? '2º' : '1º'; const srcByTurno = turnoSel ? src.filter(r=> String(r.turno||'')===turnoVal) : src; const quota=(typeof cfg.quadro==='number' && cfg.quadro>0)? Math.min(cfg.quadro, srcByTurno.length) : srcByTurno.length; const viewRows = srcByTurno.slice(0,quota); return React.createElement('div',{className:'bg-white rounded-xl p-3 shadow-lg flex-1'},[
         React.createElement('div',{className:'text-xl font-bold mb-1 text-gray-900'},'Posto'),
