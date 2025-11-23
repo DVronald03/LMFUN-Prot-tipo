@@ -78,7 +78,7 @@ function Operadores({rows:rowsProp,setRows:setRowsProp,selectedModel,setSelected
       React.createElement('div',{className:'text-xl font-bold'},'Operadores'),
       React.createElement('button',{onClick:()=>{ setEditing(null); setOpen(true) },className:'px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-500'},'+ Novo Operador')
     ]),
-    React.createElement('div',{className:'grid grid-cols-4 gap-3'},[
+    React.createElement('div',{className:'grid grid-cols-2 sm:grid-cols-4 gap-3'},[
       React.createElement('div',{className:'bg-white rounded-xl p-3 flex items-center gap-3 shadow-lg'},[
         React.createElement('span',{className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600'},
           React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5 text-white'},[
@@ -137,41 +137,41 @@ function Operadores({rows:rowsProp,setRows:setRowsProp,selectedModel,setSelected
     ]),
     
     React.createElement('div',{className:'bg-white rounded-xl p-3 shadow-lg'},[
-      React.createElement('table',{className:'w-full text-sm table-fixed'},[
+      React.createElement('table',{className:'w-full text-[12px] sm:text-sm table-auto sm:table-fixed'},[
         React.createElement('thead',null,React.createElement('tr',null,[
-          React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'POSTO'),
-          React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'NOME COMPLETO'),
-          React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'KNOW ROW'),
-          React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'ÁREAS'),
-          React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'AF'),
-          React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'STATUS'),
-          React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'TURNO'),
-          React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'TEMPO'),
-          React.createElement('th',{className:'text-right py-2 px-2 text-gray-600'},'AÇÕES')
+          React.createElement('th',{className:'text-left py-1.5 sm:py-2 px-2 text-gray-600'},'POSTO'),
+          React.createElement('th',{className:'text-left py-1.5 sm:py-2 px-2 text-gray-600'},'NOME'),
+          React.createElement('th',{className:'hidden sm:table-cell text-left py-2 px-2 text-gray-600'},'KNOW ROW'),
+          React.createElement('th',{className:'hidden sm:table-cell text-left py-2 px-2 text-gray-600'},'ÁREAS'),
+          React.createElement('th',{className:'hidden sm:table-cell text-left py-2 px-2 text-gray-600'},'AF'),
+          React.createElement('th',{className:'text-left py-1.5 sm:py-2 px-2 text-gray-600'},'STATUS'),
+          React.createElement('th',{className:'hidden sm:table-cell text-left py-2 px-2 text-gray-600'},'TURNO'),
+          React.createElement('th',{className:'hidden sm:table-cell text-left py-2 px-2 text-gray-600'},'TEMPO'),
+          React.createElement('th',{className:'text-right py-1.5 sm:py-2 px-2 text-gray-600'},'AÇÕES')
         ])),
         React.createElement('tbody',null,pageRows.map((r,i)=>React.createElement('tr',{key:startIdx+i,className:'border-none align-middle'},[
-          React.createElement('td',{className:'py-2 px-2 text-left'},String(r.posto||'').padStart(2,'0')),
-          React.createElement('td',{className:'py-2 px-2 text-left'},r.nome),
-          React.createElement('td',{className:'py-2 px-2 text-left'},r.know||'-'),
-          React.createElement('td',{className:'py-2 px-2 text-left'},r.areas||'-'),
-          React.createElement('td',{className:'py-2 px-2 text-left'},r.af||'-'),
-          React.createElement('td',{className:'py-2 px-2 text-left'},React.createElement(StatusPill,{status:r.status})),
-          React.createElement('td',{className:'py-2 px-2 text-left'},r.turno||'-'),
-          React.createElement('td',{className:'py-2 px-2 text-left'},(()=>{ const v=(r.timesByModel&&r.timesByModel[selectedModel]); if(Array.isArray(v)){ return v.length? formatTime(v[v.length-1].dur) : '-' } if(v&&typeof v==='object'){ const vals=['1','2','3'].map(k=>{ const a=v[k]; const last=(Array.isArray(a)&&a.length)? a[a.length-1].dur : 0; return last }).filter(x=>x>0); const avgMs = vals.length? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0; return avgMs>0? formatTime(avgMs) : '-' } return '-' })()),
-          React.createElement('td',{className:'py-2 px-2 text-right'},[
-            React.createElement('button',{title:'Visualizar',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600 text-white hover:bg-blue-500 mr-2',onClick:()=>setView(r)},
+          React.createElement('td',{className:'py-1.5 sm:py-2 px-2 text-left'},String(r.posto||'').padStart(2,'0')),
+          React.createElement('td',{className:'py-1.5 sm:py-2 px-2 text-left'},r.nome),
+          React.createElement('td',{className:'hidden sm:table-cell py-2 px-2 text-left'},r.know||'-'),
+          React.createElement('td',{className:'hidden sm:table-cell py-2 px-2 text-left'},r.areas||'-'),
+          React.createElement('td',{className:'hidden sm:table-cell py-2 px-2 text-left'},r.af||'-'),
+          React.createElement('td',{className:'py-1.5 sm:py-2 px-2 text-left'},React.createElement(StatusPill,{status:r.status})),
+          React.createElement('td',{className:'hidden sm:table-cell py-2 px-2 text-left'},r.turno||'-'),
+          React.createElement('td',{className:'hidden sm:table-cell py-2 px-2 text-left'},(()=>{ const v=(r.timesByModel&&r.timesByModel[selectedModel]); if(Array.isArray(v)){ return v.length? formatTime(v[v.length-1].dur) : '-' } if(v&&typeof v==='object'){ const vals=['1','2','3'].map(k=>{ const a=v[k]; const last=(Array.isArray(a)&&a.length)? a[a.length-1].dur : 0; return last }).filter(x=>x>0); const avgMs = vals.length? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0; return avgMs>0? formatTime(avgMs) : '-' } return '-' })()),
+          React.createElement('td',{className:'py-1.5 sm:py-2 px-2 text-right'},[
+            React.createElement('button',{title:'Visualizar',className:'inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-600 text-white hover:bg-blue-500 mr-2',onClick:()=>setView(r)},
               React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
                 React.createElement('path',{d:'M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7'}),
                 React.createElement('circle',{cx:12,cy:12,r:3})
               ])
             ),
-            React.createElement('button',{title:'Editar',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-orange-500 text-white hover:bg-orange-400 mr-2',onClick:()=>onEdit(startIdx+i)},
+            React.createElement('button',{title:'Editar',className:'inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-orange-500 text-white hover:bg-orange-400 mr-2',onClick:()=>onEdit(startIdx+i)},
               React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
                 React.createElement('path',{d:'M12 20h9'}),
                 React.createElement('path',{d:'M16.5 3.5l4 4-11 11H5.5v-4z'})
               ])
             ),
-            React.createElement('button',{title:'Excluir',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-red-500 text-white hover:bg-red-400',onClick:()=>onDelete(startIdx+i)},
+            React.createElement('button',{title:'Excluir',className:'inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-red-500 text-white hover:bg-red-400',onClick:()=>onDelete(startIdx+i)},
               React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
                 React.createElement('path',{d:'M3 6h18'}),
                 React.createElement('path',{d:'M8 6V4h8v2'}),
