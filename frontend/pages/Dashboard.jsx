@@ -8,7 +8,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
   const [turnoSel,setTurnoSel] = useState('1')
   const [running,setRunning] = useState(false)
   const [elapsed,setElapsed] = useState(0)
-  
+  const [exportOpen,setExportOpen] = useState(false)
   const [exportConfirm,setExportConfirm] = useState(false)
   const timerRef = useRef(null)
   const startAtRef = useRef(0)
@@ -399,8 +399,14 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
           (()=>{ const t=(modelConfigs?.[selectedModel]?.ibTarget ?? 90); return React.createElement('span',{className:'text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200 whitespace-nowrap'},`IB Alvo ${String(t)}%`) })(),
           (()=>{ const ibn=Number(String(ibMedio||'0').replace(/[^0-9]/g,'')); const t=(modelConfigs?.[selectedModel]?.ibTarget ?? 90); const cls = (ibn<=t) ? 'bg-green-100 text-green-700 border-green-200' : 'bg-red-100 text-red-700 border-red-200'; return React.createElement('span',{className:'text-[10px] px-2 py-0.5 rounded-full border whitespace-nowrap '+cls},`IB Atual ${String(ibMedio||'0%')}`) })()
         ]),
-        React.createElement('div',{className:'flex items-center'},[
-          React.createElement('button',{onClick:()=>exportPng(),className:'px-3 py-1.5 rounded bg-gray-200 hover:bg-gray-300 text-sm'},'Exportar')
+        React.createElement('div',{className:'flex items-center gap-2'},[
+          React.createElement('div',{className:'relative hidden sm:block z-50'},[
+            React.createElement('button',{onClick:()=>setExportOpen(v=>!v),className:'px-3 py-1.5 rounded bg-gray-200 hover:bg-gray-300 text-sm'},'Exportar'),
+            exportOpen ? React.createElement('div',{className:'absolute right-0 mt-1 w-40 rounded-lg border border-gray-200 bg-white shadow-lg z-50'},[
+              React.createElement('button',{onClick:()=>{ setExportOpen(false); exportPng() },className:'block w-full text-left px-3 py-2 hover:bg-gray-50'},'PNG')
+            ]) : null
+          ]),
+          React.createElement('button',{onClick:()=>setExportConfirm(true),className:'sm:hidden px-3 py-1.5 rounded bg-gray-200 hover:bg-gray-300 text-sm'},'Exportar')
         ])
       ]),
       React.createElement('div',{className:'relative z-0 h-[34vh] sm:h-[36vh] md:h-[40vh] lg:h-[42vh]'},[
@@ -413,7 +419,16 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
           viewRows.map(r=>{ const c=statusColor(r); const idx=src.indexOf(r); const selected = selIdx===idx; const style={ borderColor:c.border, backgroundColor:c.bg, color:c.text, boxShadow: selected? '0 0 0 3px rgba(59,130,246,0.5)' : 'none' }; return React.createElement('button',{key:idx,onClick:()=>{ if(selIdx===idx) setSelIdx(-1); else setSelIdx(idx) },onDoubleClick:()=>setSelIdx(-1),className:'h-7 w-7 sm:h-8 sm:w-8 lg:h-9 lg:w-9 rounded-lg border font-semibold flex items-center justify-center hover:opacity-90 transition text-[10px] sm:text-[11px]',style},String((r.posto||'')).padStart(2,'0')) })
         ])
       ]) })()
-      
+      ,
+      React.createElement(Modal,{open:exportConfirm,onClose:()=>setExportConfirm(false)},[
+        React.createElement('div',null,[
+          React.createElement('div',{className:'text-lg font-bold mb-2'},'Deseja exportar imagem do gráfico?'),
+          React.createElement('div',{className:'flex justify-end gap-2'},[
+            React.createElement('button',{onClick:()=>setExportConfirm(false),className:'px-3 py-2 rounded bg-gray-200'},'Não'),
+            React.createElement('button',{onClick:()=>{ setExportConfirm(false); exportPng() },className:'px-3 py-2 rounded bg-blue-600 text-white'},'Sim, baixar PNG')
+          ])
+        ])
+      ])
     ])
     
   ])
