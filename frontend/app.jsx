@@ -63,13 +63,13 @@ function ModelsPage({modelConfigs,selectedModel,setSelectedModel,setModelConfigs
     React.createElement('div',{className:'flex items-center'},[
       React.createElement('input',{value:query,onChange:e=>setQuery(e.target.value),placeholder:'Buscar por modelo...',className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'})
     ]),
-    React.createElement('div',{className:'grid grid-cols-3 gap-3'},[
-      filtered.map(([m,c])=> React.createElement('div',{key:m,className:'bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition'},[
+    React.createElement('div',{className:'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'},[
+      filtered.map(([m,c])=> React.createElement('div',{key:m,className:'bg-white rounded-xl p-3 sm:p-4 shadow-lg hover:shadow-xl transition'},[
         React.createElement('div',{className:'flex items-center justify-between mb-2'},[
           React.createElement('div',null,[
             React.createElement('div',{className:'font-bold flex items-center gap-2'},[
               m,
-              React.createElement('span',{className:'text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200'},`IB ${String(c.ibTarget??90)}%`)
+              React.createElement('span',{className:'hidden sm:inline-flex text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200'},`IB ${String(c.ibTarget??90)}%`)
             ]),
             React.createElement('div',{className:'text-xs text-gray-600'},c.display||'')
           ]),
@@ -77,18 +77,18 @@ function ModelsPage({modelConfigs,selectedModel,setSelectedModel,setModelConfigs
             React.createElement('button',{onClick:()=>setView({ key:m, data:c }),title:'Ver',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600 text-white hover:bg-blue-500'},
               React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[React.createElement('path',{d:'M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7'}),React.createElement('circle',{cx:12,cy:12,r:3})])
             ),
-          React.createElement('button',{onClick:()=>setEdit({ key:m, codigo:m, nome:(c.display||''), tact:String(c.max||''), quadro:String(c.quadro||''), ib:String(c.ibTarget||'') }),title:'Editar',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-orange-500 text-white hover:bg-orange-400'},
+          React.createElement('button',{onClick:()=>setEdit({ key:m, codigo:m, nome:(c.display||''), tact:String(c.max||''), quadro:String(c.quadro||''), ib:String(c.ibTarget||'') }),title:'Editar',className:'hidden sm:inline-flex items-center justify-center w-8 h-8 rounded-lg bg-orange-500 text-white hover:bg-orange-400'},
               React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[React.createElement('path',{d:'M12 20h9'}),React.createElement('path',{d:'M16.5 3.5l4 4-11 11H5.5v-4z'})])
             ),
-            React.createElement('button',{onClick:()=>setConfirm({ key:m }),title:'Remover',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-red-500 text-white hover:bg-red-400'},
+            React.createElement('button',{onClick:()=>setConfirm({ key:m }),title:'Remover',className:'hidden sm:inline-flex items-center justify-center w-8 h-8 rounded-lg bg-red-500 text-white hover:bg-red-400'},
               React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[React.createElement('path',{d:'M3 6h18'}),React.createElement('path',{d:'M8 6V4h8v2'}),React.createElement('path',{d:'M19 6l-1 14H6L5 6'})])
             )
           ])
         ]),
-        React.createElement('div',{className:'grid grid-cols-3 gap-2 mb-3'},[
-          React.createElement('div',null,[React.createElement('div',{className:'text-xs text-gray-600 mb-1'},'TACT (s)'),React.createElement('div',{className:'px-3 py-2 rounded bg-gray-100'},c.max!=null? String(c.max):'-')]),
-          React.createElement('div',null,[React.createElement('div',{className:'text-xs text-gray-600 mb-1'},'META (s)'),React.createElement('div',{className:'px-3 py-2 rounded bg-gray-100'},c.objective!=null? String(c.objective):'-')]),
-          React.createElement('div',null,[React.createElement('div',{className:'text-xs text-gray-600 mb-1'},'QUADRO'),React.createElement('div',{className:'px-3 py-2 rounded bg-gray-100'},c.quadro!=null? String(c.quadro):'-')])
+        React.createElement('div',{className:'grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3'},[
+          React.createElement('div',null,[React.createElement('div',{className:'text-[11px] sm:text-xs text-gray-600 mb-1'},'TACT (s)'),React.createElement('div',{className:'px-2 py-1.5 sm:px-3 sm:py-2 rounded bg-gray-100'},c.max!=null? String(c.max):'-')]),
+          React.createElement('div',null,[React.createElement('div',{className:'text-[11px] sm:text-xs text-gray-600 mb-1'},'META (s)'),React.createElement('div',{className:'px-2 py-1.5 sm:px-3 sm:py-2 rounded bg-gray-100'},c.objective!=null? String(c.objective):'-')]),
+          React.createElement('div',null,[React.createElement('div',{className:'text-[11px] sm:text-xs text-gray-600 mb-1'},'QUADRO'),React.createElement('div',{className:'px-2 py-1.5 sm:px-3 sm:py-2 rounded bg-gray-100'},c.quadro!=null? String(c.quadro):'-')])
         ]),
         null
       ]))
