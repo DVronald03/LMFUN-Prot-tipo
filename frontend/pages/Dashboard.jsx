@@ -398,11 +398,14 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
           (()=>{ const t=(modelConfigs?.[selectedModel]?.ibTarget ?? 90); return React.createElement('span',{className:'text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200 whitespace-nowrap'},`IB Alvo ${String(t)}%`) })(),
           (()=>{ const ibn=Number(String(ibMedio||'0').replace(/[^0-9]/g,'')); const t=(modelConfigs?.[selectedModel]?.ibTarget ?? 90); const cls = (ibn<=t) ? 'bg-green-100 text-green-700 border-green-200' : 'bg-red-100 text-red-700 border-red-200'; return React.createElement('span',{className:'text-[10px] px-2 py-0.5 rounded-full border whitespace-nowrap '+cls},`IB Atual ${String(ibMedio||'0%')}`) })()
         ]),
-        React.createElement('div',{className:'relative'},[
-          React.createElement('button',{onClick:()=>setExportOpen(v=>!v),className:'px-3 py-1.5 rounded bg-gray-200 hover:bg-gray-300 text-sm'},'Exportar'),
-          exportOpen ? React.createElement('div',{className:'absolute right-0 mt-1 w-40 rounded-lg border border-gray-200 bg-white shadow-lg z-10'},[
-            React.createElement('button',{onClick:()=>{ setExportOpen(false); exportPng() },className:'block w-full text-left px-3 py-2 hover:bg-gray-50'},'PNG')
-          ]) : null
+        React.createElement('div',{className:'flex items-center gap-2'},[
+          React.createElement('div',{className:'relative hidden sm:block'},[
+            React.createElement('button',{onClick:()=>setExportOpen(v=>!v),className:'px-3 py-1.5 rounded bg-gray-200 hover:bg-gray-300 text-sm'},'Exportar'),
+            exportOpen ? React.createElement('div',{className:'absolute right-0 mt-1 w-40 rounded-lg border border-gray-200 bg-white shadow-lg z-10'},[
+              React.createElement('button',{onClick:()=>{ setExportOpen(false); exportPng() },className:'block w-full text-left px-3 py-2 hover:bg-gray-50'},'PNG')
+            ]) : null
+          ]),
+          React.createElement('button',{onClick:()=>exportPng(),className:'sm:hidden px-3 py-1.5 rounded bg-gray-200 hover:bg-gray-300 text-sm'},'Exportar')
         ])
       ]),
       React.createElement('div',{className:'h-[34vh] sm:h-[36vh] md:h-[40vh] lg:h-[42vh]'},[
