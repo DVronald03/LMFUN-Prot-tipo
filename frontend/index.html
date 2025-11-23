@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LM FUN - Frontend</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50:'#eef2ff', 500:'#0b1220', 600:'#0b1220' },
+            green: { 600:'#16a34a' },
+            red: { 600:'#ef4444' },
+            orange: { 500:'#f59e0b' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://unpkg.com" />
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-gray-200 text-gray-900 overflow-hidden">
+  <div id="root"></div>
+  <script type="text/babel" src="./components/Sidebar.jsx"></script>
+  <script type="text/babel" src="./components/Header.jsx"></script>
+  <script type="text/babel" src="./components/Modal.jsx"></script>
+  <script type="text/babel" src="./components/StatusPill.jsx"></script>
+  <script type="text/babel" src="./components/Pagination.jsx"></script>
+  <script type="text/babel" src="./pages/Dashboard.jsx"></script>
+  <script type="text/babel" src="./pages/Operadores.jsx"></script>
+  <script type="text/babel" src="./pages/Login.jsx"></script>
+  <script type="text/babel" src="./app.jsx"></script>
+</body>
+</html>
