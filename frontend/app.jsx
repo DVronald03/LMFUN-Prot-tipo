@@ -181,7 +181,7 @@ function App(){
   return React.createElement('div',{className:'min-h-screen overflow-x-hidden'},[
     React.createElement(Sidebar,{page,setPage,open:drawerOpen,setOpen:setDrawerOpen,key:'sidebar'}),
     drawerOpen ? React.createElement('div',{onClick:()=>setDrawerOpen(false),className:'fixed inset-0 bg-black/40 z-40'}) : null,
-    React.createElement('div',{className:'p-4'},[
+    React.createElement('div',{className:'p-4 max-w-screen-xl mx-auto'},[
       React.createElement(Header,{onToggleDrawer:()=>setDrawerOpen(v=>!v),page:page,key:'header'}),
       page==='dashboard' ? React.createElement(Dashboard,{key:'dash',rows,setRows,selectedModel,setSelectedModel,modelConfigs}) : (page==='operadores' ? React.createElement(Operadores,{key:'ops',rows,setRows,selectedModel,setSelectedModel,modelConfigs}) : React.createElement(ModelsPage,{key:'mods',modelConfigs,selectedModel,setSelectedModel,setModelConfigs}))
     ])
