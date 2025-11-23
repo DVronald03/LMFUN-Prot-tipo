@@ -385,7 +385,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
         ])
       ])
     ]),
-    React.createElement('div',{className:'space-y-4 h-full overflow-hidden flex flex-col'},[
+    React.createElement('div',{className:'space-y-4 h-full overflow-visible flex flex-col'},[
       React.createElement('div',{className:'bg-white rounded-xl p-4 shadow-lg'},[
       React.createElement('div',{className:'flex flex-wrap items-center justify-between gap-2 mb-2'},[
         React.createElement('div',{className:'flex items-center flex-wrap gap-2'},[
