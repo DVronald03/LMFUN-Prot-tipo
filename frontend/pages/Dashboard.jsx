@@ -269,9 +269,8 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       if(!chartObj || !canvas) return
       const prevW = chartObj.width
       const prevH = chartObj.height
-      const aspect = canvas.width && canvas.height ? (canvas.width/canvas.height) : (16/9)
       const targetW = 1920
-      const targetH = Math.round(targetW/aspect)
+      const targetH = Math.round(targetW/4)
       const ds0 = chartObj.data?.datasets?.[0]||{}
       const prevBT = ds0.barThickness
       const prevMBT = ds0.maxBarThickness
