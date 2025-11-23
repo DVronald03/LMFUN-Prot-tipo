@@ -20,7 +20,7 @@ function LoginPage({ onSuccess }){
           React.createElement('span',null,' VINDO!')
         ]),
         React.createElement('div',{className:'w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-full overflow-hidden ring-2 ring-white/10 bg-transparent shadow-sm'},
-          React.createElement('img',{src:'./img/LOGO.svg',alt:'LMFUN',className:'w-full h-full object-cover'})
+          React.createElement('img',{src:'./img/LOGO.svg',alt:'LMFUN',onError:(e)=>{ try{ e.target.onerror=null; e.target.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22><rect width=%22200%22 height=%22200%22 fill=%22#ffffff%22/><text x=%2250%22 y=%22110%22 font-size=%2248%22 fill=%22#0b1220%22 font-family=%22Arial, Helvetica, sans-serif%22>LMFUN</text></svg>' }catch(_){} },className:'w-full h-full object-cover bg-white'})
         )
       ])
     ])
