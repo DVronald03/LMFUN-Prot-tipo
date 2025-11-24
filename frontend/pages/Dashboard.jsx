@@ -149,7 +149,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
     const quota = (typeof cfg.quadro==='number' && cfg.quadro>0) ? Math.min(cfg.quadro, srcByTurno.length) : srcByTurno.length
     const viewRows = srcByTurno.slice(0,quota)
     const names = viewRows.map(r=> (r.nome||'').split(' ')[0])
-    const labels = names.map(n=> String(n).toUpperCase())
+    const labels = isMobile ? viewRows.map(()=> '') : names.map(n=> String(n).toUpperCase())
     const tempos = viewRows.map(r=> {
       const v = r.timesByModel && r.timesByModel[selectedModel]
       if(Array.isArray(v)){
@@ -211,7 +211,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
     const valid = ib.filter(v=> v>0)
     const media = valid.length? Math.round(valid.reduce((a,b)=>a+b,0)/valid.length) : 0
     setIbMedio(media+'%')
-  },[chartObj,rows,selectedModel,modelConfigs,selIdx,turnoSel])
+  },[chartObj,rows,selectedModel,modelConfigs,selIdx,turnoSel,isMobile])
   useEffect(()=>{
     function onResize(){ try{ if(!chartObj) return; const labelsLen = Array.isArray(chartObj.data?.labels)? chartObj.data.labels.length : 0; const perBar = (chartObj._mobile===true) ? 44 : 68; const minW = labelsLen*perBar + 80; const boxW = chartBoxRef.current ? chartBoxRef.current.clientWidth : chartObj.width; const boxH = chartBoxRef.current ? chartBoxRef.current.clientHeight : chartObj.height; const targetW = Math.max(boxW, minW); if(typeof chartObj.resize==='function'){ chartObj.resize(targetW, boxH); chartObj.update() } }catch(_){ } }
     window.addEventListener('resize', onResize)
@@ -390,10 +390,13 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
             React.createElement('div',{className:'text-[10px] uppercase tracking-wide text-gray-600 mb-1 font-semibold'},'Nome do Operador'),
             React.createElement('input',{value:((rows[selIdx]?.nome||'').split(' ')[0]),readOnly:true,placeholder:'Selecione...',className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'})
           ]),
-          React.createElement('div',null,[
+          (()=>{ const cfg=(modelConfigs||{})[selectedModel]||{}; const src=Array.isArray(rows)? rows : []; const turnoVal = turnoSel==='2' ? '2º' : '1º'; const srcByTurno = turnoSel ? src.filter(r=> String(r.turno||'')===turnoVal) : src; const quota=(typeof cfg.quadro==='number' && cfg.quadro>0)? Math.min(cfg.quadro, srcByTurno.length) : srcByTurno.length; const viewRows = srcByTurno.slice(0,quota); const options = viewRows.map(r=>({ idx:src.indexOf(r), posto:String(r.posto||'').padStart(2,'0'), nome:(r.nome||'') })); const currentIdxInView = selIdx>=0 ? options.find(o=> o.idx===selIdx)?.idx ?? -1 : -1; return React.createElement('div',null,[
             React.createElement('div',{className:'text-[10px] uppercase tracking-wide text-gray-600 mb-1 font-semibold'},'Posto'),
-            React.createElement('input',{value:String((rows[selIdx]?.posto||'')).padStart(2,'0'),readOnly:true,placeholder:'--',className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'})
-          ]),
+            isMobile ? React.createElement('select',{value:(currentIdxInView>=0? String(currentIdxInView) : ''),onChange:e=>{ const v=e.target.value; setSelIdx(v? Number(v) : -1) },className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-sm'},[
+              React.createElement('option',{value:''},'Selecione o posto...'),
+              options.map(o=> React.createElement('option',{key:o.idx,value:String(o.idx)},`${o.posto} — ${(o.nome.split(' ')[0]||'').toUpperCase()}`))
+            ]) : React.createElement('input',{value:String((rows[selIdx]?.posto||'')).padStart(2,'0'),readOnly:true,placeholder:'--',className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'})
+          ]) })(),
           React.createElement('div',null,[
             React.createElement('div',{className:'text-[10px] uppercase tracking-wide text-gray-600 mb-1 font-semibold'},'Modelo'),
             React.createElement('select',{value:(selectedModel||''),onChange:e=>setSelectedModel(e.target.value),className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'},[
@@ -457,16 +460,11 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
         React.createElement('canvas',{ref:canvasRef})
       ])
       ]),
-      (()=>{ const cfg=(modelConfigs||{})[selectedModel]||{}; const src=Array.isArray(rows)? rows : []; const turnoVal = turnoSel==='2' ? '2º' : '1º'; const srcByTurno = turnoSel ? src.filter(r=> String(r.turno||'')===turnoVal) : src; const quota=(typeof cfg.quadro==='number' && cfg.quadro>0)? Math.min(cfg.quadro, srcByTurno.length) : srcByTurno.length; const viewRows = srcByTurno.slice(0,quota); const options = viewRows.map(r=>({ idx:src.indexOf(r), posto:String(r.posto||'').padStart(2,'0'), nome:(r.nome||'') })); const currentIdxInView = selIdx>=0 ? options.find(o=> o.idx===selIdx)?.idx ?? -1 : -1; return React.createElement('div',{className:'bg-white rounded-xl p-3 shadow-lg flex-1'},[
+      (()=>{ const cfg=(modelConfigs||{})[selectedModel]||{}; const src=Array.isArray(rows)? rows : []; const turnoVal = turnoSel==='2' ? '2º' : '1º'; const srcByTurno = turnoSel ? src.filter(r=> String(r.turno||'')===turnoVal) : src; const quota=(typeof cfg.quadro==='number' && cfg.quadro>0)? Math.min(cfg.quadro, srcByTurno.length) : srcByTurno.length; const viewRows = srcByTurno.slice(0,quota); if(isMobile){ return null } return React.createElement('div',{className:'bg-white rounded-xl p-3 shadow-lg flex-1'},[
         React.createElement('div',{className:'text-xl font-bold mb-1 text-gray-900'},'Posto'),
-        (isMobile ? React.createElement('div',null,[
-          React.createElement('select',{value:(currentIdxInView>=0? String(currentIdxInView) : ''),onChange:e=>{ const v=e.target.value; setSelIdx(v? Number(v) : -1) },className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-sm'},[
-            React.createElement('option',{value:''},'Selecione o posto...'),
-            options.map(o=> React.createElement('option',{key:o.idx,value:String(o.idx)},`${o.posto} — ${(o.nome.split(' ')[0]||'').toUpperCase()}`))
-          ])
-        ]) : React.createElement('div',{className:'grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-x-2 gap-y-2'},[
+        React.createElement('div',{className:'grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-x-2 gap-y-2'},[
           viewRows.map(r=>{ const c=statusColor(r); const idx=src.indexOf(r); const selected = selIdx===idx; const style={ borderColor:c.border, backgroundColor:c.bg, color:c.text, boxShadow: selected? '0 0 0 3px rgba(59,130,246,0.5)' : 'none' }; return React.createElement('button',{key:idx,onClick:()=>{ if(selIdx===idx) setSelIdx(-1); else setSelIdx(idx) },onDoubleClick:()=>setSelIdx(-1),className:'h-7 w-7 sm:h-8 sm:w-8 lg:h-9 lg:w-9 rounded-lg border font-semibold flex items-center justify-center hover:opacity-90 transition text-[10px] sm:text-[11px]',style},String((r.posto||'')).padStart(2,'0')) })
-        ]))
+        ])
       ]) })()
     ])
     
