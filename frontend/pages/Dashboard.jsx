@@ -213,6 +213,61 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
     setIbMedio(media+'%')
   },[chartObj,rows,selectedModel,modelConfigs,selIdx,turnoSel,isMobile])
   useEffect(()=>{
+    function onOrient(){
+      try{
+        if(!chartObj) return
+        const labelsLen = Array.isArray(chartObj.data?.labels)? chartObj.data.labels.length : 0
+        const perBar = (chartObj._mobile===true) ? 44 : 68
+        const minW = labelsLen*perBar + 80
+        const boxW = chartBoxRef.current ? chartBoxRef.current.clientWidth : chartObj.width
+        const boxH = chartBoxRef.current ? chartBoxRef.current.clientHeight : chartObj.height
+        const targetW = Math.max(boxW, minW)
+        if(typeof chartObj.resize==='function'){ chartObj.resize(targetW, boxH); chartObj.update() }
+        const src = Array.isArray(rows)? rows : []
+        const turnoVal = turnoSel==='2' ? '2º' : '1º'
+        const srcByTurno = turnoSel ? src.filter(r=> String(r.turno||'')===turnoVal) : src
+        const cfg = (modelConfigs||{})[selectedModel]||{}
+        const quota = (typeof cfg.quadro==='number' && cfg.quadro>0) ? Math.min(cfg.quadro, srcByTurno.length) : srcByTurno.length
+        const viewRows = srcByTurno.slice(0,quota)
+        const selectedRow = (selIdx>=0 ? src[selIdx] : null)
+        const idxInView = selectedRow ? viewRows.indexOf(selectedRow) : -1
+        if(idxInView<0) return
+        const meta = chartObj.getDatasetMeta(0)
+        const el = meta && meta.data ? meta.data[idxInView] : null
+        if(!el) return
+        const x = el.x
+        const box = chartBoxRef.current
+        if(!box) return
+        const target = Math.max(0, Math.floor(x - box.clientWidth/2))
+        box.scrollTo({ left: target, behavior:'smooth' })
+      }catch(_){ }
+    }
+    window.addEventListener('orientationchange', onOrient)
+    return ()=> window.removeEventListener('orientationchange', onOrient)
+  },[chartObj,rows,selectedModel,modelConfigs,selIdx,turnoSel])
+  useEffect(()=>{
+    try{
+      if(!chartObj || !isMobile) return
+      const src = Array.isArray(rows)? rows : []
+      const turnoVal = turnoSel==='2' ? '2º' : '1º'
+      const srcByTurno = turnoSel ? src.filter(r=> String(r.turno||'')===turnoVal) : src
+      const cfg = (modelConfigs||{})[selectedModel]||{}
+      const quota = (typeof cfg.quadro==='number' && cfg.quadro>0) ? Math.min(cfg.quadro, srcByTurno.length) : srcByTurno.length
+      const viewRows = srcByTurno.slice(0,quota)
+      const selectedRow = (selIdx>=0 ? src[selIdx] : null)
+      const idxInView = selectedRow ? viewRows.indexOf(selectedRow) : -1
+      if(idxInView<0) return
+      const meta = chartObj.getDatasetMeta(0)
+      const el = meta && meta.data ? meta.data[idxInView] : null
+      if(!el) return
+      const x = el.x
+      const box = chartBoxRef.current
+      if(!box) return
+      const target = Math.max(0, Math.floor(x - box.clientWidth/2))
+      box.scrollTo({ left: target, behavior:'smooth' })
+    }catch(_){ }
+  },[chartObj,selIdx,turnoSel,selectedModel,isMobile,rows])
+  useEffect(()=>{
     function onResize(){ try{ if(!chartObj) return; const labelsLen = Array.isArray(chartObj.data?.labels)? chartObj.data.labels.length : 0; const perBar = (chartObj._mobile===true) ? 44 : 68; const minW = labelsLen*perBar + 80; const boxW = chartBoxRef.current ? chartBoxRef.current.clientWidth : chartObj.width; const boxH = chartBoxRef.current ? chartBoxRef.current.clientHeight : chartObj.height; const targetW = Math.max(boxW, minW); if(typeof chartObj.resize==='function'){ chartObj.resize(targetW, boxH); chartObj.update() } }catch(_){ } }
     window.addEventListener('resize', onResize)
     return ()=> window.removeEventListener('resize', onResize)
@@ -338,7 +393,6 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       try{ const cfgExp = (modelConfigs||{})[selectedModel]||{}; const namesExp = viewRowsTmp.map(r=> (r.nome||'').split(' ')[0]); const labelsExp = namesExp.map(n=> String(n).toUpperCase()); const temposExp = viewRowsTmp.map(r=> { const v=r.timesByModel && r.timesByModel[selectedModel]; if(Array.isArray(v)){ const last=(v[v.length-1]?.dur)||0; return Number((last/1000).toFixed(2)) } if(v&&typeof v==='object'){ const vals=['1','2','3'].map(k=>{ const a=v[k]; const last=(Array.isArray(a)&&a.length)? a[a.length-1].dur : 0; return last }).filter(x=> x>0); const avgMs = vals.length? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0; return Number((avgMs/1000).toFixed(2)) } return 0 }); const maxLineExp = labelsExp.map(()=> (cfgExp.max!=null? cfgExp.max : null)); const objLineExp = labelsExp.map(()=> (cfgExp.objective!=null? cfgExp.objective : null)); const ibExp = temposExp.map(t=> (cfgExp.max? Math.round(t/cfgExp.max*100) : 0)); chartObj.data.labels = labelsExp; chartObj._names = namesExp; chartObj.data.datasets[0].data = temposExp; chartObj.data.datasets[1].data = maxLineExp; chartObj.data.datasets[2].data = objLineExp; chartObj.data.datasets[3].data = ibExp; if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.maxRotation = 40; chartObj.options.scales.x.ticks.minRotation = 0; chartObj.options.scales.x.ticks.autoSkip = false } if(ds0){ ds0.barThickness=undefined; ds0.maxBarThickness=18; ds0.barPercentage=0.6; ds0.categoryPercentage=0.7; const len = Array.isArray(chartObj.data.labels)? chartObj.data.labels.length : 0; ds0.borderColor = len? Array(len).fill('transparent') : 'transparent'; ds0.borderWidth = len? Array(len).fill(0) : 0 } chartObj.setActiveElements([]); if(typeof chartObj.resize==='function'){ chartObj.resize(targetW,targetH) } }catch(_){}
       try{ if(chartObj.options?.plugins?.tooltip){ chartObj.options.plugins.tooltip.enabled = false } if(chartObj.tooltip && typeof chartObj.tooltip.setActiveElements==='function'){ chartObj.tooltip.setActiveElements([]) } }catch(_){}
       chartObj.update()
-      const imgData = chartObj.toBase64Image('image/png',1)
       const headerH = 110
       const out = document.createElement('canvas')
       out.width = targetW
@@ -373,9 +427,9 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       octx.textAlign = 'center'
       octx.textBaseline = 'middle'
       octx.fillText(badgeTextStr, bx + bw/2, by + bh/2)
-      const im = new Image()
-      im.onload = ()=>{ octx.drawImage(im, 0, headerH, targetW, targetH); const data = out.toDataURL('image/png'); const a=document.createElement('a'); a.href=data; a.download=`dashboard_${String(selectedModel||'modelo')}.png`; a.click() }
-      im.src = imgData
+      octx.drawImage(canvas, 0, headerH, targetW, targetH)
+      const data = out.toDataURL('image/png')
+      try{ const a=document.createElement('a'); a.href=data; a.download=`dashboard_${String(selectedModel||'modelo')}.png`; a.rel='noopener'; a.target='_blank'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a) }catch(_){ } },0) }catch(_){ try{ window.open(data,'_blank') }catch(__){} }
       try{ chartObj.data.labels = prevLabels; if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.maxRotation = prevTickMax; chartObj.options.scales.x.ticks.minRotation = prevTickMin; chartObj.options.scales.x.ticks.autoSkip = prevAutoSkip } if(ds0){ ds0.barThickness=prevBT; ds0.maxBarThickness=prevMBT; ds0.barPercentage=prevBP; ds0.categoryPercentage=prevCP; ds0.borderColor = prevBordColor; ds0.borderWidth = prevBordWidth } chartObj._exporting = false; if(selectedIdxInViewTmp>=0){ chartObj.setActiveElements([{ datasetIndex:0, index:selectedIdxInViewTmp }]) } if(typeof chartObj.resize==='function'){ chartObj.resize(prevW,prevH) } }catch(_){}
       try{ if(chartObj.options?.plugins?.tooltip){ chartObj.options.plugins.tooltip.enabled = prevTooltipEnabled } }catch(_){}
       chartObj.update()
@@ -388,18 +442,18 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
         React.createElement('div',{className:'grid grid-cols-1 gap-3 mb-3'},[
           React.createElement('div',null,[
             React.createElement('div',{className:'text-[10px] uppercase tracking-wide text-gray-600 mb-1 font-semibold'},'Nome do Operador'),
-            React.createElement('input',{value:((rows[selIdx]?.nome||'').split(' ')[0]),readOnly:true,placeholder:'Selecione...',className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'})
+            React.createElement('input',{value:((rows[selIdx]?.nome||'').split(' ')[0]),readOnly:true,placeholder:'Selecione...',className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-base placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'})
           ]),
           (()=>{ const cfg=(modelConfigs||{})[selectedModel]||{}; const src=Array.isArray(rows)? rows : []; const turnoVal = turnoSel==='2' ? '2º' : '1º'; const srcByTurno = turnoSel ? src.filter(r=> String(r.turno||'')===turnoVal) : src; const quota=(typeof cfg.quadro==='number' && cfg.quadro>0)? Math.min(cfg.quadro, srcByTurno.length) : srcByTurno.length; const viewRows = srcByTurno.slice(0,quota); const options = viewRows.map(r=>({ idx:src.indexOf(r), posto:String(r.posto||'').padStart(2,'0'), nome:(r.nome||'') })); const currentIdxInView = selIdx>=0 ? options.find(o=> o.idx===selIdx)?.idx ?? -1 : -1; return React.createElement('div',null,[
             React.createElement('div',{className:'text-[10px] uppercase tracking-wide text-gray-600 mb-1 font-semibold'},'Posto'),
-            isMobile ? React.createElement('select',{value:(currentIdxInView>=0? String(currentIdxInView) : ''),onChange:e=>{ const v=e.target.value; setSelIdx(v? Number(v) : -1) },className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-sm'},[
+            isMobile ? React.createElement('select',{value:(currentIdxInView>=0? String(currentIdxInView) : ''),onChange:e=>{ const v=e.target.value; setSelIdx(v? Number(v) : -1) },className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none'},[
               React.createElement('option',{value:''},'Selecione o posto...'),
               options.map(o=> React.createElement('option',{key:o.idx,value:String(o.idx)},`${o.posto} — ${(o.nome.split(' ')[0]||'').toUpperCase()}`))
             ]) : React.createElement('input',{value:String((rows[selIdx]?.posto||'')).padStart(2,'0'),readOnly:true,placeholder:'--',className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'})
           ]) })(),
           React.createElement('div',null,[
             React.createElement('div',{className:'text-[10px] uppercase tracking-wide text-gray-600 mb-1 font-semibold'},'Modelo'),
-            React.createElement('select',{value:(selectedModel||''),onChange:e=>setSelectedModel(e.target.value),className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'},[
+            React.createElement('select',{value:(selectedModel||''),onChange:e=>setSelectedModel(e.target.value),className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none'},[
               React.createElement('option',{value:'',disabled:true},'Selecione o modelo'),
               Object.keys(modelConfigs||{}).map(m=> React.createElement('option',{key:m,value:m},m))
             ])
@@ -456,9 +510,14 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
           React.createElement('button',{onClick:()=>exportPng(),className:'sm:hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm shadow-sm transition whitespace-nowrap'},'Exportar')
         ])
       ]),
-      React.createElement('div',{ref:chartBoxRef,className:'h-[34vh] sm:h-[36vh] md:h-[40vh] lg:h-[42vh] overflow-x-auto'},[
+      React.createElement('div',{ref:chartBoxRef,className:'h-64 sm:h-72 md:h-80 lg:h-[42vh] overflow-x-auto'},[
         React.createElement('canvas',{ref:canvasRef})
       ])
+      , isMobile ? (()=>{ const cfg=(modelConfigs||{})[selectedModel]||{}; const src=Array.isArray(rows)? rows : []; const turnoVal = turnoSel==='2' ? '2º' : '1º'; const srcByTurno = turnoSel ? src.filter(r=> String(r.turno||'')===turnoVal) : src; const quota=(typeof cfg.quadro==='number' && cfg.quadro>0)? Math.min(cfg.quadro, srcByTurno.length) : srcByTurno.length; const viewRows = srcByTurno.slice(0,quota); return React.createElement('div',{className:'mt-2 overflow-x-auto'},[
+        React.createElement('div',{className:'flex items-center gap-2 w-max'},[
+          viewRows.map(r=>{ const idx=src.indexOf(r); const selected = selIdx===idx; const cls = 'inline-flex items-center justify-center px-3 py-2 rounded-lg border text-base '+(selected? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-gray-300 text-gray-800'); return React.createElement('button',{key:idx,onClick:()=>setSelIdx(idx),className:cls},String((r.posto||'')).padStart(2,'0')) })
+        ])
+      ]) })() : null
       ]),
       (()=>{ const cfg=(modelConfigs||{})[selectedModel]||{}; const src=Array.isArray(rows)? rows : []; const turnoVal = turnoSel==='2' ? '2º' : '1º'; const srcByTurno = turnoSel ? src.filter(r=> String(r.turno||'')===turnoVal) : src; const quota=(typeof cfg.quadro==='number' && cfg.quadro>0)? Math.min(cfg.quadro, srcByTurno.length) : srcByTurno.length; const viewRows = srcByTurno.slice(0,quota); if(isMobile){ return null } return React.createElement('div',{className:'bg-white rounded-xl p-3 shadow-lg flex-1'},[
         React.createElement('div',{className:'text-xl font-bold mb-1 text-gray-900'},'Posto'),
