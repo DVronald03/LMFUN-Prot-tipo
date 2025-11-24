@@ -445,23 +445,28 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
         ]),
         React.createElement('div',{className:'flex items-center gap-2'},[
           React.createElement('div',{className:'relative hidden sm:block'},[
-            React.createElement('button',{onClick:()=>setExportOpen(v=>!v),className:'px-3 py-1.5 rounded bg-gray-200 hover:bg-gray-300 text-sm'},'Exportar'),
+            React.createElement('button',{onClick:()=>setExportOpen(v=>!v),className:'inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm shadow-sm transition whitespace-nowrap'},'Exportar'),
             exportOpen ? React.createElement('div',{className:'absolute right-0 mt-1 w-40 rounded-lg border border-gray-200 bg-white shadow-lg z-10'},[
               React.createElement('button',{onClick:()=>{ setExportOpen(false); exportPng() },className:'block w-full text-left px-3 py-2 hover:bg-gray-50'},'PNG')
             ]) : null
           ]),
-          React.createElement('button',{onClick:()=>exportPng(),className:'sm:hidden px-3 py-1.5 rounded bg-gray-200 hover:bg-gray-300 text-sm'},'Exportar')
+          React.createElement('button',{onClick:()=>exportPng(),className:'sm:hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm shadow-sm transition whitespace-nowrap'},'Exportar')
         ])
       ]),
       React.createElement('div',{ref:chartBoxRef,className:'h-[34vh] sm:h-[36vh] md:h-[40vh] lg:h-[42vh] overflow-x-auto'},[
         React.createElement('canvas',{ref:canvasRef})
       ])
       ]),
-      (()=>{ const cfg=(modelConfigs||{})[selectedModel]||{}; const src=Array.isArray(rows)? rows : []; const turnoVal = turnoSel==='2' ? '2º' : '1º'; const srcByTurno = turnoSel ? src.filter(r=> String(r.turno||'')===turnoVal) : src; const quota=(typeof cfg.quadro==='number' && cfg.quadro>0)? Math.min(cfg.quadro, srcByTurno.length) : srcByTurno.length; const viewRows = srcByTurno.slice(0,quota); return React.createElement('div',{className:'bg-white rounded-xl p-3 shadow-lg flex-1'},[
+      (()=>{ const cfg=(modelConfigs||{})[selectedModel]||{}; const src=Array.isArray(rows)? rows : []; const turnoVal = turnoSel==='2' ? '2º' : '1º'; const srcByTurno = turnoSel ? src.filter(r=> String(r.turno||'')===turnoVal) : src; const quota=(typeof cfg.quadro==='number' && cfg.quadro>0)? Math.min(cfg.quadro, srcByTurno.length) : srcByTurno.length; const viewRows = srcByTurno.slice(0,quota); const options = viewRows.map(r=>({ idx:src.indexOf(r), posto:String(r.posto||'').padStart(2,'0'), nome:(r.nome||'') })); const currentIdxInView = selIdx>=0 ? options.find(o=> o.idx===selIdx)?.idx ?? -1 : -1; return React.createElement('div',{className:'bg-white rounded-xl p-3 shadow-lg flex-1'},[
         React.createElement('div',{className:'text-xl font-bold mb-1 text-gray-900'},'Posto'),
-        React.createElement('div',{className:'grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-x-2 gap-y-2'},[
+        (isMobile ? React.createElement('div',null,[
+          React.createElement('select',{value:(currentIdxInView>=0? String(currentIdxInView) : ''),onChange:e=>{ const v=e.target.value; setSelIdx(v? Number(v) : -1) },className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-sm'},[
+            React.createElement('option',{value:''},'Selecione o posto...'),
+            options.map(o=> React.createElement('option',{key:o.idx,value:String(o.idx)},`${o.posto} — ${(o.nome.split(' ')[0]||'').toUpperCase()}`))
+          ])
+        ]) : React.createElement('div',{className:'grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-x-2 gap-y-2'},[
           viewRows.map(r=>{ const c=statusColor(r); const idx=src.indexOf(r); const selected = selIdx===idx; const style={ borderColor:c.border, backgroundColor:c.bg, color:c.text, boxShadow: selected? '0 0 0 3px rgba(59,130,246,0.5)' : 'none' }; return React.createElement('button',{key:idx,onClick:()=>{ if(selIdx===idx) setSelIdx(-1); else setSelIdx(idx) },onDoubleClick:()=>setSelIdx(-1),className:'h-7 w-7 sm:h-8 sm:w-8 lg:h-9 lg:w-9 rounded-lg border font-semibold flex items-center justify-center hover:opacity-90 transition text-[10px] sm:text-[11px]',style},String((r.posto||'')).padStart(2,'0')) })
-        ])
+        ]))
       ]) })()
     ])
     

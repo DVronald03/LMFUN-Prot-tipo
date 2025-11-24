@@ -37,7 +37,10 @@ function ModelsPage({modelConfigs,selectedModel,setSelectedModel,setModelConfigs
     React.createElement('div',{className:'flex items-center justify-between'},[
       React.createElement('div',{className:'text-2xl font-bold'},'Gestão de Modelos'),
       React.createElement('div',null,[
-        React.createElement('button',{onClick:()=>setOpen(true),className:'px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-500'},'+ Novo Modelo')
+        React.createElement('button',{onClick:()=>setOpen(true),className:'inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0a0f1c] text-white hover:bg-[#0b1220] shadow-md hover:shadow-lg active:scale-[.98] transition whitespace-nowrap'},[
+          React.createElement('span',{className:'inline-flex items-center justify-center w-6 h-6 rounded-lg bg-white/10'},'+'),
+          React.createElement('span',null,'Novo Modelo')
+        ])
       ])
     ]),
     React.createElement('div',{className:'grid grid-cols-2 gap-3'},[
