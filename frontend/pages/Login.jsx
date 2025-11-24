@@ -3,6 +3,9 @@ function LoginPage({ onSuccess }){
   const [pass,setPass] = React.useState('')
   const [error,setError] = React.useState('')
   function submit(e){ e.preventDefault(); const u=user.trim(); const p=pass.trim(); if(u==='HDA2' && p==='Manaus@01'){ setError(''); onSuccess?.() } else { setError('Credenciais inválidas') } }
+  const logoCandidates = [ new URL('./img/LOGO.svg', document.baseURI).toString(), new URL('../img/LOGO.svg', document.baseURI).toString() ]
+  const logoSrc = logoCandidates[0]
+  const fallbackSvg = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#ffffff"/><text x="50" y="110" font-size="48" fill="#0b1220" font-family="Arial, Helvetica, sans-serif">LMFUN</text></svg>')
   return React.createElement('div',{className:'min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0a0f1c] to-[#0e1627] p-4 sm:p-6 lg:p-8'},[
     React.createElement('div',{className:'bg-white rounded-2xl shadow-xl w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl overflow-hidden grid grid-cols-1 lg:grid-cols-2'},[
       React.createElement('div',{className:'order-2 lg:order-1 p-5 sm:p-6 md:p-8 lg:p-10'},[
@@ -20,7 +23,7 @@ function LoginPage({ onSuccess }){
           React.createElement('span',null,' VINDO!')
         ]),
         React.createElement('div',{className:'w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-full overflow-hidden ring-2 ring-white/10 bg-transparent shadow-sm'},
-          React.createElement('img',{src:(new URL('./img/LOGO.svg', window.location.href)).toString(),alt:'LMFUN',onError:(e)=>{ try{ e.target.onerror=null; e.target.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22><rect width=%22200%22 height=%22200%22 fill=%22#ffffff%22/><text x=%2250%22 y=%22110%22 font-size=%2248%22 fill=%220b1220%22 font-family=%22Arial, Helvetica, sans-serif%22>LMFUN</text></svg>' }catch(_){} },className:'w-full h-full object-cover'})
+          React.createElement('img',{src:logoSrc,alt:'LMFUN',"data-try":"0",onError:(e)=>{ try{ const i=Number(e.target.dataset.try||'0'); const next = logoCandidates[i+1]; if(next){ e.target.dataset.try=String(i+1); e.target.src=next } else { e.target.onerror=null; e.target.src=fallbackSvg } }catch(_){} },className:'w-full h-full object-cover'})
         )
       ])
     ])

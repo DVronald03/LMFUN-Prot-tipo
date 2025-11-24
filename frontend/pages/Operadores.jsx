@@ -33,8 +33,10 @@ function Operadores({rows:rowsProp,setRows:setRowsProp,selectedModel,setSelected
   const [query,setQuery] = useState('')
   const [turnoFilter,setTurnoFilter] = useState('')
   const [conflict,setConflict] = useState(null)
+  const [isMobile,setIsMobile] = useState(false)
   
   useEffect(()=>{ if(!open) setForm({ nome:'', know:'', af:'MONT. ', areas:'', status:'EFETIVO', posto:'', turno:'1º' }) },[open])
+  useEffect(()=>{ const mq=window.matchMedia('(max-width: 640px)'); const apply=()=> setIsMobile(mq.matches); apply(); mq.addEventListener('change',apply); return ()=> mq.removeEventListener('change',apply) },[])
   function nextId(){ return (rows.length? Math.max(...rows.map(r=> Number(r.id)||0)) : 0) + 1 }
   function onSubmit(e){
     e.preventDefault();
@@ -78,7 +80,7 @@ function Operadores({rows:rowsProp,setRows:setRowsProp,selectedModel,setSelected
       React.createElement('div',{className:'text-xl font-bold'},'Operadores'),
       React.createElement('button',{onClick:()=>{ setEditing(null); setOpen(true) },className:'px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-500'},'+ Novo Operador')
     ]),
-    React.createElement('div',{className:'grid grid-cols-4 gap-3'},[
+    React.createElement('div',{className:'grid grid-cols-2 sm:grid-cols-4 gap-3'},[
       React.createElement('div',{className:'bg-white rounded-xl p-3 flex items-center gap-3 shadow-lg'},[
         React.createElement('span',{className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600'},
           React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5 text-white'},[
@@ -136,7 +138,23 @@ function Operadores({rows:rowsProp,setRows:setRowsProp,selectedModel,setSelected
       ])
     ]),
     
-    React.createElement('div',{className:'bg-white rounded-xl p-3 shadow-lg'},[
+    isMobile ? React.createElement('div',{className:'space-y-2'},[
+      pageRows.map((r,i)=> React.createElement('div',{key:startIdx+i,className:'bg-white rounded-xl p-3 shadow-lg flex items-center justify-between'},[
+        React.createElement('div',{className:'flex items-center gap-3'},[
+          React.createElement('div',{className:'inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gray-100 border border-gray-200 font-bold'},String(r.posto||'').padStart(2,'0')),
+          React.createElement('div',null,[
+            React.createElement('div',{className:'font-semibold'},r.nome),
+            React.createElement('div',{className:'text-xs text-gray-600'},(r.areas||'-')+' • '+(r.turno||'-'))
+          ])
+        ]),
+        React.createElement('div',{className:'flex items-center gap-2'},[
+          React.createElement('div',null,React.createElement(StatusPill,{status:r.status})),
+          React.createElement('button',{title:'Ver',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600 text-white hover:bg-blue-500',onClick:()=>setView(r)},'👁️'),
+          React.createElement('button',{title:'Editar',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-orange-500 text-white hover:bg-orange-400',onClick:()=>onEdit(startIdx+i)},'✎'),
+          React.createElement('button',{title:'Excluir',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-red-500 text-white hover:bg-red-400',onClick:()=>onDelete(startIdx+i)},'🗑️')
+        ])
+      ]))
+    ]) : React.createElement('div',{className:'bg-white rounded-xl p-3 shadow-lg'},[
       React.createElement('table',{className:'w-full text-sm table-fixed'},[
         React.createElement('thead',null,React.createElement('tr',null,[
           React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'POSTO'),

@@ -1,10 +1,13 @@
 function Sidebar({page,setPage,open,setOpen}){
   const [upgOpen,setUpgOpen] = React.useState(true)
+  const logoCandidates = [ new URL('./img/LOGO.svg', document.baseURI).toString(), new URL('../img/LOGO.svg', document.baseURI).toString() ]
+  const logoSrc = logoCandidates[0]
+  const fallbackSvg = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#ffffff"/><text x="50" y="110" font-size="44" fill="#0b1220" font-family="Arial, Helvetica, sans-serif">LMFUN</text></svg>')
   return React.createElement('aside',{className:(open?'translate-x-0 ':'-translate-x-full ')+'fixed inset-y-0 left-0 w-64 z-50 bg-[#0a0f1c] text-white border-r border-white/10 p-4 transform transition-transform'},[
     React.createElement('div',{className:'flex items-center justify-between mb-6'},[
       React.createElement('div',{className:'flex items-center gap-4'},[
         React.createElement('div',{className:'w-12 h-12 rounded-full overflow-hidden ring-2 ring-white/10 bg-transparent shadow-sm transition'},
-          React.createElement('img',{src:(new URL('./img/LOGO.svg', window.location.href)).toString(),alt:'LMFUN',onError:(e)=>{ try{ e.target.onerror=null; e.target.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22><rect width=%22200%22 height=%22200%22 fill=%22#ffffff%22/><text x=%2250%22 y=%22110%22 font-size=%2244%22 fill=%220b1220%22 font-family=%22Arial, Helvetica, sans-serif%22>LMFUN</text></svg>' }catch(_){} },className:'w-full h-full object-cover'})
+          React.createElement('img',{src:logoSrc,alt:'LMFUN',"data-try":"0",onError:(e)=>{ try{ const i=Number(e.target.dataset.try||'0'); const next = logoCandidates[i+1]; if(next){ e.target.dataset.try=String(i+1); e.target.src=next } else { e.target.onerror=null; e.target.src=fallbackSvg } }catch(_){} },className:'w-full h-full object-cover'})
         ),
         React.createElement('div',{className:'font-bold tracking-wide'},[
           React.createElement('span',{className:'text-red-500'},'LM'),

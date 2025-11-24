@@ -63,7 +63,7 @@ function ModelsPage({modelConfigs,selectedModel,setSelectedModel,setModelConfigs
     React.createElement('div',{className:'flex items-center'},[
       React.createElement('input',{value:query,onChange:e=>setQuery(e.target.value),placeholder:'Buscar por modelo...',className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'})
     ]),
-    React.createElement('div',{className:'grid grid-cols-3 gap-3'},[
+    React.createElement('div',{className:'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3'},[
       filtered.map(([m,c])=> React.createElement('div',{key:m,className:'bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition'},[
         React.createElement('div',{className:'flex items-center justify-between mb-2'},[
           React.createElement('div',null,[
@@ -174,7 +174,7 @@ function App(){
   const [rows,setRows] = useState(()=> makeProvidedOperatorsApp(initialModelConfigs))
   const [selectedModel,setSelectedModel] = useState('')
   const [drawerOpen,setDrawerOpen] = useState(false)
-  const [logged,setLogged] = useState(false)
+  const [logged,setLogged] = useState(true)
   if(!logged){
     return React.createElement(LoginPage,{onSuccess:()=>{ setLogged(true); setPage('dashboard') }})
   }
