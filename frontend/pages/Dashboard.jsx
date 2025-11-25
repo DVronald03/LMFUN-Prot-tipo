@@ -310,6 +310,8 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       const prevBW = d3.borderWidth
       const prevTooltipEnabled = chartObj.options?.plugins?.tooltip?.enabled
       const prevTicksDisplay = chartObj.options?.scales?.x?.ticks?.display
+      const prevAxisDisplay = chartObj.options?.scales?.x?.display
+      const prevLayoutPadding = chartObj.options?.layout?.padding
       chartObj._exporting = true
       try{
         const src = Array.isArray(rows)? rows : []
@@ -331,6 +333,9 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
         chartObj.data.datasets[2].data = objLineExp
         chartObj.data.datasets[3].data = ibExp
         if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.maxRotation = 40; chartObj.options.scales.x.ticks.minRotation = 0; chartObj.options.scales.x.ticks.autoSkip = false; chartObj.options.scales.x.ticks.display = true }
+        if(chartObj.options?.scales?.x){ chartObj.options.scales.x.display = true }
+        chartObj.options.layout = chartObj.options.layout || {}
+        chartObj.options.layout.padding = { ...(prevLayoutPadding||{}), bottom: Math.max(24, Number((prevLayoutPadding||{}).bottom||0)) }
         chartObj._mobile = false
         if(ds0){ ds0.barThickness=undefined; ds0.maxBarThickness=16; ds0.barPercentage=0.6; ds0.categoryPercentage=0.7 }
         if(d3){ d3.pointRadius=0; d3.borderWidth=2 }
@@ -353,6 +358,9 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
         if(d3){ d3.pointRadius=prevPR; d3.borderWidth=prevBW }
         if(chartObj.options?.plugins?.tooltip){ chartObj.options.plugins.tooltip.enabled = prevTooltipEnabled }
         if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.display = prevTicksDisplay }
+        if(chartObj.options?.scales?.x){ chartObj.options.scales.x.display = prevAxisDisplay }
+        chartObj.options.layout = chartObj.options.layout || {}
+        chartObj.options.layout.padding = prevLayoutPadding
         chartObj._mobile = isMobile
         chartObj._exporting = false
         if(typeof chartObj.resize==='function'){ chartObj.resize(prevW, prevH) }
@@ -442,6 +450,9 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       try{ chartObj.data.labels = prevLabels; if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.maxRotation = prevTickMax; chartObj.options.scales.x.ticks.minRotation = prevTickMin; chartObj.options.scales.x.ticks.autoSkip = prevAutoSkip } if(ds0){ ds0.barThickness=prevBT; ds0.maxBarThickness=prevMBT; ds0.barPercentage=prevBP; ds0.categoryPercentage=prevCP; ds0.borderColor = prevBordColor; ds0.borderWidth = prevBordWidth } chartObj._exporting = false; if(selectedIdxInViewTmp>=0){ chartObj.setActiveElements([{ datasetIndex:0, index:selectedIdxInViewTmp }]) } if(typeof chartObj.resize==='function'){ chartObj.resize(prevW,prevH) } }catch(_){}
       try{ if(chartObj.options?.plugins?.tooltip){ chartObj.options.plugins.tooltip.enabled = prevTooltipEnabled } }catch(_){}
       if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.display = prevTicksDisplay }
+      if(chartObj.options?.scales?.x){ chartObj.options.scales.x.display = prevAxisDisplay }
+      chartObj.options.layout = chartObj.options.layout || {}
+      chartObj.options.layout.padding = prevLayoutPadding
       chartObj._mobile = isMobile
       chartObj.update('none')
     }catch(e){ const a=document.createElement('a'); a.href=chartObj.toBase64Image(); a.download='dashboard.png'; a.click() }
