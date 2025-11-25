@@ -293,7 +293,8 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       doc.text(headerMsg, headerLeft, headerTop)
       const imgY = headerTop + 24
       const availW = Math.floor(pageW - margin*2)
-      const availH = Math.floor(pageH - imgY - margin)
+      const exportW = 1920
+      const exportH = 590
       const prevW = chartObj.width
       const prevH = chartObj.height
       const ds0 = chartObj.data?.datasets?.[0]||{}
@@ -341,14 +342,14 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
         if(d3){ d3.pointRadius=0; d3.borderWidth=2 }
         if(chartObj.options?.plugins?.tooltip){ chartObj.options.plugins.tooltip.enabled = false }
         if(chartObj.tooltip && typeof chartObj.tooltip.setActiveElements==='function'){ chartObj.tooltip.setActiveElements([]) }
-        if(typeof chartObj.resize==='function'){ chartObj.resize(availW, availH) }
+        if(typeof chartObj.resize==='function'){ chartObj.resize(exportW, exportH) }
         chartObj.update('none')
       }catch(_){}
       await new Promise(r=> requestAnimationFrame(r))
       const imgData = chartObj.toBase64Image('image/png',1)
       const imgX = margin
       const innerW = availW
-      const innerH = availH
+      const innerH = Math.round(innerW * exportH / exportW)
       const innerY = imgY
       doc.addImage(imgData,'PNG',imgX,innerY,innerW,innerH)
       try{
@@ -381,7 +382,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       const prevW = chartObj.width
       const prevH = chartObj.height
       const targetW = 1920
-      const targetH = Math.round(targetW/4)
+      const targetH = 590
       const ds0 = chartObj.data?.datasets?.[0]||{}
       const prevBT = ds0.barThickness
       const prevMBT = ds0.maxBarThickness
