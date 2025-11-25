@@ -1,5 +1,6 @@
 function Sidebar({page,setPage,open,setOpen,onLogout}){
   const [upgOpen,setUpgOpen] = React.useState(true)
+  const [confirm,setConfirm] = React.useState(false)
   const logoCandidates = [ new URL('./img/LOGO.svg', document.baseURI).toString(), new URL('../img/LOGO.svg', document.baseURI).toString() ]
   const logoSrc = logoCandidates[0]
   const fallbackSvg = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#ffffff"/><text x="50" y="110" font-size="44" fill="#0b1220" font-family="Arial, Helvetica, sans-serif">LMFUN</text></svg>')
@@ -45,9 +46,19 @@ function Sidebar({page,setPage,open,setOpen,onLogout}){
         ]))
       ]) : null,
       React.createElement('div',{className:'border-t border-white/10 my-3'}),
-      React.createElement('button',{onClick:onLogout,className:'w-full flex items-center gap-3 text-left px-3 py-2 rounded bg-red-600 text-white hover:bg-red-500'},[
+      React.createElement('button',{onClick:()=>setConfirm(true),className:'w-full flex items-center gap-3 text-left px-3 py-2 rounded bg-red-600 text-white hover:bg-red-500'},[
         React.createElement('span',{className:'inline-flex items-center justify-center w-7 h-7 rounded-lg'},'⎋'),
         React.createElement('span',{className:'leading-none'},'Sair')
+      ]),
+      React.createElement(Modal,{open:confirm,onClose:()=>setConfirm(false)},[
+        React.createElement('div',null,[
+          React.createElement('div',{className:'text-lg font-bold mb-2'},'Confirmar saída'),
+          React.createElement('div',{className:'text-sm text-gray-700 mb-3'},'Deseja encerrar a sessão e voltar para a tela de login?'),
+          React.createElement('div',{className:'flex justify-end gap-2'},[
+            React.createElement('button',{onClick:()=>setConfirm(false),className:'px-3 py-2 rounded bg-gray-200 hover:bg-gray-300'},'Cancelar'),
+            React.createElement('button',{onClick:()=>{ onLogout?.(); setConfirm(false) },className:'px-3 py-2 rounded bg-red-600 text-white hover:bg-red-500'},'Sair')
+          ])
+        ])
       ])
     ])
   ])
