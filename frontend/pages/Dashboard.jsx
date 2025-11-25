@@ -378,7 +378,9 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       const prevW = chartObj.width
       const prevH = chartObj.height
       const targetW = 1920
-      const targetH = 590
+      const finalH = 700
+      const headerH = 110
+      const targetH = Math.max(0, finalH - headerH)
       const ds0 = chartObj.data?.datasets?.[0]||{}
       const prevBT = ds0.barThickness
       const prevMBT = ds0.maxBarThickness
@@ -407,10 +409,9 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       chartObj._mobile = false
       chartObj.update('none')
       await new Promise(r=> requestAnimationFrame(r))
-      const headerH = 110
       const out = document.createElement('canvas')
       out.width = targetW
-      out.height = targetH + headerH
+      out.height = finalH
       const octx = out.getContext('2d')
       octx.fillStyle = '#ffffff'
       octx.fillRect(0,0,out.width,out.height)
@@ -443,7 +444,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       octx.fillText(badgeTextStr, bx + bw/2, by + bh/2)
       octx.drawImage(canvas, 0, headerH, targetW, targetH)
       const data = out.toDataURL('image/png')
-      try{ const a=document.createElement('a'); a.href=data; a.download=`dashboard_${String(selectedModel||'modelo')}.png`; a.rel='noopener'; a.target='_blank'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a) }catch(_){ } },0) }catch(_){ try{ window.open(data,'_blank') }catch(__){} }
+      try{ const a=document.createElement('a'); a.href=data; a.download=`dashboard_${String(selectedModel||'modelo')}.png`; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a) }catch(_){ } },0) }catch(_){ }
       try{ chartObj.data.labels = prevLabels; if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.maxRotation = prevTickMax; chartObj.options.scales.x.ticks.minRotation = prevTickMin; chartObj.options.scales.x.ticks.autoSkip = prevAutoSkip } if(ds0){ ds0.barThickness=prevBT; ds0.maxBarThickness=prevMBT; ds0.barPercentage=prevBP; ds0.categoryPercentage=prevCP; ds0.borderColor = prevBordColor; ds0.borderWidth = prevBordWidth } chartObj._exporting = false; if(selectedIdxInViewTmp>=0){ chartObj.setActiveElements([{ datasetIndex:0, index:selectedIdxInViewTmp }]) } if(typeof chartObj.resize==='function'){ chartObj.resize(prevW,prevH) } }catch(_){}
       try{ if(chartObj.options?.plugins?.tooltip){ chartObj.options.plugins.tooltip.enabled = prevTooltipEnabled } }catch(_){}
       if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.display = prevTicksDisplay }
@@ -452,7 +453,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       chartObj.options.layout.padding = prevLayoutPadding
       chartObj._mobile = isMobile
       chartObj.update('none')
-    }catch(e){ const a=document.createElement('a'); a.href=chartObj.toBase64Image(); a.download='dashboard.png'; a.click() }
+    }catch(e){ }
   }
   return React.createElement('div',{className:'grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-3 lg:gap-4'},[
     React.createElement('div',{className:'space-y-6'},[
