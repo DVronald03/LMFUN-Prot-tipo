@@ -124,6 +124,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
   }
   useEffect(()=>()=>{ clearInterval(timerRef.current) },[])
   useEffect(()=>{
+    if(!canvasRef.current) return
     const ctx = canvasRef.current.getContext('2d')
     const valueLabelPlugin={ id:'valueLabels', afterDatasetsDraw(chart){ const {ctx} = chart; const meta = chart.getDatasetMeta(0); const ibData = Array.isArray(chart._ib)? chart._ib : []; const ibTarget = chart._ibTarget ?? 90; const baseY = chart.scales.y.getPixelForValue(0); const exporting = chart._exporting===true; const isMob = chart._mobile===true; meta.data.forEach((bar, i)=>{ const x=bar.x; const y=bar.y; const base = (bar.base!=null ? bar.base : baseY); const top = Math.min(y, base); const bottom = Math.max(y, base); const height = bottom - top; const ib=Number(ibData[i]||0); const timeVal = chart.data.datasets[0].data[i]; const hasData = typeof timeVal==='number' && isFinite(timeVal) && timeVal>0; if(!hasData) return; const timeStr = timeVal.toFixed(2).replace('.',','); const ibColor = ib>ibTarget ? '#ef4444' : '#22c55e'; if(ib>0 && (!isMob || exporting)){ ctx.save(); ctx.font='bold 11px helvetica'; ctx.textAlign='center'; ctx.fillStyle=ibColor; ctx.fillText(String(ib)+'%', x, Math.max(chart.chartArea.top+12, y-8)); if(ib>ibTarget && !exporting){ ctx.strokeStyle='#ef4444'; ctx.setLineDash([4,3]); const tw = ctx.measureText(String(ib)+'%').width + 8; ctx.strokeRect(x - tw/2, Math.max(chart.chartArea.top+12, y-8) - 12, tw, 16); ctx.setLineDash([]); } ctx.restore(); }
       if(!(isMob && !exporting)){ ctx.save(); ctx.translate(x, top + height/2); ctx.rotate(-Math.PI/2); ctx.font='bold 11px helvetica'; ctx.textAlign='center'; ctx.strokeStyle='#000000'; ctx.lineWidth=4; ctx.strokeText(timeStr, 0, 0); ctx.fillStyle='#ffffff'; ctx.fillText(timeStr, 0, 0); ctx.restore(); } }) } }
@@ -272,105 +273,6 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
     window.addEventListener('resize', onResize)
     return ()=> window.removeEventListener('resize', onResize)
   },[chartObj])
-  async function exportPdf(){ return }
-      
-      const pageW = doc.internal.pageSize.getWidth()
-      const pageH = doc.internal.pageSize.getHeight()
-      const margin = 24
-      const cfg = (modelConfigs||{})[selectedModel]||{}
-      const tact = cfg.max!=null ? String(cfg.max)+'"' : '-'
-      const headerLeft = margin
-      const headerTop = 28
-      doc.setFont('helvetica','bolditalic')
-      doc.setFontSize(18)
-      doc.setTextColor(0,0,0)
-      const turnoLabel = (typeof turnoSel==='string' && turnoSel==='2') ? '2º TURNOS' : '1º TURNOS'
-      const headerMsg = `BALANCEAMENTO DO MODELO: ${String(selectedModel||'').toUpperCase()} (LM FUN) ${turnoLabel} • IB ALVO ${String(cfg.ibTarget??90)}%`
-      doc.text(headerMsg, headerLeft, headerTop)
-      const imgY = headerTop + 24
-      const availW = Math.floor(pageW - margin*2)
-      const exportW = 1920
-      const exportH = 590
-      const prevW = chartObj.width
-      const prevH = chartObj.height
-      const ds0 = chartObj.data?.datasets?.[0]||{}
-      const prevBT = ds0.barThickness
-      const prevMBT = ds0.maxBarThickness
-      const prevBP = ds0.barPercentage
-      const prevCP = ds0.categoryPercentage
-      const prevLabels = Array.isArray(chartObj.data.labels) ? [...chartObj.data.labels] : []
-      const prevTickMax = chartObj.options?.scales?.x?.ticks?.maxRotation
-      const prevTickMin = chartObj.options?.scales?.x?.ticks?.minRotation
-      const prevAutoSkip = chartObj.options?.scales?.x?.ticks?.autoSkip
-      const d3 = chartObj.data?.datasets?.[3]||{}
-      const prevPR = d3.pointRadius
-      const prevBW = d3.borderWidth
-      const prevTooltipEnabled = chartObj.options?.plugins?.tooltip?.enabled
-      const prevTicksDisplay = chartObj.options?.scales?.x?.ticks?.display
-      const prevAxisDisplay = chartObj.options?.scales?.x?.display
-      const prevLayoutPadding = chartObj.options?.layout?.padding
-      chartObj._exporting = true
-      try{
-        const src = Array.isArray(rows)? rows : []
-        const turnoValExp = turnoSel==='2' ? '2º' : '1º'
-        const srcByTurnoExp = turnoSel ? src.filter(r=> String(r.turno||'')===turnoValExp) : src
-        const cfgExp = (modelConfigs||{})[selectedModel]||{}
-        const quotaExp = (typeof cfgExp.quadro==='number' && cfgExp.quadro>0) ? Math.min(cfgExp.quadro, srcByTurnoExp.length) : srcByTurnoExp.length
-        const viewRowsExp = srcByTurnoExp.slice(0,quotaExp)
-        const namesExp = viewRowsExp.map(r=> (r.nome||'').split(' ')[0])
-        const labelsExp = namesExp.map(n=> String(n).toUpperCase())
-        const temposExp = viewRowsExp.map(r=> { const v=r.timesByModel && r.timesByModel[selectedModel]; if(Array.isArray(v)){ const last=(v[v.length-1]?.dur)||0; return Number((last/1000).toFixed(2)) } if(v&&typeof v==='object'){ const vals=['1','2','3'].map(k=>{ const a=v[k]; const last=(Array.isArray(a)&&a.length)? a[a.length-1].dur : 0; return last }).filter(x=>x>0); const avgMs = vals.length? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0; return Number((avgMs/1000).toFixed(2)) } return 0 })
-        const maxLineExp = labelsExp.map(()=> (cfgExp.max!=null? cfgExp.max : null))
-        const objLineExp = labelsExp.map(()=> (cfgExp.objective!=null? cfgExp.objective : null))
-        const ibExp = temposExp.map(t=> (cfgExp.max? Math.round(t/cfgExp.max*100) : 0))
-        chartObj.data.labels = labelsExp
-        chartObj._names = namesExp
-        chartObj.data.datasets[0].data = temposExp
-        chartObj.data.datasets[1].data = maxLineExp
-        chartObj.data.datasets[2].data = objLineExp
-        chartObj.data.datasets[3].data = ibExp
-        if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.maxRotation = 40; chartObj.options.scales.x.ticks.minRotation = 0; chartObj.options.scales.x.ticks.autoSkip = false; chartObj.options.scales.x.ticks.display = true }
-        if(chartObj.options?.scales?.x){ chartObj.options.scales.x.display = true }
-        chartObj.options.layout = chartObj.options.layout || {}
-        chartObj.options.layout.padding = { ...(prevLayoutPadding||{}), bottom: Math.max(24, Number((prevLayoutPadding||{}).bottom||0)) }
-        chartObj._mobile = false
-        if(ds0){ ds0.barThickness=undefined; ds0.maxBarThickness=16; ds0.barPercentage=0.6; ds0.categoryPercentage=0.7 }
-        if(d3){ d3.pointRadius=0; d3.borderWidth=2 }
-        if(chartObj.options?.plugins?.tooltip){ chartObj.options.plugins.tooltip.enabled = false }
-        if(chartObj.tooltip && typeof chartObj.tooltip.setActiveElements==='function'){ chartObj.tooltip.setActiveElements([]) }
-        if(typeof chartObj.resize==='function'){ chartObj.resize(exportW, exportH) }
-        chartObj.update('none')
-      }catch(_){}
-      await new Promise(r=> requestAnimationFrame(r))
-      const imgData = chartObj.toBase64Image('image/png',1)
-      const imgX = margin
-      const innerW = availW
-      const innerH = Math.round(innerW * exportH / exportW)
-      const innerY = imgY
-      doc.addImage(imgData,'PNG',imgX,innerY,innerW,innerH)
-      try{
-        chartObj.data.labels = prevLabels
-        if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.maxRotation = prevTickMax; chartObj.options.scales.x.ticks.minRotation = prevTickMin; chartObj.options.scales.x.ticks.autoSkip = prevAutoSkip }
-        if(ds0){ ds0.barThickness=prevBT; ds0.maxBarThickness=prevMBT; ds0.barPercentage=prevBP; ds0.categoryPercentage=prevCP }
-        if(d3){ d3.pointRadius=prevPR; d3.borderWidth=prevBW }
-        if(chartObj.options?.plugins?.tooltip){ chartObj.options.plugins.tooltip.enabled = prevTooltipEnabled }
-        if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.display = prevTicksDisplay }
-        if(chartObj.options?.scales?.x){ chartObj.options.scales.x.display = prevAxisDisplay }
-        chartObj.options.layout = chartObj.options.layout || {}
-        chartObj.options.layout.padding = prevLayoutPadding
-        chartObj._mobile = isMobile
-        chartObj._exporting = false
-        if(typeof chartObj.resize==='function'){ chartObj.resize(prevW, prevH) }
-        chartObj.update('none')
-      }catch(_){}
-      doc.setFont('helvetica','normal')
-      doc.setFontSize(12)
-      doc.text('IB Médio: '+ibMedio,margin,pageH - margin)
-      doc.save('dashboard.pdf')
-    }catch(e){
-      const a=document.createElement('a'); a.href=chartObj.toBase64Image(); a.download='dashboard.png'; a.click()
-    }
-  }
   async function exportPng(){
     try{
       if(chartObj && chartObj._exporting===true) return
