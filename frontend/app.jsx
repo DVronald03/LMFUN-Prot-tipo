@@ -185,7 +185,7 @@ function App(){
     React.createElement(Sidebar,{page,setPage,open:drawerOpen,setOpen:setDrawerOpen,onLogout:()=>{ setLogged(false); setDrawerOpen(false); setPage('dashboard') },key:'sidebar'}),
     drawerOpen ? React.createElement('div',{onClick:()=>setDrawerOpen(false),className:'fixed inset-0 bg-black/40 z-40',key:'backdrop'}) : null,
     React.createElement('div',{className:'p-4'},[
-      React.createElement(Header,{onToggleDrawer:()=>setDrawerOpen(v=>!v),onLogout:()=>{ setLogged(false); setDrawerOpen(false); setPage('dashboard') },key:'header'}),
+      React.createElement(Header,{onToggleDrawer:()=>setDrawerOpen(v=>!v),key:'header'}),
       page==='dashboard' ? React.createElement(Dashboard,{key:'dash',rows,setRows,selectedModel,setSelectedModel,modelConfigs}) : (page==='operadores' ? React.createElement(Operadores,{key:'ops',rows,setRows,selectedModel,setSelectedModel,modelConfigs}) : React.createElement(ModelsPage,{key:'mods',modelConfigs,selectedModel,setSelectedModel,setModelConfigs}))
     ])
   ])
