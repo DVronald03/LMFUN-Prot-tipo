@@ -272,11 +272,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
     window.addEventListener('resize', onResize)
     return ()=> window.removeEventListener('resize', onResize)
   },[chartObj])
-  async function exportPdf(){
-    try{
-      const { jsPDF } = window.jspdf
-      const doc = new jsPDF({ orientation:'landscape', unit:'pt', format:'a4' })
-      const canvas = canvasRef.current
+  async function exportPdf(){ return }
       
       const pageW = doc.internal.pageSize.getWidth()
       const pageH = doc.internal.pageSize.getHeight()
