@@ -373,6 +373,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
   }
   async function exportPng(){
     try{
+      if(chartObj && chartObj._exporting===true) return
       const canvas = canvasRef.current
       if(!chartObj || !canvas) return
       const prevW = chartObj.width
@@ -527,7 +528,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
               React.createElement('button',{onClick:()=>{ setExportOpen(false); exportPng() },className:'block w-full text-left px-3 py-2 hover:bg-gray-50'},'PNG')
             ]) : null
           ]),
-          React.createElement('button',{onClick:()=>exportPng(),className:'sm:hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm shadow-sm transition whitespace-nowrap'},'Exportar')
+          React.createElement('button',{onClick:()=>{ try{ if(chartObj && chartObj._exporting===true) return }catch(_){ } exportPng() },className:'sm:hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm shadow-sm transition whitespace-nowrap'},'Exportar')
         ])
       ]),
       React.createElement('div',{ref:chartBoxRef,className:'h-64 sm:h-72 md:h-80 lg:h-[42vh] overflow-x-auto'},[
