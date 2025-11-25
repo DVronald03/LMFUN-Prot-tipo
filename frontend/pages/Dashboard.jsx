@@ -272,7 +272,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
     window.addEventListener('resize', onResize)
     return ()=> window.removeEventListener('resize', onResize)
   },[chartObj])
-  function exportPdf(){
+  async function exportPdf(){
     try{
       const { jsPDF } = window.jspdf
       const doc = new jsPDF({ orientation:'landscape', unit:'pt', format:'a4' })
@@ -309,6 +309,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       const prevPR = d3.pointRadius
       const prevBW = d3.borderWidth
       const prevTooltipEnabled = chartObj.options?.plugins?.tooltip?.enabled
+      const prevTicksDisplay = chartObj.options?.scales?.x?.ticks?.display
       chartObj._exporting = true
       try{
         const src = Array.isArray(rows)? rows : []
@@ -329,14 +330,16 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
         chartObj.data.datasets[1].data = maxLineExp
         chartObj.data.datasets[2].data = objLineExp
         chartObj.data.datasets[3].data = ibExp
-        if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.maxRotation = 40; chartObj.options.scales.x.ticks.minRotation = 0; chartObj.options.scales.x.ticks.autoSkip = false }
+        if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.maxRotation = 40; chartObj.options.scales.x.ticks.minRotation = 0; chartObj.options.scales.x.ticks.autoSkip = false; chartObj.options.scales.x.ticks.display = true }
+        chartObj._mobile = false
         if(ds0){ ds0.barThickness=undefined; ds0.maxBarThickness=16; ds0.barPercentage=0.6; ds0.categoryPercentage=0.7 }
         if(d3){ d3.pointRadius=0; d3.borderWidth=2 }
         if(chartObj.options?.plugins?.tooltip){ chartObj.options.plugins.tooltip.enabled = false }
         if(chartObj.tooltip && typeof chartObj.tooltip.setActiveElements==='function'){ chartObj.tooltip.setActiveElements([]) }
         if(typeof chartObj.resize==='function'){ chartObj.resize(availW, availH) }
-        chartObj.update()
+        chartObj.update('none')
       }catch(_){}
+      await new Promise(r=> requestAnimationFrame(r))
       const imgData = chartObj.toBase64Image('image/png',1)
       const imgX = margin
       const innerW = availW
@@ -349,9 +352,11 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
         if(ds0){ ds0.barThickness=prevBT; ds0.maxBarThickness=prevMBT; ds0.barPercentage=prevBP; ds0.categoryPercentage=prevCP }
         if(d3){ d3.pointRadius=prevPR; d3.borderWidth=prevBW }
         if(chartObj.options?.plugins?.tooltip){ chartObj.options.plugins.tooltip.enabled = prevTooltipEnabled }
+        if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.display = prevTicksDisplay }
+        chartObj._mobile = isMobile
         chartObj._exporting = false
         if(typeof chartObj.resize==='function'){ chartObj.resize(prevW, prevH) }
-        chartObj.update()
+        chartObj.update('none')
       }catch(_){}
       doc.setFont('helvetica','normal')
       doc.setFontSize(12)
@@ -388,10 +393,13 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       const prevTickMax = chartObj.options?.scales?.x?.ticks?.maxRotation
       const prevTickMin = chartObj.options?.scales?.x?.ticks?.minRotation
       const prevAutoSkip = chartObj.options?.scales?.x?.ticks?.autoSkip
+      const prevTicksDisplay = chartObj.options?.scales?.x?.ticks?.display
       const prevTooltipEnabled = chartObj.options?.plugins?.tooltip?.enabled
       chartObj._exporting = true
       try{ const cfgExp = (modelConfigs||{})[selectedModel]||{}; const namesExp = viewRowsTmp.map(r=> (r.nome||'').split(' ')[0]); const labelsExp = namesExp.map(n=> String(n).toUpperCase()); const temposExp = viewRowsTmp.map(r=> { const v=r.timesByModel && r.timesByModel[selectedModel]; if(Array.isArray(v)){ const last=(v[v.length-1]?.dur)||0; return Number((last/1000).toFixed(2)) } if(v&&typeof v==='object'){ const vals=['1','2','3'].map(k=>{ const a=v[k]; const last=(Array.isArray(a)&&a.length)? a[a.length-1].dur : 0; return last }).filter(x=> x>0); const avgMs = vals.length? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0; return Number((avgMs/1000).toFixed(2)) } return 0 }); const maxLineExp = labelsExp.map(()=> (cfgExp.max!=null? cfgExp.max : null)); const objLineExp = labelsExp.map(()=> (cfgExp.objective!=null? cfgExp.objective : null)); const ibExp = temposExp.map(t=> (cfgExp.max? Math.round(t/cfgExp.max*100) : 0)); chartObj.data.labels = labelsExp; chartObj._names = namesExp; chartObj.data.datasets[0].data = temposExp; chartObj.data.datasets[1].data = maxLineExp; chartObj.data.datasets[2].data = objLineExp; chartObj.data.datasets[3].data = ibExp; if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.maxRotation = 40; chartObj.options.scales.x.ticks.minRotation = 0; chartObj.options.scales.x.ticks.autoSkip = false } if(ds0){ ds0.barThickness=undefined; ds0.maxBarThickness=18; ds0.barPercentage=0.6; ds0.categoryPercentage=0.7; const len = Array.isArray(chartObj.data.labels)? chartObj.data.labels.length : 0; ds0.borderColor = len? Array(len).fill('transparent') : 'transparent'; ds0.borderWidth = len? Array(len).fill(0) : 0 } chartObj.setActiveElements([]); if(typeof chartObj.resize==='function'){ chartObj.resize(targetW,targetH) } }catch(_){}
       try{ if(chartObj.options?.plugins?.tooltip){ chartObj.options.plugins.tooltip.enabled = false } if(chartObj.tooltip && typeof chartObj.tooltip.setActiveElements==='function'){ chartObj.tooltip.setActiveElements([]) } }catch(_){}
+      if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.display = true }
+      chartObj._mobile = false
       chartObj.update('none')
       await new Promise(r=> requestAnimationFrame(r))
       const headerH = 110
@@ -433,6 +441,8 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       try{ const a=document.createElement('a'); a.href=data; a.download=`dashboard_${String(selectedModel||'modelo')}.png`; a.rel='noopener'; a.target='_blank'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a) }catch(_){ } },0) }catch(_){ try{ window.open(data,'_blank') }catch(__){} }
       try{ chartObj.data.labels = prevLabels; if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.maxRotation = prevTickMax; chartObj.options.scales.x.ticks.minRotation = prevTickMin; chartObj.options.scales.x.ticks.autoSkip = prevAutoSkip } if(ds0){ ds0.barThickness=prevBT; ds0.maxBarThickness=prevMBT; ds0.barPercentage=prevBP; ds0.categoryPercentage=prevCP; ds0.borderColor = prevBordColor; ds0.borderWidth = prevBordWidth } chartObj._exporting = false; if(selectedIdxInViewTmp>=0){ chartObj.setActiveElements([{ datasetIndex:0, index:selectedIdxInViewTmp }]) } if(typeof chartObj.resize==='function'){ chartObj.resize(prevW,prevH) } }catch(_){}
       try{ if(chartObj.options?.plugins?.tooltip){ chartObj.options.plugins.tooltip.enabled = prevTooltipEnabled } }catch(_){}
+      if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.display = prevTicksDisplay }
+      chartObj._mobile = isMobile
       chartObj.update('none')
     }catch(e){ const a=document.createElement('a'); a.href=chartObj.toBase64Image(); a.download='dashboard.png'; a.click() }
   }
