@@ -133,9 +133,9 @@ function Operadores({rows:rowsProp,setRows:setRowsProp,selectedModel,setSelected
         ])
       ])
     ]),
-    React.createElement('div',{className:'flex items-center gap-3'},[
-      React.createElement('input',{value:query,onChange:e=>setQuery(e.target.value),placeholder:'Buscar por nome ou posto...',className:'flex-1 border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'}),
-      React.createElement('select',{value:turnoFilter,onChange:e=>{ setTurnoFilter(e.target.value); setPage(1) },className:'w-40 border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900'},[
+    React.createElement('div',{className:'grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 items-center'},[
+      React.createElement('input',{value:query,onChange:e=>setQuery(e.target.value),placeholder:'Buscar por nome ou posto...',className:'w-full max-w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base'}),
+      React.createElement('select',{value:turnoFilter,onChange:e=>{ setTurnoFilter(e.target.value); setPage(1) },className:'shrink-0 w-full sm:w-44 md:w-48 border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-base'},[
         React.createElement('option',{value:''},'Todos Turnos'),
         optionsTurnos.map(t=> React.createElement('option',{key:t,value:t},t))
       ])
@@ -150,11 +150,27 @@ function Operadores({rows:rowsProp,setRows:setRowsProp,selectedModel,setSelected
             React.createElement('div',{className:'text-xs text-gray-600'},(r.areas||'-')+' • '+(r.turno||'-'))
           ])
         ]),
-        React.createElement('div',{className:'flex items-center gap-2'},[
+        React.createElement('div',{className:'flex items-center gap-2 flex-wrap'},[
           React.createElement('div',null,React.createElement(StatusPill,{status:r.status})),
-          React.createElement('button',{title:'Ver',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600 text-white hover:bg-blue-500',onClick:()=>setView(r)},'👁️'),
-          React.createElement('button',{title:'Editar',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-orange-500 text-white hover:bg-orange-400',onClick:()=>onEdit(startIdx+i)},'✎'),
-          React.createElement('button',{title:'Excluir',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-red-500 text-white hover:bg-red-400',onClick:()=>onDelete(startIdx+i)},'🗑️')
+          React.createElement('button',{title:'Visualizar',className:'inline-flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-blue-600 text-white hover:bg-blue-500',onClick:()=>setView(r)},
+            React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+              React.createElement('path',{d:'M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7'}),
+              React.createElement('circle',{cx:12,cy:12,r:3})
+            ])
+          ),
+          React.createElement('button',{title:'Editar',className:'inline-flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-orange-500 text-white hover:bg-orange-400',onClick:()=>onEdit(startIdx+i)},
+            React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+              React.createElement('path',{d:'M12 20h9'}),
+              React.createElement('path',{d:'M16.5 3.5l4 4-11 11H5.5v-4z'})
+            ])
+          ),
+          React.createElement('button',{title:'Excluir',className:'inline-flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-red-500 text-white hover:bg-red-400',onClick:()=>onDelete(startIdx+i)},
+            React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+              React.createElement('path',{d:'M3 6h18'}),
+              React.createElement('path',{d:'M8 6V4h8v2'}),
+              React.createElement('path',{d:'M19 6l-1 14H6L5 6'})
+            ])
+          )
         ])
       ]))
     ]) : React.createElement('div',{className:'bg-white rounded-xl p-3 shadow-lg'},[
@@ -168,7 +184,7 @@ function Operadores({rows:rowsProp,setRows:setRowsProp,selectedModel,setSelected
           React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'STATUS'),
           React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'TURNO'),
           React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'TEMPO'),
-          React.createElement('th',{className:'text-right py-2 px-2 text-gray-600'},'AÇÕES')
+          React.createElement('th',{className:'text-right py-2 px-2 text-gray-600 w-28 md:w-32'},'AÇÕES')
         ])),
         React.createElement('tbody',null,pageRows.map((r,i)=>React.createElement('tr',{key:startIdx+i,className:'border-none align-middle'},[
           React.createElement('td',{className:'py-2 px-2 text-left'},String(r.posto||'').padStart(2,'0')),
@@ -179,27 +195,29 @@ function Operadores({rows:rowsProp,setRows:setRowsProp,selectedModel,setSelected
           React.createElement('td',{className:'py-2 px-2 text-left'},React.createElement(StatusPill,{status:r.status})),
           React.createElement('td',{className:'py-2 px-2 text-left'},r.turno||'-'),
           React.createElement('td',{className:'py-2 px-2 text-left'},(()=>{ const v=(r.timesByModel&&r.timesByModel[selectedModel]); if(Array.isArray(v)){ return v.length? formatTime(v[v.length-1].dur) : '-' } if(v&&typeof v==='object'){ const vals=['1','2','3'].map(k=>{ const a=v[k]; const last=(Array.isArray(a)&&a.length)? a[a.length-1].dur : 0; return last }).filter(x=>x>0); const avgMs = vals.length? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0; return avgMs>0? formatTime(avgMs) : '-' } return '-' })()),
-          React.createElement('td',{className:'py-2 px-2 text-right'},[
-            React.createElement('button',{title:'Visualizar',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600 text-white hover:bg-blue-500 mr-2',onClick:()=>setView(r)},
-              React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
-                React.createElement('path',{d:'M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7'}),
-                React.createElement('circle',{cx:12,cy:12,r:3})
-              ])
-            ),
-            React.createElement('button',{title:'Editar',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-orange-500 text-white hover:bg-orange-400 mr-2',onClick:()=>onEdit(startIdx+i)},
-              React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
-                React.createElement('path',{d:'M12 20h9'}),
-                React.createElement('path',{d:'M16.5 3.5l4 4-11 11H5.5v-4z'})
-              ])
-            ),
-            React.createElement('button',{title:'Excluir',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-red-500 text-white hover:bg-red-400',onClick:()=>onDelete(startIdx+i)},
-              React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
-                React.createElement('path',{d:'M3 6h18'}),
-                React.createElement('path',{d:'M8 6V4h8v2'}),
-                React.createElement('path',{d:'M19 6l-1 14H6L5 6'})
-              ])
-            )
-          ])
+          React.createElement('td',{className:'py-2 px-2 text-right'},
+            React.createElement('div',{className:'inline-flex items-center justify-end gap-1 md:gap-2 flex-nowrap whitespace-nowrap'},[
+              React.createElement('button',{title:'Visualizar',className:'inline-flex items-center justify-center w-7 h-7 md:w-8 md:h-8 rounded-lg bg-blue-600 text-white hover:bg-blue-500',onClick:()=>setView(r)},
+                React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+                  React.createElement('path',{d:'M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7'}),
+                  React.createElement('circle',{cx:12,cy:12,r:3})
+                ])
+              ),
+              React.createElement('button',{title:'Editar',className:'inline-flex items-center justify-center w-7 h-7 md:w-8 md:h-8 rounded-lg bg-orange-500 text-white hover:bg-orange-400',onClick:()=>onEdit(startIdx+i)},
+                React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+                  React.createElement('path',{d:'M12 20h9'}),
+                  React.createElement('path',{d:'M16.5 3.5l4 4-11 11H5.5v-4z'})
+                ])
+              ),
+              React.createElement('button',{title:'Excluir',className:'inline-flex items-center justify-center w-7 h-7 md:w-8 md:h-8 rounded-lg bg-red-500 text-white hover:bg-red-400',onClick:()=>onDelete(startIdx+i)},
+                React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+                  React.createElement('path',{d:'M3 6h18'}),
+                  React.createElement('path',{d:'M8 6V4h8v2'}),
+                  React.createElement('path',{d:'M19 6l-1 14H6L5 6'})
+                ])
+              )
+            ])
+          )
         ])))
       ])
     ]),

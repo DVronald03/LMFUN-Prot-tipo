@@ -34,9 +34,9 @@ function ModelsPage({modelConfigs,selectedModel,setSelectedModel,setModelConfigs
   const total = entries.length
   const ativos = entries.filter(([_,c])=> c.max!=null).length
   return React.createElement('div',{className:'space-y-4'},[
-    React.createElement('div',{className:'flex items-center justify-between'},[
+    React.createElement('div',{className:'flex items-start justify-between gap-3 flex-wrap'},[
       React.createElement('div',{className:'text-2xl font-bold'},'Gestão de Modelos'),
-      React.createElement('div',null,[
+      React.createElement('div',{className:'mt-2 sm:mt-0'},[
         React.createElement('button',{onClick:()=>setOpen(true),className:'inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0a0f1c] text-white hover:bg-[#0b1220] shadow-md hover:shadow-lg active:scale-[.98] transition whitespace-nowrap'},[
           React.createElement('span',{className:'inline-flex items-center justify-center w-6 h-6 rounded-lg bg-white/10'},'+'),
           React.createElement('span',null,'Novo Modelo')
@@ -177,15 +177,15 @@ function App(){
   const [rows,setRows] = useState(()=> makeProvidedOperatorsApp(initialModelConfigs))
   const [selectedModel,setSelectedModel] = useState('')
   const [drawerOpen,setDrawerOpen] = useState(false)
-  const [logged,setLogged] = useState(true)
+  const [logged,setLogged] = useState(false)
   if(!logged){
     return React.createElement(LoginPage,{onSuccess:()=>{ setLogged(true); setPage('dashboard') }})
   }
   return React.createElement('div',{className:'min-h-screen overflow-x-hidden'},[
-    React.createElement(Sidebar,{page,setPage,open:drawerOpen,setOpen:setDrawerOpen,key:'sidebar'}),
+    React.createElement(Sidebar,{page,setPage,open:drawerOpen,setOpen:setDrawerOpen,onLogout:()=>{ setLogged(false); setDrawerOpen(false); setPage('dashboard') },key:'sidebar'}),
     drawerOpen ? React.createElement('div',{onClick:()=>setDrawerOpen(false),className:'fixed inset-0 bg-black/40 z-40',key:'backdrop'}) : null,
     React.createElement('div',{className:'p-4'},[
-      React.createElement(Header,{onToggleDrawer:()=>setDrawerOpen(v=>!v),page:page,key:'header'}),
+      React.createElement(Header,{onToggleDrawer:()=>setDrawerOpen(v=>!v),onLogout:()=>{ setLogged(false); setDrawerOpen(false); setPage('dashboard') },key:'header'}),
       page==='dashboard' ? React.createElement(Dashboard,{key:'dash',rows,setRows,selectedModel,setSelectedModel,modelConfigs}) : (page==='operadores' ? React.createElement(Operadores,{key:'ops',rows,setRows,selectedModel,setSelectedModel,modelConfigs}) : React.createElement(ModelsPage,{key:'mods',modelConfigs,selectedModel,setSelectedModel,setModelConfigs}))
     ])
   ])

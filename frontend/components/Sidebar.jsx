@@ -1,4 +1,4 @@
-function Sidebar({page,setPage,open,setOpen}){
+function Sidebar({page,setPage,open,setOpen,onLogout}){
   const [upgOpen,setUpgOpen] = React.useState(true)
   const logoCandidates = [ new URL('./img/LOGO.svg', document.baseURI).toString(), new URL('../img/LOGO.svg', document.baseURI).toString() ]
   const logoSrc = logoCandidates[0]
@@ -17,17 +17,17 @@ function Sidebar({page,setPage,open,setOpen}){
       React.createElement('button',{onClick:()=>setOpen(false),className:'px-3 py-2 rounded bg-white/10 hover:bg-white/20'},'✕')
     ]),
     React.createElement('div',{className:'space-y-2'},[
-      React.createElement('button',{onClick:()=>{ setPage('dashboard'); setOpen(false) },className:(page==='dashboard'?'bg-white/10 ':'')+'w-full flex items-center gap-2 text-left px-3 py-2 rounded hover:bg-white/10'},[
-        React.createElement('span',null,'▦'),
-        React.createElement('span',null,'Dashboard')
+      React.createElement('button',{onClick:()=>{ setPage('dashboard'); setOpen(false) },className:(page==='dashboard'?'bg-white/10 ':'')+'w-full flex items-center gap-3 text-left px-3 py-2 rounded hover:bg-white/10 group'},[
+        React.createElement('span',{className:'inline-flex items-center justify-center w-7 h-7 rounded-lg text-white transition-transform group-hover:scale-105'},'▦'),
+        React.createElement('span',{className:'leading-none'},'Dashboard')
       ]),
-      React.createElement('button',{onClick:()=>{ setPage('operadores'); setOpen(false) },className:(page==='operadores'?'bg-white/10 ':'')+'w-full flex items-center gap-2 text-left px-3 py-2 rounded hover:bg-white/10'},[
-        React.createElement('span',null,'👤'),
-        React.createElement('span',null,'Operadores')
+      React.createElement('button',{onClick:()=>{ setPage('operadores'); setOpen(false) },className:(page==='operadores'?'bg-white/10 ':'')+'w-full flex items-center gap-3 text-left px-3 py-2 rounded hover:bg-white/10 group'},[
+        React.createElement('span',{className:'inline-flex items-center justify-center w-7 h-7 rounded-lg transition-transform group-hover:scale-105'},'👤'),
+        React.createElement('span',{className:'leading-none'},'Operadores')
       ]),
-      React.createElement('button',{onClick:()=>{ setPage('modelos'); setOpen(false) },className:(page==='modelos'?'bg-white/10 ':'')+'w-full flex items-center gap-2 text-left px-3 py-2 rounded hover:bg-white/10'},[
-        React.createElement('span',null,'🏍️'),
-        React.createElement('span',null,'Modelos')
+      React.createElement('button',{onClick:()=>{ setPage('modelos'); setOpen(false) },className:(page==='modelos'?'bg-white/10 ':'')+'w-full flex items-center gap-3 text-left px-3 py-2 rounded hover:bg-white/10 group'},[
+        React.createElement('span',{className:'inline-flex items-center justify-center w-7 h-7 rounded-lg transition-transform group-hover:scale-105'},'🏍️'),
+        React.createElement('span',{className:'leading-none'},'Modelos')
       ])
       ,
       React.createElement('div',{className:'border-t border-white/10 my-3'}),
@@ -43,7 +43,12 @@ function Sidebar({page,setPage,open,setOpen}){
           ]),
           React.createElement('span',{className:'inline-flex items-center justify-center whitespace-nowrap px-3 py-1 rounded-full text-[10px] bg-white/10 text-white/70 border border-white/10'},'EM BREVE')
         ]))
-      ]) : null
+      ]) : null,
+      React.createElement('div',{className:'border-t border-white/10 my-3'}),
+      React.createElement('button',{onClick:onLogout,className:'w-full flex items-center gap-3 text-left px-3 py-2 rounded bg-red-600 text-white hover:bg-red-500'},[
+        React.createElement('span',{className:'inline-flex items-center justify-center w-7 h-7 rounded-lg'},'⎋'),
+        React.createElement('span',{className:'leading-none'},'Sair')
+      ])
     ])
   ])
 }
