@@ -361,7 +361,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       const a=document.createElement('a'); a.href=chartObj.toBase64Image(); a.download='dashboard.png'; a.click()
     }
   }
-  function exportPng(){
+  async function exportPng(){
     try{
       const canvas = canvasRef.current
       if(!chartObj || !canvas) return
@@ -392,7 +392,8 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       chartObj._exporting = true
       try{ const cfgExp = (modelConfigs||{})[selectedModel]||{}; const namesExp = viewRowsTmp.map(r=> (r.nome||'').split(' ')[0]); const labelsExp = namesExp.map(n=> String(n).toUpperCase()); const temposExp = viewRowsTmp.map(r=> { const v=r.timesByModel && r.timesByModel[selectedModel]; if(Array.isArray(v)){ const last=(v[v.length-1]?.dur)||0; return Number((last/1000).toFixed(2)) } if(v&&typeof v==='object'){ const vals=['1','2','3'].map(k=>{ const a=v[k]; const last=(Array.isArray(a)&&a.length)? a[a.length-1].dur : 0; return last }).filter(x=> x>0); const avgMs = vals.length? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0; return Number((avgMs/1000).toFixed(2)) } return 0 }); const maxLineExp = labelsExp.map(()=> (cfgExp.max!=null? cfgExp.max : null)); const objLineExp = labelsExp.map(()=> (cfgExp.objective!=null? cfgExp.objective : null)); const ibExp = temposExp.map(t=> (cfgExp.max? Math.round(t/cfgExp.max*100) : 0)); chartObj.data.labels = labelsExp; chartObj._names = namesExp; chartObj.data.datasets[0].data = temposExp; chartObj.data.datasets[1].data = maxLineExp; chartObj.data.datasets[2].data = objLineExp; chartObj.data.datasets[3].data = ibExp; if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.maxRotation = 40; chartObj.options.scales.x.ticks.minRotation = 0; chartObj.options.scales.x.ticks.autoSkip = false } if(ds0){ ds0.barThickness=undefined; ds0.maxBarThickness=18; ds0.barPercentage=0.6; ds0.categoryPercentage=0.7; const len = Array.isArray(chartObj.data.labels)? chartObj.data.labels.length : 0; ds0.borderColor = len? Array(len).fill('transparent') : 'transparent'; ds0.borderWidth = len? Array(len).fill(0) : 0 } chartObj.setActiveElements([]); if(typeof chartObj.resize==='function'){ chartObj.resize(targetW,targetH) } }catch(_){}
       try{ if(chartObj.options?.plugins?.tooltip){ chartObj.options.plugins.tooltip.enabled = false } if(chartObj.tooltip && typeof chartObj.tooltip.setActiveElements==='function'){ chartObj.tooltip.setActiveElements([]) } }catch(_){}
-      chartObj.update()
+      chartObj.update('none')
+      await new Promise(r=> requestAnimationFrame(r))
       const headerH = 110
       const out = document.createElement('canvas')
       out.width = targetW
@@ -432,7 +433,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       try{ const a=document.createElement('a'); a.href=data; a.download=`dashboard_${String(selectedModel||'modelo')}.png`; a.rel='noopener'; a.target='_blank'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a) }catch(_){ } },0) }catch(_){ try{ window.open(data,'_blank') }catch(__){} }
       try{ chartObj.data.labels = prevLabels; if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.maxRotation = prevTickMax; chartObj.options.scales.x.ticks.minRotation = prevTickMin; chartObj.options.scales.x.ticks.autoSkip = prevAutoSkip } if(ds0){ ds0.barThickness=prevBT; ds0.maxBarThickness=prevMBT; ds0.barPercentage=prevBP; ds0.categoryPercentage=prevCP; ds0.borderColor = prevBordColor; ds0.borderWidth = prevBordWidth } chartObj._exporting = false; if(selectedIdxInViewTmp>=0){ chartObj.setActiveElements([{ datasetIndex:0, index:selectedIdxInViewTmp }]) } if(typeof chartObj.resize==='function'){ chartObj.resize(prevW,prevH) } }catch(_){}
       try{ if(chartObj.options?.plugins?.tooltip){ chartObj.options.plugins.tooltip.enabled = prevTooltipEnabled } }catch(_){}
-      chartObj.update()
+      chartObj.update('none')
     }catch(e){ const a=document.createElement('a'); a.href=chartObj.toBase64Image(); a.download='dashboard.png'; a.click() }
   }
   return React.createElement('div',{className:'grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-3 lg:gap-4'},[
