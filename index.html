@@ -129,12 +129,12 @@ function Modal({open,onClose,children,backdrop=true,position='center'}){
   },[open])
   const wrapperCls = (open?'block':'hidden')+' fixed inset-0 z-50 '+(backdrop?'':'pointer-events-none')
   const contentWrapper = position==='bottom'
-    ? { className:'absolute bottom-6 left-1/2 -translate-x-1/2 w-full max-w-xl px-4 pointer-events-auto' }
+    ? { className:'absolute bottom-10 left-1/2 -translate-x-1/2 w-full max-w-lg px-6 pointer-events-auto' }
     : { className:'absolute inset-0 flex items-center justify-center px-4 pointer-events-auto' }
   return React.createElement('div',{className:wrapperCls},[
-    backdrop? React.createElement('div',{className:'absolute inset-0 bg-black/50'}) : null,
+    backdrop? React.createElement('div',{className:'absolute inset-0 bg-black/50',onClick:()=> onClose?.()}) : null,
     React.createElement('div',contentWrapper,
-      React.createElement('div',{className:'bg-white text-black rounded-xl p-4 w-full shadow-lg'},children)
+      React.createElement('div',{className:'bg-white text-black rounded-2xl p-5 w-full shadow-xl border border-gray-200'},children)
     )
   ])
 }
@@ -594,7 +594,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs,kot
         return React.createElement('div',{className:'bg-white rounded-xl p-4 shadow-lg'},[
           React.createElement('div',{className:'text-xl font-bold mb-2 text-gray-900'},'Posto'),
           React.createElement('div',{className:'grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-3'},
-            columns.map((col,i)=> React.createElement('div',{key:'col-'+i,className:'flex flex-col items-center gap-2'},
+            columns.map((col,i)=> React.createElement('div',{key:'col-'+i,className:'flex flex-col items-center gap-2 mb-1'},
               col.map(o=>{
                 const active = o.idx===currentIdx;
                 const cls = 'inline-flex items-center justify-center w-8 h-8 rounded-lg border-2 text-sm '+(active? 'bg-green-200 text-green-800 border-green-400' : 'bg-green-100 text-green-700 border-green-300');
@@ -605,12 +605,11 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs,kot
       })()
       ])
     ]),
-    React.createElement(Modal,{open:!!promptKotei,onClose:()=>setPromptKotei(null),backdrop:false,position:'bottom'},[
-      React.createElement('div',{className:'text-lg font-bold mb-2'},'Visualizar Kotei'),
-      React.createElement('div',{className:'text-sm text-gray-700 mb-3'},`Deseja visualizar o Kotei do posto ${String(promptKotei?.posto||'')} ${String(promptKotei?.nome||'')}?`),
-      React.createElement('div',{className:'flex items-center justify-end gap-2'},[
-        React.createElement('button',{onClick:()=>setPromptKotei(null),className:'px-3 py-2 rounded bg-gray-200 hover:bg-gray-300'},'Não'),
-        React.createElement('button',{onClick:()=>{ setFullPdf(String(promptKotei?.url||'')); setPromptKotei(null) },className:'px-3 py-2 rounded bg-blue-600 text-white'},'Sim')
+    React.createElement(Modal,{open:!!promptKotei,onClose:()=>setPromptKotei(null),backdrop:true,position:'bottom'},[
+      React.createElement('div',{className:'text-sm text-gray-700 mb-4'},`Deseja visualizar o Kotei do posto ${String(promptKotei?.posto||'')} ${String(promptKotei?.nome||'')}?`),
+      React.createElement('div',{className:'flex items-center justify-end gap-3'},[
+        React.createElement('button',{onClick:()=>setPromptKotei(null),className:'px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 shadow-sm'},'Não'),
+        React.createElement('button',{onClick:()=>{ setFullPdf(String(promptKotei?.url||'')); setPromptKotei(null) },className:'px-4 py-2 rounded-lg bg-blue-600 text-white shadow-sm'},'Sim')
       ])
     ]),
     (fullPdf? React.createElement('div',{className:'fixed inset-0 bg-black/90 z-[60]'},[
