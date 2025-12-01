@@ -1336,7 +1336,7 @@ function KoteiPage({rows,modelConfigs,setSelectedModel,setPage,koteisByModel,set
           React.createElement('div',{className:'border border-gray-200 rounded overflow-hidden bg-white'},[
             (()=>{ const list = Array.isArray(koteisByModel[selModel])? koteisByModel[selModel] : []; const url = selectedFileUrl || (list[0]?.url||''); const name = selectedFileName || (list[0]?.name||'kotei.html'); return url? React.createElement('div',null,[
               React.createElement('div',{className:'flex items-center justify-end gap-2 p-2 border-b border-gray-200 bg-gray-50'},[
-                React.createElement('button',{className:'px-3 py-1.5 rounded bg-blue-600 text-white hover:bg-blue-500',onClick:async()=>{ try{ const rows=Array.isArray(columnsPreview?.rows)? columnsPreview.rows : []; if(rows.length){ await ensureJsPdf(); if(window.jspdf && window.jspdf.jsPDF){ const doc=new window.jspdf.jsPDF({unit:'pt',format:'a4'}); const margin=40; let y=margin; const outName=String(name||'kotei.pdf').replace(/\.[^.]*$/,'.pdf'); doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text(String(name||'Kotei'), margin, y); y+=12; doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.text('DESCRIÇÃO DA ATIVIDADE', margin, y); doc.text('TEMPO', 520, y, {align:'right'}); y+=12; doc.setFont('helvetica','normal'); for(const r of rows){ const lines=doc.splitTextToSize(String(r.descricao||''), 460); for(let i=0;i<lines.length;i++){ if(y>770){ doc.addPage(); y=margin } doc.text(lines[i], margin, y); if(i===0){ doc.text(String(r.tempo||'')+' ST', 520, y, {align:'right'}) } y+=12 } } doc.save(outName) } else { const a=document.createElement('a'); a.href=url; a.download=String(name||'kotei.html'); document.body.appendChild(a); a.click(); document.body.removeChild(a) } } else { const a=document.createElement('a'); a.href=url; a.download=String(name||'arquivo.pdf'); document.body.appendChild(a); a.click(); document.body.removeChild(a) } }catch(_){ } }},'Exportar')
+                React.createElement('button',{className:'px-3 py-1.5 rounded bg-blue-600 text-white hover:bg-blue-500',onClick:async()=>{ try{ const rows=Array.isArray(columnsPreview?.rows)? columnsPreview.rows : []; if(rows.length){ await ensureJsPdf(); if(window.jspdf && window.jspdf.jsPDF){ const doc=new window.jspdf.jsPDF({unit:'pt',format:'a4'}); const margin=40; let y=margin; const outName=String(name||'kotei.pdf').replace(/\.[^.]*$/,'.pdf'); doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text(String(name||'Kotei'), margin, y); y+=12; doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.text('DESCRIÇÃO DA ATIVIDADE', margin, y); doc.text('TEMPO (ST)', 520, y, {align:'right'}); y+=12; doc.setFont('helvetica','normal'); for(const r of rows){ const lines=doc.splitTextToSize(String(r.descricao||''), 460); for(let i=0;i<lines.length;i++){ if(y>770){ doc.addPage(); y=margin } doc.text(lines[i], margin, y); if(i===0){ doc.text(String(r.tempo||'')+' ST', 520, y, {align:'right'}) } y+=12 } } doc.save(outName) } else { const a=document.createElement('a'); a.href=url; a.download=String(name||'kotei.html'); document.body.appendChild(a); a.click(); document.body.removeChild(a) } } else { const a=document.createElement('a'); a.href=url; a.download=String(name||'arquivo.pdf'); document.body.appendChild(a); a.click(); document.body.removeChild(a) } }catch(_){ } }},'Exportar')
               ]),
               React.createElement('object',{data:url,type:'application/pdf',style:{width:'100%',height:'420px'}},
                 React.createElement('div',{style:{width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center'}},
@@ -1405,7 +1405,7 @@ function KoteiPage({rows,modelConfigs,setSelectedModel,setPage,koteisByModel,set
             React.createElement('thead',null,[
               React.createElement('tr',null,[
                 React.createElement('th',{className:'text-left px-2 py-1 border-b bg-gray-50'},'DESCRIÇÃO DA ATIVIDADE'),
-                React.createElement('th',{className:'text-left px-2 py-1 border-b bg-gray-50 w-40'},'TEMPO'),
+                React.createElement('th',{className:'text-left px-2 py-1 border-b bg-gray-50 w-40'},'TEMPO (ST)'),
                 React.createElement('th',{className:'text-left px-2 py-1 border-b bg-gray-50 w-10'},'')
               ])
             ]),
@@ -1417,6 +1417,7 @@ function KoteiPage({rows,modelConfigs,setSelectedModel,setPage,koteisByModel,set
                         React.createElement('td',{className:'px-2 py-1 border-b align-top'},[
                           React.createElement('div',{className:'flex items-center gap-2'},[
                             React.createElement('input',{value:r.tempo,onChange:e=>handlePlanilhaChange(idx,'tempo',e.target.value),className:'w-24 border rounded px-2 py-1'}),
+                            React.createElement('span',{className:'text-xs text-gray-600'},'ST'),
                           React.createElement('div',{className:'inline-flex items-center gap-1'},[
                               React.createElement('button',{onClick:()=>startCronometro(idx),className:'px-2 py-1 rounded bg-blue-600 text-white'},'Iniciar'),
                               React.createElement('button',{onClick:()=>registrarCronometro(idx),className:'px-2 py-1 rounded bg-green-600 text-white'},'Média'),
@@ -1438,7 +1439,7 @@ function KoteiPage({rows,modelConfigs,setSelectedModel,setPage,koteisByModel,set
             return acc + parseTempoMs(r.tempo||'')
           },0)
           const text = fmtMinSecDec(totalMs)+' ST'
-          return React.createElement('div',{className:'text-black font-bold text-sm text-right mt-2'},text)
+          return React.createElement('div',{className:'text-black font-bold text-sm text-right mt-2',style:{whiteSpace:'nowrap'}},text)
         })(),
         React.createElement(Modal,{open:confirmDelIdx!=null,onClose:()=>setConfirmDelIdx(null)},[
           React.createElement('div',{className:'text-lg font-bold mb-3'},'Excluir atividade'),
