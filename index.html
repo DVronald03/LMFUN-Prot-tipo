@@ -4,38 +4,1456 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>LM FUN - Protótipo</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html,body{height:100%}
+    body{margin:0;background:#f3f4f6;color:#111827;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial}
+    .p-4{padding:1rem}
+    .flex-center{display:flex;align-items:center;justify-content:center}
+    .login-container{min-height:100vh;background:linear-gradient(135deg,#0a0f1c 0%,#0e1627 100%);padding:16px}
+    .login-card{background:#fff;border-radius:16px;box-shadow:0 12px 24px rgba(0,0,0,.15);width:100%;max-width:880px;overflow:hidden;display:grid;grid-template-columns:1fr}
+    @media (min-width:1024px){ .login-card{grid-template-columns:1fr 1fr} }
+    .login-left{padding:24px}
+    @media (min-width:640px){ .login-left{padding:28px} }
+    @media (min-width:768px){ .login-left{padding:32px} }
+    @media (min-width:1024px){ .login-left{padding:40px} }
+    .login-title{font-weight:700;font-size:20px;margin-bottom:12px}
+    .login-left label{display:block;font-size:12px;color:#6b7280;margin-bottom:6px}
+    .login-left input{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:10px 12px;color:#111827;background:#fff;margin-bottom:12px}
+    .login-left button{width:100%;border:none;border-radius:10px;padding:12px;background:#2563eb;color:#fff;font-weight:600}
+    .login-left button:hover{background:#1d4ed8}
+    .login-right{background:#0a0f1c;color:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:24px}
+    .login-right .welcome{font-weight:700;letter-spacing:.02em}
+    .login-right img{width:180px;height:180px;border-radius:9999px;box-shadow:0 6px 16px rgba(0,0,0,.25);object-fit:cover}
+    /* Tailwind-lite fallback for app views */
+    .min-h-screen{min-height:100vh}
+    .overflow-x-hidden{overflow-x:hidden}
+    .flex{display:flex}
+    .inline-flex{display:inline-flex}
+    .items-center{align-items:center}
+    .justify-between{justify-content:space-between}
+    .justify-end{justify-content:flex-end}
+    .justify-center{justify-content:center}
+    .mb-4{margin-bottom:1rem}
+    .rounded{border-radius:.25rem}
+    .rounded-lg{border-radius:.5rem}
+    .rounded-xl{border-radius:.75rem}
+    .px-2{padding-left:.5rem;padding-right:.5rem}
+    .px-3{padding-left:.75rem;padding-right:.75rem}
+    .px-4{padding-left:1rem;padding-right:1rem}
+    .py-1{padding-top:.25rem;padding-bottom:.25rem}
+    .py-2{padding-top:.5rem;padding-bottom:.5rem}
+    .py-3{padding-top:.75rem;padding-bottom:.75rem}
+    .p-3{padding:.75rem}
+    .shadow{box-shadow:0 8px 20px rgba(0,0,0,.08)}
+    .shadow-lg{box-shadow:0 12px 24px rgba(0,0,0,.12)}
+    .bg-white{background:#fff}
+    .text-white{color:#fff}
+    .text-black{color:#000}
+    .text-gray-600{color:#6b7280}
+    .text-gray-700{color:#374151}
+    .text-xs{font-size:.75rem}
+    .text-sm{font-size:.875rem}
+    .text-xl{font-size:1.25rem;font-weight:700}
+    .text-2xl{font-size:1.5rem;font-weight:700}
+    .font-bold{font-weight:700}
+    .w-full{width:100%}
+    .border{border:1px solid #e5e7eb}
+    .border-gray-300{border-color:#d1d5db}
+    .table-fixed{table-layout:fixed}
+    .grid{display:grid}
+    .grid-cols-1{grid-template-columns:1fr}
+    .grid-cols-2{grid-template-columns:repeat(2,1fr)}
+    .grid-cols-3{grid-template-columns:repeat(3,1fr)}
+    .gap-3{gap:.75rem}
+    .text-right{text-align:right}
+    .bg-gradient-to-r{background:linear-gradient(90deg,#0a0f1c,#0e1627)}
+    .fixed{position:fixed}
+    .inset-0{top:0;right:0;bottom:0;left:0}
+    .inset-y-0{top:0;bottom:0}
+    .left-0{left:0}
+    .w-64{width:16rem}
+    .z-40{z-index:40}
+    .z-50{z-index:50}
+    .transform{transform:translateX(0)}
+    .transition{transition:transform .2s ease}
+    .translate-x-0{transform:translateX(0)}
+    .-translate-x-full{transform:translateX(-100%)}
+    .bg-white\/10{background:rgba(255,255,255,.1)}
+    .border-white\/10{border-color:rgba(255,255,255,.1)}
+    .bg-black\/50{background:rgba(0,0,0,.5)}
+    .w-12{width:3rem}
+    .h-12{height:3rem}
+    .w-8{width:2rem}
+    .h-8{height:2rem}
+    .w-7{width:1.75rem}
+    .h-7{height:1.75rem}
+    .w-9{width:2.25rem}
+    .h-9{height:2.25rem}
+    .w-32{width:8rem}
+    .h-32{height:8rem}
+    .object-cover{object-fit:cover}
+    button{cursor:pointer}
+  </style>
   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: { 50:'#eef2ff', 500:'#0b1220', 600:'#0b1220' },
-            green: { 600:'#16a34a' },
-            red: { 600:'#ef4444' },
-            orange: { 500:'#f59e0b' }
-          }
-        }
-      }
-    }
+    try{ window.tailwind = window.tailwind || {}; window.tailwind.config = { darkMode:'media' } }catch(_){}
   </script>
-  <link rel="preconnect" href="https://unpkg.com" />
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="./vendor/tailwindcdn.js"></script>
+  <script src="./vendor/react.development.js"></script>
+  <script src="./vendor/react-dom.development.js"></script>
+  <script src="./vendor/chart.umd.min.js"></script>
 </head>
 <body class="bg-gray-200 text-gray-900 overflow-x-hidden">
   <div id="root"></div>
-  <script type="text/babel" src="./frontend/components/Sidebar.jsx"></script>
-  <script type="text/babel" src="./frontend/components/Header.jsx"></script>
-  <script type="text/babel" src="./frontend/components/Modal.jsx"></script>
-  <script type="text/babel" src="./frontend/components/StatusPill.jsx"></script>
-  <script type="text/babel" src="./frontend/components/Pagination.jsx"></script>
-  <script type="text/babel" src="./frontend/pages/Dashboard.jsx"></script>
-  <script type="text/babel" src="./frontend/pages/Operadores.jsx"></script>
-  <script type="text/babel" src="./frontend/pages/Login.jsx"></script>
-  <script type="text/babel" src="./frontend/app.jsx"></script>
+  <div id="app-error" style="display:none;position:fixed;inset:0;z-index:9999;background:#0b1220;color:#fff;align-items:center;justify-content:center;text-align:center;padding:24px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial"></div>
+  <script>
+    (function(){
+      function showError(msg){ try{ var el=document.getElementById('app-error'); if(!el) return; el.textContent=String(msg||'Erro desconhecido'); el.style.display='flex'; var root=document.getElementById('root'); if(root) root.style.display='none' }catch(_){} }
+      window.addEventListener('error',function(e){
+        var info='Erro: '+(e.message||'')
+        if(e.filename){ info+='\nArquivo: '+e.filename }
+        if(typeof e.lineno==='number'){ info+='\nLinha: '+e.lineno }
+        if(typeof e.colno==='number'){ info+='\nColuna: '+e.colno }
+        showError(info)
+      })
+      window.addEventListener('unhandledrejection',function(e){ try{ var m= (e.reason && e.reason.message) ? e.reason.message : String(e.reason||'Promise rejeitada'); showError('Promise rejeitada: '+m) }catch(_){ showError('Promise rejeitada') } })
+    })();
+  </script>
+  <script>
+const { useRef,useState,useEffect } = React
+function Modal({open,onClose,children,backdrop=true,position='center'}){
+  useEffect(()=>{
+    function onKey(e){ if(e.key==='Escape') onClose?.() }
+    if(open) document.addEventListener('keydown',onKey)
+    return ()=> document.removeEventListener('keydown',onKey)
+  },[open])
+  const wrapperCls = (open?'block':'hidden')+' fixed inset-0 z-50 '+(backdrop?'':'pointer-events-none')
+  const contentWrapper = position==='bottom'
+    ? { className:'absolute bottom-6 left-1/2 -translate-x-1/2 w-full max-w-xl px-4 pointer-events-auto' }
+    : { className:'absolute inset-0 flex items-center justify-center px-4 pointer-events-auto' }
+  return React.createElement('div',{className:wrapperCls},[
+    backdrop? React.createElement('div',{className:'absolute inset-0 bg-black/50'}) : null,
+    React.createElement('div',contentWrapper,
+      React.createElement('div',{className:'bg-white text-black rounded-xl p-4 w-full shadow-lg'},children)
+    )
+  ])
+}
+function StatusPill({status}){
+  const map={EFETIVO:'bg-green-100 text-green-700 border border-green-600',TEMPORÁRIO:'bg-red-100 text-red-700 border border-red-600',RL:'bg-orange-100 text-orange-700 border border-orange-500'}
+  return React.createElement('span',{className:'px-2 py-1 rounded-full text-xs '+(map[status]||'')},status)
+}
+function Pagination({ total=0, page=1, pageSize=5, onPageChange=()=>{} }){
+  const pages = Math.max(1, Math.ceil((total||0)/pageSize))
+  let visible = [page]
+  if(page < pages) visible = [page, page+1]
+  else if(page > 1) visible = [page-1, page]
+  return React.createElement('div',{className:'flex items-center justify-end mt-3'},[
+    React.createElement('div',{className:'inline-flex items-center gap-1 rounded-xl border border-gray-200 bg-white px-1 py-1 shadow-sm'},[
+      React.createElement('button',{onClick:()=> onPageChange(Math.max(1,page-1)),disabled:page<=1,className:'px-2 py-1 rounded-lg text-gray-600 hover:text-gray-900 disabled:opacity-40 disabled:cursor-not-allowed'},'‹'),
+      visible.map(n=> React.createElement('button',{key:n,onClick:()=> onPageChange(n),className:(n===page?'bg-gray-100 text-gray-900 border border-gray-300 ':'text-gray-700 hover:bg-gray-50 ')+'px-3 py-1 rounded-lg'},String(n))),
+      React.createElement('button',{onClick:()=> onPageChange(Math.min(pages,page+1)),disabled:page>=pages,className:'px-2 py-1 rounded-lg text-gray-600 hover:text-gray-900 disabled:opacity-40 disabled:cursor-not-allowed'},'›')
+    ])
+  ])
+}
+function Header({onToggleDrawer,page}){
+  const titles={ dashboard:'Dashboard', operadores:'Operadores', modelos:'Modelos', kotei:'Kotei Hyo' }
+  const title = titles[page] || 'Painel'
+  return React.createElement('div',{className:'flex items-center justify-between mb-4 bg-gradient-to-r from-[#0a0f1c] to-[#0e1627] text-white rounded-xl px-4 py-3 shadow'},[
+    React.createElement('div',{className:'flex items-center gap-3'},[
+      React.createElement('button',{onClick:onToggleDrawer,className:'px-3 py-2 rounded bg-white/10 hover:bg-white/20'},'☰'),
+      React.createElement('div',{className:'text-xl font-bold'},title)
+    ]),
+    React.createElement('div',null)
+  ])
+}
+function Sidebar({page,setPage,open,setOpen,onLogout}){
+  const [upgOpen,setUpgOpen] = React.useState(true)
+  const [confirm,setConfirm] = React.useState(false)
+  const logoCandidates = [ new URL('./frontend/img/LOGO.svg', document.baseURI).toString(), new URL('./img/LOGO.svg', document.baseURI).toString() ]
+  const logoSrc = logoCandidates[0]
+  const fallbackSvg = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#ffffff"/><text x="50" y="110" font-size="44" fill="#0b1220" font-family="Arial, Helvetica, sans-serif">LMFUN</text></svg>')
+  return React.createElement('aside',{className:(open?'translate-x-0 ':'-translate-x-full ')+'fixed inset-y-0 left-0 w-64 z-50 bg-[#0a0f1c] text-white border-r border-white/10 p-4 transform transition-transform'},[
+    React.createElement('div',{className:'flex items-center justify-between mb-6'},[
+      React.createElement('div',{className:'flex items-center gap-4'},[
+        React.createElement('div',{className:'w-12 h-12 rounded-full overflow-hidden ring-2 ring-white/10 bg-transparent shadow-sm transition'},
+          React.createElement('img',{src:logoSrc,alt:'LMFUN',"data-try":"0",onError:(e)=>{ try{ const i=Number(e.target.dataset.try||'0'); const next = logoCandidates[i+1]; if(next){ e.target.dataset.try=String(i+1); e.target.src=next } else { e.target.onerror=null; e.target.src=fallbackSvg } }catch(_){} },className:'w-full h-full object-cover'})
+        ),
+        React.createElement('div',{className:'font-bold tracking-wide'},[
+          React.createElement('span',{className:'text-red-500'},'LM'),
+          React.createElement('span',null,'FUN')
+        ])
+      ]),
+      React.createElement('button',{onClick:()=>setOpen(false),className:'px-3 py-2 rounded bg-white/10 hover:bg-white/20'},'✕')
+    ]),
+    React.createElement('div',{className:'space-y-2'},[
+      React.createElement('button',{onClick:()=>{ setPage('dashboard'); setOpen(false) },className:(page==='dashboard'?'bg-white/10 ':'')+'w-full flex items-center gap-3 text-left px-3 py-2 rounded hover:bg-white/10 group'},[
+        React.createElement('span',{className:'inline-flex items-center justify-center w-7 h-7 rounded-lg text-white transition-transform group-hover:scale-105'},'▦'),
+        React.createElement('span',{className:'leading-none'},'Dashboard')
+      ]),
+      React.createElement('button',{onClick:()=>{ setPage('operadores'); setOpen(false) },className:(page==='operadores'?'bg-white/10 ':'')+'w-full flex items-center gap-3 text-left px-3 py-2 rounded hover:bg-white/10 group'},[
+        React.createElement('span',{className:'inline-flex items-center justify-center w-7 h-7 rounded-lg transition-transform group-hover:scale-105'},'👤'),
+        React.createElement('span',{className:'leading-none'},'Operadores')
+      ]),
+      React.createElement('button',{onClick:()=>{ setPage('modelos'); setOpen(false) },className:(page==='modelos'?'bg-white/10 ':'')+'w-full flex items-center gap-3 text-left px-3 py-2 rounded hover:bg-white/10 group'},[
+        React.createElement('span',{className:'inline-flex items-center justify-center w-7 h-7 rounded-lg transition-transform group-hover:scale-105'},'🏍️'),
+        React.createElement('span',{className:'leading-none'},'Modelos')
+      ])
+      ,
+      React.createElement('button',{onClick:()=>{ setPage('kotei'); setOpen(false) },className:(page==='kotei'?'bg-white/10 ':'')+'w-full flex items-center gap-3 text-left px-3 py-2 rounded hover:bg-white/10 group'},[
+        React.createElement('span',{className:'inline-flex items-center justify-center w-7 h-7 rounded-lg transition-transform group-hover:scale-105'},'📄'),
+        React.createElement('span',{className:'leading-none'},'Kotei Hyo')
+      ])
+      ,
+      React.createElement('div',{className:'border-t border-white/10 my-3'}),
+      React.createElement('button',{onClick:()=>setUpgOpen(v=>!v),className:'w-full flex items-center justify-between text-left px-3 py-2 rounded hover:bg-white/5'},[
+        React.createElement('span',{className:'text-xs font-bold uppercase tracking-wide text-white/80'},'UPGRADE FUTURO'),
+        React.createElement('span',{className:'text-white/70'}, upgOpen ? '▾' : '▸')
+      ]),
+      upgOpen ? React.createElement('div',{className:'space-y-2 px-2'},[
+        React.createElement('button',{type:'button',disabled:true,className:'w-full flex items-center justify-between px-2 py-2 rounded hover:bg-white/5 cursor-not-allowed'},[
+          React.createElement('div',{className:'flex items-center gap-2'},[
+            React.createElement('span',{className:'inline-flex items-center justify-center w-6 h-6 rounded-lg bg-white/10'},'🛠️'),
+            React.createElement('span',{className:'text-white/80 font-semibold uppercase text-xs'},'PADRÃO DE SERVIÇO')
+          ]),
+          React.createElement('span',{className:'inline-flex items-center justify-center whitespace-nowrap px-3 py-1 rounded-full text-[10px] bg-white/10 text-white/70 border border-white/10'},'EM BREVE')
+        ]),
+        
+        React.createElement('button',{type:'button',disabled:true,className:'w-full flex items-center justify-between px-2 py-2 rounded hover:bg-white/5 cursor-not-allowed'},[
+          React.createElement('div',{className:'flex items-center gap-2'},[
+            React.createElement('span',{className:'inline-flex items-center justify-center w-6 h-6 rounded-lg bg-white/10'},
+              React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'none',className:'w-5 h-5'},[
+                React.createElement('rect',{x:2,y:3,width:20,height:18,rx:3,stroke:'#22c55e'}),
+                React.createElement('circle',{cx:12,cy:20,r:1.3,fill:'#22c55e'}),
+                React.createElement('circle',{cx:5,cy:16,r:1.3,fill:'#22c55e'}),
+                React.createElement('circle',{cx:9,cy:16,r:1.3,fill:'#22c55e'}),
+                React.createElement('circle',{cx:15,cy:16,r:1.3,fill:'#22c55e'}),
+                React.createElement('circle',{cx:19,cy:16,r:1.3,fill:'#22c55e'}),
+                React.createElement('circle',{cx:6,cy:12,r:1.3,fill:'#22c55e'}),
+                React.createElement('circle',{cx:10,cy:12,r:1.3,fill:'#22c55e'}),
+                React.createElement('circle',{cx:14,cy:12,r:1.3,fill:'#22c55e'}),
+                React.createElement('circle',{cx:18,cy:12,r:1.3,fill:'#22c55e'}),
+                React.createElement('circle',{cx:9,cy:8,r:1.3,fill:'#22c55e'}),
+                React.createElement('circle',{cx:15,cy:8,r:1.3,fill:'#22c55e'})
+              ])
+            ),
+            React.createElement('span',{className:'text-white/80 font-semibold uppercase text-xs'},'FORMAÇÃO DE LINHA')
+          ]),
+          React.createElement('span',{className:'inline-flex items-center justify-center whitespace-nowrap px-3 py-1 rounded-full text-[10px] bg-white/10 text-white/70 border border-white/10'},'EM BREVE')
+        ]),
+        React.createElement('button',{type:'button',disabled:true,className:'w-full flex items-center justify-between px-2 py-2 rounded hover:bg-white/5 cursor-not-allowed'},[
+          React.createElement('div',{className:'flex items-center gap-2'},[
+            React.createElement('span',{className:'inline-flex items-center justify-center w-6 h-6 rounded-lg bg-white/10'},
+              React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'none',className:'w-5 h-5'},[
+                React.createElement('circle',{cx:12,cy:12,r:9,stroke:'#16a34a'}),
+                React.createElement('rect',{x:11,y:7,width:2,height:10,fill:'#16a34a'}),
+                React.createElement('rect',{x:7,y:11,width:10,height:2,fill:'#16a34a'})
+              ])
+            ),
+            React.createElement('span',{className:'text-white/80 font-semibold uppercase text-xs'},'AVALIAÇÃO ERGONÔMICA')
+          ]),
+          React.createElement('span',{className:'inline-flex items-center justify-center whitespace-nowrap px-3 py-1 rounded-full text-[10px] bg-white/10 text-white/70 border border-white/10'},'EM BREVE')
+        ]),
+        React.createElement('button',{type:'button',disabled:true,className:'w-full flex items-center justify-between px-2 py-2 rounded hover:bg-white/5 cursor-not-allowed'},[
+          React.createElement('div',{className:'flex items-center gap-2'},[
+            React.createElement('span',{className:'inline-flex items-center justify-center w-6 h-6 rounded-lg bg-white/10'},
+              React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'none',className:'w-5 h-5'},[
+                React.createElement('rect',{x:3,y:6,width:18,height:12,rx:3,stroke:'#3b82f6'}),
+                React.createElement('rect',{x:6,y:3,width:6,height:4,rx:1,stroke:'#3b82f6'}),
+                React.createElement('circle',{cx:14,cy:12,r:3,stroke:'#3b82f6'}),
+                React.createElement('circle',{cx:14,cy:12,r:1.2,fill:'#3b82f6'})
+              ])
+            ),
+            React.createElement('span',{className:'text-white/80 font-semibold uppercase text-xs'},'PROCESSO GRAVADO')
+          ]),
+          React.createElement('span',{className:'inline-flex items-center justify-center whitespace-nowrap px-3 py-1 rounded-full text-[10px] bg-white/10 text-white/70 border border-white/10'},'EM BREVE')
+        ]),
+        React.createElement('button',{type:'button',disabled:true,className:'w-full flex items-center justify-between px-2 py-2 rounded hover:bg-white/5 cursor-not-allowed'},[
+          React.createElement('div',{className:'flex items-center gap-2'},[
+            React.createElement('span',{className:'inline-flex items-center justify-center w-6 h-6 rounded-lg bg-white/10'},'🕶️'),
+            React.createElement('span',{className:'text-white/80 font-semibold uppercase text-xs'},'PROCESSO EM VR')
+          ]),
+          React.createElement('span',{className:'inline-flex items-center justify-center whitespace-nowrap px-3 py-1 rounded-full text-[10px] bg-white/10 text-white/70 border border-white/10'},'EM BREVE')
+        ])
+      ]) : null,
+      React.createElement('div',{className:'border-t border-white/10 my-3'}),
+      React.createElement('button',{onClick:()=>setConfirm(true),className:'w-full flex items-center gap-3 text-left px-3 py-2 rounded bg-red-600 text-white hover:bg-red-500'},[
+        React.createElement('span',{className:'inline-flex items-center justify-center w-7 h-7 rounded-lg'},'⎋'),
+        React.createElement('span',{className:'leading-none'},'Sair')
+      ]),
+      React.createElement(Modal,{open:confirm,onClose:()=>setConfirm(false)},[
+        React.createElement('div',null,[
+          React.createElement('div',{className:'text-lg font-bold mb-2'},'Confirmar saída'),
+          React.createElement('div',{className:'text-sm text-gray-700 mb-3'},'Deseja encerrar a sessão e voltar para a tela de login?'),
+          React.createElement('div',{className:'flex justify-end gap-2'},[
+            React.createElement('button',{onClick:()=>setConfirm(false),className:'px-3 py-2 rounded bg-gray-200 hover:bg-gray-300'},'Cancelar'),
+            React.createElement('button',{onClick:()=>{ onLogout?.(); setConfirm(false) },className:'px-3 py-2 rounded bg-red-600 text-white hover:bg-red-500'},'Sair')
+          ])
+        ])
+      ])
+    ])
+  ])
+}
+function LoginPage({ onSuccess }){
+  const [user,setUser] = React.useState('')
+  const [pass,setPass] = React.useState('')
+  const [error,setError] = React.useState('')
+  function submit(e){ e.preventDefault(); const u=user.trim(); const p=pass.trim(); if(u==='HDA2' && p==='Manaus@01'){ setError(''); onSuccess?.() } else { setError('Credenciais inválidas') } }
+  const logoCandidates = [ new URL('./frontend/img/LOGO.svg', document.baseURI).toString(), new URL('./img/LOGO.svg', document.baseURI).toString() ]
+  const logoSrc = logoCandidates[0]
+  const fallbackSvg = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#ffffff"/><text x="50" y="110" font-size="48" fill="#0b1220" font-family="Arial, Helvetica, sans-serif">LMFUN</text></svg>')
+  return React.createElement('div',{className:'login-container flex-center'},[
+    React.createElement('div',{className:'login-card'},[
+      React.createElement('div',{className:'login-left'},[
+        React.createElement('div',{className:'login-title'},'Acesso'),
+        (error? React.createElement('div',{style:{marginBottom:'12px',color:'#dc2626',fontSize:'12px'}},error) : null),
+        React.createElement('form',{onSubmit:submit},[
+          React.createElement('label',{key:'lbl-login'},'Login'),
+          React.createElement('input',{key:'inp-login',type:'text',autoComplete:'off',value:user,onChange:e=>setUser(e.target.value)}),
+          React.createElement('label',{key:'lbl-senha'},'Senha'),
+          React.createElement('input',{key:'inp-senha',type:'password',autoComplete:'off',value:pass,onChange:e=>setPass(e.target.value)}),
+          React.createElement('button',{type:'submit'},'Entrar')
+        ])
+      ]),
+      React.createElement('div',{className:'login-right'},[
+        React.createElement('div',{className:'welcome'},[
+          React.createElement('span',{key:'bem',style:{color:'#ef4444'}},'BEM'),
+          React.createElement('span',{key:'vindo'},' VINDO!')
+        ]),
+        React.createElement('img',{src:logoSrc,alt:'LMFUN',"data-try":"0",onError:(e)=>{ try{ const i=Number(e.target.dataset.try||'0'); const next = logoCandidates[i+1]; if(next){ e.target.dataset.try=String(i+1); e.target.src=next } else { e.target.onerror=null; e.target.src=fallbackSvg } }catch(_){} }})
+      ])
+    ])
+  ])
+}
+function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs,koteisByModel}){
+  const canvasRef = useRef(null)
+  const chartBoxRef = useRef(null)
+  const [chartObj,setChartObj] = useState(null)
+  const [ibMedio,setIbMedio] = useState('0%')
+  const [selIdx,setSelIdx] = useState(-1)
+  const [tempSel,setTempSel] = useState('')
+  const [turnoSel,setTurnoSel] = useState('1')
+  const [running,setRunning] = useState(false)
+  const [elapsed,setElapsed] = useState(0)
+  const [exportOpen,setExportOpen] = useState(false)
+  const [isMobile,setIsMobile] = useState(false)
+  const timerRef = useRef(null)
+  const startAtRef = useRef(0)
+  const [promptKotei,setPromptKotei] = useState(null)
+  const [fullPdf,setFullPdf] = useState('')
+  function statusColor(r){ const s=String(r.status||'').toUpperCase(); if(s==='EFETIVO') return { bg:'#dcfce7', border:'#16a34a', text:'#166534' }; if(s==='TEMPORÁRIO') return { bg:'#fee2e2', border:'#dc2626', text:'#991b1b' }; if(s==='RL') return { bg:'#ffedd5', border:'#f97316', text:'#9a3412' }; return { bg:'#f3f4f6', border:'#9ca3af', text:'#374151' } }
+  function fmt(ms){ const m=Math.floor(ms/60000); const s=Math.floor((ms%60000)/1000); const t=Math.floor((ms%1000)/100); return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${t}` }
+  function colorForSeconds(sec,max){ if(!max || sec===0) return '#60a5fa'; const ib=(sec/max)*100; if(ib>90) return '#ef4444'; if(ib>=85) return '#22c55e'; return '#f59e0b' }
+  function darkenColor(hex){ const h=String(hex||'').trim(); if(!h.startsWith('#')||h.length<7) return hex; const r=parseInt(h.slice(1,3),16); const g=parseInt(h.slice(3,5),16); const b=parseInt(h.slice(5,7),16); const dr=Math.max(0,r-32), dg=Math.max(0,g-32), db=Math.max(0,b-32); const nn=(v)=> v.toString(16).padStart(2,'0'); return `#${nn(dr)}${nn(dg)}${nn(db)}` }
+  function ensureModelBuckets(){ try{ if(!selectedModel) return; setRows(prev=>{ const src = Array.isArray(prev)? prev : []; const next = src.map(r=>{ const tbm = r.timesByModel && typeof r.timesByModel==='object' ? { ...r.timesByModel } : {}; if(!(selectedModel in tbm)) tbm[selectedModel] = { '1':[], '2':[], '3':[] }; return { ...r, timesByModel: tbm } }); return next }) }catch(_){ } }
+  function start(fromZero){ try{ if(running) return; if(!tempSel) setTempSel('1'); const base = fromZero? 0 : elapsed; startAtRef.current = Date.now()-base; setRunning(true); timerRef.current = setInterval(()=> setElapsed(Date.now()-startAtRef.current), 50) }catch(_){ } }
+  function pause(){ try{ if(!running) return; setRunning(false); clearInterval(timerRef.current) }catch(_){ } }
+  function reset(){ try{ pause(); if(!(selectedModel && selIdx>=0)) { setElapsed(0); return } const activeBucket = tempSel || '1'; setRows(prev=>{ const next=[...prev]; const item=next[selIdx]||{}; const tbm = (item.timesByModel&&typeof item.timesByModel==='object')? {...item.timesByModel} : {}; const modelBuckets = tbm[selectedModel] || { '1':[], '2':[], '3':[] }; modelBuckets[activeBucket] = []; tbm[selectedModel] = modelBuckets; next[selIdx] = { ...item, timesByModel:tbm, updatedAt:Date.now() }; return next }); setTempSel(activeBucket); setElapsed(0) }catch(_){ } }
+  function registrar(durOverride, advance=true, bucketOverride=null){ try{ if(!(selectedModel && selIdx>=0)) return; const durNow = typeof durOverride==='number' ? durOverride : (running ? Date.now()-startAtRef.current : elapsed); pause(); const dur = durNow; if(dur<=0) return; const usedBucket = bucketOverride || tempSel || '1'; setRows(prev=>{ const next=[...prev]; const item=next[selIdx]||{}; const allModels=Object.keys(modelConfigs||{}); const baseTbm = item.timesByModel && typeof item.timesByModel==='object' ? item.timesByModel : Object.fromEntries(allModels.map(k=>[k,{ '1':[], '2':[], '3':[] }])); const arr = Array.isArray(baseTbm[selectedModel]?.[usedBucket]) ? baseTbm[selectedModel][usedBucket] : []; arr.push({ ts:Date.now(), dur }); baseTbm[selectedModel] = { ...(baseTbm[selectedModel]||{}), [usedBucket]:arr }; next[selIdx] = { ...item, timesByModel:baseTbm, updatedAt:Date.now() }; return next }); setElapsed(0); if(advance){ const nextBucket = usedBucket==='1' ? '2' : usedBucket==='2' ? '3' : null; if(nextBucket){ setTempSel(nextBucket) } } }catch(_){ } }
+  function registrarBucket(bucket){ try{ if(!(selectedModel && selIdx>=0)) return; const b=bucket||'1'; registrar(undefined,true,b) }catch(_){ } }
+  function mediaBuckets(){
+    try{
+      if(!(selectedModel && selIdx>=0)) return
+      const v = rows[selIdx]?.timesByModel?.[selectedModel]
+      const activeBucket = tempSel || '1'
+      if(v && typeof v==='object'){
+        const current = running ? Date.now()-startAtRef.current : elapsed
+        const vals = ['1','2','3']
+          .map(k=>{ const a=v[k]; const last=(Array.isArray(a)&&a.length)? a[a.length-1].dur : 0; return (k===activeBucket && current>0) ? current : last })
+          .filter(x=> x>0)
+        const avg = vals.length ? (vals.reduce((a,b)=> a+b,0)/vals.length) : 0
+        pause()
+        registrar(avg,false, activeBucket)
+        const nextBucket = activeBucket==='1' ? '2' : (activeBucket==='2' ? '3' : null)
+        if(nextBucket){ setTempSel(nextBucket) }
+      } else {
+        pause()
+        setElapsed(0)
+      }
+    }catch(_){ }
+  }
+  useEffect(()=>()=>{ clearInterval(timerRef.current) },[])
+  useEffect(()=>{ if(!canvasRef.current) return; if(!(typeof window!=='undefined' && window.Chart)) return; const ctx=canvasRef.current.getContext('2d'); const valueLabelPlugin={ id:'valueLabels', afterDatasetsDraw(chart){ const {ctx} = chart; const meta = chart.getDatasetMeta(0); const ibData = Array.isArray(chart._ib)? chart._ib : []; const ibTarget = chart._ibTarget ?? 90; const baseY = chart.scales.y.getPixelForValue(0); const exporting = chart._exporting===true; const isMob = chart._mobile===true; meta.data.forEach((bar, i)=>{ const x=bar.x; const y=bar.y; const base = (bar.base!=null ? bar.base : baseY); const top = Math.min(y, base); const bottom = Math.max(y, base); const height = bottom - top; const ib=Number(ibData[i]||0); const timeVal = chart.data.datasets[0].data[i]; const hasData = typeof timeVal==='number' && isFinite(timeVal) && timeVal>0; if(!hasData) return; const timeStr = timeVal.toFixed(2).replace('.',','); const ibColor = ib>ibTarget ? '#ef4444' : '#22c55e'; if(ib>0){ ctx.save(); ctx.font= (exporting? 'bold 14px helvetica' : 'bold 11px helvetica'); ctx.textAlign='center'; ctx.fillStyle=ibColor; ctx.fillText(String(ib)+'%', x, Math.max(chart.chartArea.top+12, y-8)); ctx.restore(); } ctx.save(); ctx.translate(x, top + height/2); ctx.rotate(-Math.PI/2); ctx.font= exporting ? 'bold 14px helvetica' : 'bold 11px helvetica'; ctx.textAlign='center'; ctx.strokeStyle='#000000'; ctx.lineWidth=4; ctx.strokeText(timeStr, 0, 0); ctx.fillStyle='#ffffff'; ctx.fillText(timeStr, 0, 0); ctx.restore(); }) } };
+  const chart = new Chart(ctx,{ type:'bar', data:{ labels:[], datasets:[ { label:'Tempo de Processo', data:[], backgroundColor:'#22c55e', borderRadius:4, maxBarThickness:32, barThickness:32 }, { type:'line', label:'Limite Máximo (s)', data:[], borderColor:'#ef4444', borderDash:[6,6], borderWidth:3, pointRadius:0, tension:0.3 }, { type:'line', label:'Limite Objetivo (s)', data:[], borderColor:'#22c55e', borderDash:[3,6], borderWidth:3, pointRadius:0, tension:0.3 }, { type:'line', label:'IB (%)', data:[], borderColor:'#f59e0b', borderWidth:3, pointRadius:4, tension:0.3, yAxisID:'y1' } ] }, options:{ responsive:true, maintainAspectRatio:false, interaction:{ mode:'index', intersect:false }, animation:{ duration:1200, easing:'easeOutQuart' }, animations:{ y:{ duration:1200, easing:'easeOutQuart', from:(ctx)=>{ if(ctx.type==='data' && ctx.mode==='default'){ return ctx.chart.scales.y.getPixelForValue(0) } } } }, plugins:{ tooltip:{ displayColors:false, titleFont:{ family:'Helvetica, Arial, sans-serif', size:12, weight:'bold' }, bodyFont:{ family:'Helvetica, Arial, sans-serif', size:12 }, callbacks:{ label:(ctx)=>{ const chartObj=ctx.chart; const name = Array.isArray(chartObj._names)? chartObj._names[ctx.dataIndex] : ctx.label; const val = ctx.parsed.y; if(ctx.datasetIndex===0){ return `${name}: ${val}s` } return `${ctx.dataset.label}: ${val}` } } } }, scales:{ x:{ ticks:{ autoSkip:false, maxRotation:60, minRotation:45, color:'#0f172a', font:{ family:'Helvetica, Arial, sans-serif', size:12, weight:'bold' } } }, y:{ beginAtZero:true, ticks:{ color:'#0f172a', font:{ family:'Helvetica, Arial, sans-serif', size:12, weight:'bold' } }, grid:{ color:'#E5E7EB' } }, y1:{ position:'right', min:0, max:120, ticks:{ color:'#0f172a', font:{ family:'Helvetica, Arial, sans-serif', size:12, weight:'bold' }, callback:(v)=>v+'%' }, grid:{ drawOnChartArea:false } } } }, plugins:[valueLabelPlugin] });
+  setChartObj(chart); return ()=> chart.destroy() },[selectedModel])
+  useEffect(()=>{ ensureModelBuckets() },[selectedModel])
+  useEffect(()=>{ try{ const hasMM = typeof window!=='undefined' && typeof window.matchMedia==='function'; if(!hasMM){ setIsMobile(false); return } const mq = window.matchMedia('(max-width: 640px)'); const apply = ()=>{ try{ setIsMobile(!!mq && !!mq.matches) }catch(_){ } }; apply(); if(mq && typeof mq.addEventListener==='function'){ mq.addEventListener('change', apply); return ()=>{ try{ mq.removeEventListener('change', apply) }catch(_){ } } } else if(mq && typeof mq.addListener==='function'){ mq.addListener(apply); return ()=>{ try{ mq.removeListener(apply) }catch(_){ } } } else { return ()=>{} } }catch(_){ } },[])
+  useEffect(()=>{ if(!chartObj) return; const cfg=(modelConfigs||{})[selectedModel]||{}; const max=cfg.max; const obj=cfg.objective; const src=Array.isArray(rows)? rows : []; const turnoVal = turnoSel==='2' ? '2º' : '1º'; const srcByTurno = turnoSel ? src.filter(r=> String(r.turno||'')===turnoVal) : src; const quota = (typeof cfg.quadro==='number' && cfg.quadro>0) ? Math.min(cfg.quadro, srcByTurno.length) : srcByTurno.length; const viewRows = srcByTurno.slice(0,quota); const names=viewRows.map(r=> (r.nome||'').split(' ')[0]); const labels = isMobile ? viewRows.map(()=> '') : names.map(n=> String(n).toUpperCase()); const tempos = viewRows.map(r=>{ const v=r.timesByModel && r.timesByModel[selectedModel]; if(Array.isArray(v)){ const last=(v[v.length-1]?.dur)||0; return Number((last/1000).toFixed(2)) } if(v && typeof v==='object'){ const vals=['1','2','3'].map(k=>{ const a=v[k]; const last=(Array.isArray(a)&&a.length)? a[a.length-1].dur : 0; return last }).filter(x=> x>0); const avgMs = vals.length? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0; return Number((avgMs/1000).toFixed(2)) } return 0 }); const maxLine = labels.map(()=> (max!=null? max : null)); const objLine = labels.map(()=> (obj!=null? obj : null)); const colors = tempos.map(t=>{ if(!max || t===0) return '#60a5fa'; const ib=(t/max)*100; if(ib>90) return '#ef4444'; if(ib>=85) return '#22c55e'; return '#f59e0b' }); const selectedRow=(selIdx>=0 ? src[selIdx] : null); const selectedIdxInView = selectedRow ? viewRows.indexOf(selectedRow) : -1; const bgColors = colors.map((c,i)=> i===selectedIdxInView ? darkenColor(c) : c); const borderColors = colors.map((c,i)=> i===selectedIdxInView ? '#2563eb' : c); const borderWidths = colors.map((_,i)=> i===selectedIdxInView ? 3 : 0); if(selectedIdxInView>=0){ chartObj.setActiveElements([{ datasetIndex:0, index:selectedIdxInView }]) } else { chartObj.setActiveElements([]) } const ib = tempos.map(t=> (max? Math.round(t/max*100) : 0)); chartObj.data.labels=labels; chartObj._names=names; chartObj._ib=ib; chartObj._ibTarget=(modelConfigs?.[selectedModel]?.ibTarget ?? 90); chartObj.data.datasets[0].data=tempos; chartObj.data.datasets[0].backgroundColor=bgColors; chartObj.data.datasets[0].borderColor=borderColors; chartObj.data.datasets[0].borderWidth=borderWidths; chartObj.data.datasets[1].data=maxLine; chartObj.data.datasets[2].data=objLine; chartObj.data.datasets[3].data=ib; try{ const ds0=chartObj.data?.datasets?.[0]||{}; const d3=chartObj.data?.datasets?.[3]||{}; if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.maxRotation=40; chartObj.options.scales.x.ticks.minRotation=0; chartObj.options.scales.x.ticks.autoSkip=false; chartObj.options.scales.x.ticks.display=!isMobile } if(ds0){ if(isMobile){ ds0.barThickness=undefined; ds0.maxBarThickness=24; ds0.barPercentage=0.5; ds0.categoryPercentage=0.6 } else { ds0.barThickness=undefined; ds0.maxBarThickness=18; ds0.barPercentage=0.6; ds0.categoryPercentage=0.7 } } if(d3){ d3.pointRadius=0; d3.borderWidth=2 } const labelsLen = Array.isArray(labels)? labels.length : 0; const perBar=isMobile? 44 : 68; const minW=labelsLen*perBar+80; const boxW=chartBoxRef.current ? chartBoxRef.current.clientWidth : chartObj.width; const boxH=chartBoxRef.current ? chartBoxRef.current.clientHeight : chartObj.height; const targetW=Math.max(boxW,minW); chartObj._mobile=isMobile; if(typeof chartObj.resize==='function'){ chartObj.resize(targetW, boxH) } }catch(_){ } chartObj.update(); const valid=ib.filter(v=> v>0); const media = valid.length? Math.round(valid.reduce((a,b)=>a+b,0)/valid.length) : 0; setIbMedio(media+'%') },[chartObj,rows,selectedModel,modelConfigs,selIdx,turnoSel,isMobile])
+  useEffect(()=>{ function onResize(){ try{ if(!chartObj) return; const labelsLen = Array.isArray(chartObj.data?.labels)? chartObj.data.labels.length : 0; const perBar = (chartObj._mobile===true) ? 44 : 68; const minW = labelsLen*perBar + 80; const boxW = chartBoxRef.current ? chartBoxRef.current.clientWidth : chartObj.width; const boxH = chartBoxRef.current ? chartBoxRef.current.clientHeight : chartObj.height; const targetW = Math.max(boxW, minW); if(typeof chartObj.resize==='function'){ chartObj.resize(targetW, boxH); chartObj.update() } }catch(_){ } } window.addEventListener('resize', onResize); return ()=> window.removeEventListener('resize', onResize) },[chartObj])
+  async function exportPng(){
+    if(chartObj && chartObj._exporting===true) return;
+    const canvas = canvasRef.current;
+    if(!chartObj || !canvas) return;
+    const prevW = chartObj.width;
+    const prevH = chartObj.height;
+    const targetW = 1920;
+    const finalH = 700;
+    const headerH = 110;
+    const targetH = Math.max(0, finalH - headerH);
+    const ds0 = chartObj.data?.datasets?.[0]||{};
+    const prevBT = ds0.barThickness;
+    const prevMBT = ds0.maxBarThickness;
+    const prevBP = ds0.barPercentage;
+    const prevCP = ds0.categoryPercentage;
+    const prevBordColor = ds0.borderColor;
+    const prevBordWidth = ds0.borderWidth;
+    const src = Array.isArray(rows)? rows : [];
+    const turnoVal = turnoSel==='2' ? '2º' : '1º';
+    const srcByTurno = turnoSel ? src.filter(r=> String(r.turno||'')===turnoVal) : src;
+    const cfgTmp = (modelConfigs||{})[selectedModel]||{};
+    const quotaTmp = (typeof cfgTmp.quadro==='number' && cfgTmp.quadro>0) ? Math.min(cfgTmp.quadro, srcByTurno.length) : srcByTurno.length;
+    const viewRowsTmp = srcByTurno.slice(0,quotaTmp);
+    const selectedRowTmp = (selIdx>=0 ? src[selIdx] : null);
+    const selectedIdxInViewTmp = selectedRowTmp ? viewRowsTmp.indexOf(selectedRowTmp) : -1;
+    const prevLabels = Array.isArray(chartObj.data.labels) ? [...chartObj.data.labels] : [];
+    const prevTickMax = chartObj.options?.scales?.x?.ticks?.maxRotation;
+    const prevTickMin = chartObj.options?.scales?.x?.ticks?.minRotation;
+    const prevAutoSkip = chartObj.options?.scales?.x?.ticks?.autoSkip;
+    const prevTicksDisplay = chartObj.options?.scales?.x?.ticks?.display;
+    const prevTickFont = chartObj.options?.scales?.x?.ticks?.font;
+    const prevAnimation = chartObj.options?.animation;
+    const prevTooltipEnabled = chartObj.options?.plugins?.tooltip?.enabled;
+    const prevMobile = chartObj._mobile;
+    chartObj._exporting = true;
+    try{
+      chartObj.options.animation = false;
+      if(chartObj.options?.plugins?.tooltip){ chartObj.options.plugins.tooltip.enabled=false }
+      if(ds0){ ds0.barThickness=undefined; ds0.maxBarThickness=18; ds0.barPercentage=0.6; ds0.categoryPercentage=0.7; const len = Array.isArray(chartObj.data.labels)? chartObj.data.labels.length : 0; ds0.borderColor = len? Array(len).fill('transparent') : 'transparent'; ds0.borderWidth = len? Array(len).fill(0) : 0 }
+      if(chartObj.options?.scales?.x?.ticks){ chartObj.options.scales.x.ticks.display=true; chartObj.options.scales.x.ticks.maxRotation=40; chartObj.options.scales.x.ticks.minRotation=0; chartObj.options.scales.x.ticks.autoSkip=false; chartObj.options.scales.x.ticks.font = prevTickFont }
+      chartObj._mobile = false;
+      const exportNames = viewRowsTmp.map(r=> (r.nome||'').split(' ')[0]).map(n=> String(n).toUpperCase());
+      chartObj.data.labels = exportNames;
+      const prevStyleW = canvas.style.width;
+      const prevStyleH = canvas.style.height;
+      try{ canvas.style.width = targetW+'px'; canvas.style.height = targetH+'px' }catch(_){ }
+      if(typeof chartObj.resize==='function'){ chartObj.resize(targetW, targetH) } else { try{ canvas.width=targetW; canvas.height=targetH }catch(_){ } }
+      chartObj.update('none');
+      await new Promise(r=> requestAnimationFrame(r));
+      const out = document.createElement('canvas');
+      out.width = targetW;
+      out.height = finalH;
+      const octx = out.getContext('2d');
+      octx.fillStyle = '#ffffff';
+      octx.fillRect(0, 0, out.width, out.height);
+      octx.fillStyle = '#000000';
+      octx.font = 'bold 24px Helvetica';
+      const turnoLabel2 = (typeof turnoSel==='string' && turnoSel==='2') ? '2º TURNOS' : '1º TURNOS';
+      const cfg2 = (modelConfigs||{})[selectedModel]||{};
+      const headerMsg2 = `BALANCEAMENTO DO MODELO: ${String(selectedModel||'').toUpperCase()} (LM FUN) ${turnoLabel2} • IB ALVO ${String(cfg2.ibTarget??90)}%`;
+      octx.textAlign = 'left';
+      octx.fillText(headerMsg2, 20, 40);
+      const ibn = Number(String(ibMedio||'0').replace(/[^0-9]/g,''));
+      const t = (cfg2.ibTarget??90);
+      const isGood = ibn<=t && ibn>0;
+      const badgeBg = isGood? '#dcfce7' : '#fee2e2';
+      const badgeStroke = isGood? '#86efac' : '#fecaca';
+      const badgeText = isGood? '#166534' : '#991b1b';
+      const badgeTextStr = `IB Atual ${String(ibMedio||'0%')}`;
+      octx.font = 'bold 22px Helvetica';
+      const tw = Math.ceil(octx.measureText(badgeTextStr).width);
+      const bw = tw + 28;
+      const bh = 40;
+      const bx = out.width - bw - 20;
+      const by = 20;
+      octx.fillStyle = badgeBg;
+      octx.strokeStyle = badgeStroke;
+      octx.lineWidth = 2;
+      ;(function roundedRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r); ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h); ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r); ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath(); ctx.fill(); ctx.stroke(); })(octx,bx,by,bw,bh,20);
+      octx.fillStyle = badgeText;
+      octx.textAlign = 'center';
+      octx.textBaseline = 'middle';
+      octx.fillText(badgeTextStr, bx + bw/2, by + bh/2);
+      octx.drawImage(canvas, 0, headerH, targetW, targetH);
+      const data = out.toDataURL('image/png');
+      try{ const a=document.createElement('a'); a.href=data; a.download=`dashboard_${String(selectedModel||'modelo')}.png`; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a) }catch(_){ } },0) }catch(_){ }
+    } catch (err) {
+      console.error('Erro ao exportar PNG:', err);
+    } finally {
+      try{
+        if(ds0){
+          ds0.barThickness = prevBT;
+          ds0.maxBarThickness = prevMBT;
+          ds0.barPercentage = prevBP;
+          ds0.categoryPercentage = prevCP;
+          ds0.borderColor = prevBordColor;
+          ds0.borderWidth = prevBordWidth;
+        }
+        if(chartObj && chartObj.options?.plugins?.tooltip){
+          chartObj.options.plugins.tooltip.enabled = prevTooltipEnabled;
+        }
+        chartObj.options.animation = prevAnimation;
+        if(chartObj?.options?.scales?.x?.ticks){
+          chartObj.options.scales.x.ticks.maxRotation = prevTickMax;
+          chartObj.options.scales.x.ticks.minRotation = prevTickMin;
+          chartObj.options.scales.x.ticks.autoSkip = prevAutoSkip;
+          chartObj.options.scales.x.ticks.display = prevTicksDisplay;
+          chartObj.options.scales.x.ticks.font = prevTickFont;
+        }
+        chartObj.data.labels = prevLabels;
+        chartObj._mobile = prevMobile;
+        try{ canvas.style.width = prevStyleW; canvas.style.height = prevStyleH }catch(_){ }
+        if(typeof chartObj.resize === 'function'){
+          chartObj.resize(prevW, prevH);
+        }
+        chartObj._exporting = false;
+        chartObj.update();
+      }catch(_){ console.warn('Falha ao restaurar estado do chart após exportação') }
+    }
+  }
+  function registrarBucketUI(k){ registrarBucket(k) }
+  function clearMedia(){ setTempSel(''); setElapsed(0); setRunning(false) }
+  return React.createElement('div',{className:'grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-3 lg:gap-4'},[
+    React.createElement('div',{className:'space-y-6 h-full flex flex-col'},[
+      React.createElement('div',{className:'bg-white rounded-xl p-4 overflow-hidden shadow-lg'},[
+        React.createElement('div',{className:'text-xl font-bold mb-2 text-gray-900'},'Matriz de Dados'),
+        React.createElement('div',{className:'grid grid-cols-1 gap-3 mb-3'},[
+          React.createElement('div',null,[
+            React.createElement('div',{className:'text-[10px] uppercase tracking-wide text-gray-600 mb-1 font-semibold'},'Nome do Operador'),
+            React.createElement('input',{value:((rows[selIdx]?.nome||'').split(' ')[0]),readOnly:true,placeholder:'Selecione...',className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-base placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'})
+          ]),
+          (()=>{ const cfg=(modelConfigs||{})[selectedModel]||{}; const src=Array.isArray(rows)? rows : []; const turnoVal = turnoSel==='2' ? '2º' : '1º'; const srcByTurno = turnoSel ? src.filter(r=> String(r.turno||'')===turnoVal) : src; const quota=(typeof cfg.quadro==='number' && cfg.quadro>0)? Math.min(cfg.quadro, srcByTurno.length) : srcByTurno.length; const viewRows = srcByTurno.slice(0,quota); const options = viewRows.map(r=>({ idx:src.indexOf(r), posto:String(r.posto||'').padStart(2,'0'), nome:(r.nome||'') })); const currentIdxInView = selIdx>=0 ? options.find(o=> o.idx===selIdx)?.idx ?? -1 : -1; return React.createElement('div',null,[
+            React.createElement('div',{className:'text-[10px] uppercase tracking-wide text-gray-600 mb-1 font-semibold'},'Posto'),
+            isMobile ? React.createElement('select',{value:(currentIdxInView>=0? String(currentIdxInView) : ''),onChange:e=>{ const v=e.target.value; setSelIdx(v? Number(v) : -1) },className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none'},[
+              React.createElement('option',{value:'',key:'opt-empty'},'Selecione o posto...'),
+              options.map(o=> React.createElement('option',{key:o.idx,value:String(o.idx)},`${o.posto} — ${(o.nome.split(' ')[0]||'').toUpperCase()}`))
+            ]) : React.createElement('input',{value:String((rows[selIdx]?.posto||'')).padStart(2,'0'),readOnly:true,placeholder:'--',className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'})
+          ]) })(),
+          React.createElement('div',null,[
+            React.createElement('div',{className:'text-[10px] uppercase tracking-wide text-gray-600 mb-1 font-semibold'},'Modelo'),
+            React.createElement('select',{value:(selectedModel||''),onChange:e=>setSelectedModel(e.target.value),className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none'},[
+              React.createElement('option',{value:'',disabled:true,key:'opt-model-empty'},'Selecione o modelo'),
+              Object.keys(modelConfigs||{}).map(m=> React.createElement('option',{key:m,value:m},m))
+            ])
+          ]),
+          (()=>{ const cfg=(modelConfigs||{})[selectedModel]||{}; const max=cfg.max||0; const v=rows[selIdx]?.timesByModel?.[selectedModel]; const vals=['1','2','3'].map(k=>{ const a=v?.[k]; const last=(Array.isArray(a)&&a.length)? a[a.length-1].dur : 0; return last }).filter(x=>x>0); const avgMs = vals.length? (vals.reduce((a,b)=>a+b,0)/vals.length) : 0; const avgSec = avgMs? (avgMs/1000).toFixed(1) : '0.0'; return React.createElement('div',{className:'grid grid-cols-2 gap-2'},[
+            React.createElement('div',null,[React.createElement('div',{className:'text-[10px] uppercase tracking-wide text-gray-600 mb-1 font-semibold'},'TACT (s)'),React.createElement('input',{value:String(max||0),readOnly:true,className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'})]),
+            React.createElement('div',null,[React.createElement('div',{className:'text-[10px] uppercase tracking-wide text-gray-600 mb-1 font-semibold'},'Tempo realizado (s)'),React.createElement('input',{value:String(avgSec),readOnly:true,className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'})])
+          ]) })()
+        ]),
+        React.createElement('div',{className:'flex items-center gap-2'},[
+          React.createElement('button',{onClick:()=>{ if(elapsed>0) registrar(); else mediaBuckets() },disabled:!(selectedModel && selIdx>=0),className:'px-3 py-2 rounded bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed'},'Registrar'),
+          React.createElement('button',{onClick:clearMedia,className:'px-3 py-2 rounded bg-gray-200 hover:bg-gray-300'},'Limpar')
+        ])
+      ]),
+      React.createElement('div',{className:'bg-white rounded-xl p-4 overflow-hidden shadow-lg flex-1 flex flex-col min-h-[280px]'},[
+        React.createElement('div',{className:'text-xl font-bold mb-2 text-gray-900'},'Tempo de Processo'),
+        React.createElement('div',{className:'flex items-center gap-2 mb-2'},[
+          React.createElement('div',{className:'rounded-lg bg-gray-100 px-4 py-2 font-mono text-lg'},fmt(elapsed)),
+          React.createElement('button',{onClick:()=>start(true),disabled:!(selectedModel && selIdx>=0),className:'px-3 py-2 rounded bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed'},'Iniciar'),
+          React.createElement('button',{onClick:mediaBuckets,disabled:!(selectedModel && selIdx>=0),className:'px-3 py-2 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed'},'Média'),
+          React.createElement('button',{onClick:reset,className:'px-3 py-2 rounded bg-gray-200 hover:bg-gray-300'},'Zerar')
+        ]),
+        React.createElement('div',{className:'text-xs text-gray-600 mb-2'},'MÉDIA SELECIONADA: '+String(tempSel||'1')),
+        React.createElement('div',{className:'grid grid-cols-3 gap-4'},[
+          ['1','2','3'].map((k,idx)=> React.createElement('div',{key:k,className:'bg-gray-100 rounded-xl p-3 text-center'},[
+            React.createElement('div',{className:'text-xs text-gray-600 mb-1'},`MED. ${idx+1}`),
+            (()=>{ const cfg=(modelConfigs||{})[selectedModel]||{}; const max=cfg.max; const v=rows[selIdx]?.timesByModel?.[selectedModel]; const isRunningActive = running && tempSel===k; const highlight = tempSel===k; const lastMs = (v && typeof v==='object' && Array.isArray(v[k]) && v[k].length)? v[k][v[k].length-1].dur : 0; const msVal = isRunningActive ? elapsed : lastMs; const sec = Math.floor(msVal/1000); const col = colorForSeconds(sec, max); const txt = sec>0 ? String(sec) : '-'; const style={borderColor:col, backgroundColor:col+'26'}; if(highlight){ style.boxShadow='0 0 0 3px rgba(59,130,246,0.5)'; } return React.createElement('div',{onClick:()=>{ if(selectedModel && selIdx>=0) setTempSel(k) },className:'cursor-pointer w-14 h-14 rounded-full mx-auto border-2 flex items-center justify-center',style},
+               React.createElement('span',{onClick:(e)=>{ e.stopPropagation(); registrarBucketUI(k) },style:{color:col, fontWeight:'600'}},txt)
+             ) })()
+          ]))
+        ])
+      ])
+    ]),
+    React.createElement('div',{className:'space-y-4 h-full overflow-hidden flex flex-col'},[
+      React.createElement('div',{className:'bg-white rounded-xl p-4 shadow-lg'},[
+      React.createElement('div',{className:'flex flex-wrap items-center justify-between gap-2 mb-2'},[
+        React.createElement('div',{className:'flex items-center flex-wrap gap-2'},[
+          React.createElement('span',{className:'border border-gray-300 rounded px-3 py-1.5 bg-gray-100 text-gray-900 font-mono text-sm whitespace-nowrap'},String(selectedModel||'--')),
+          React.createElement('select',{value:turnoSel,onChange:e=>setTurnoSel(e.target.value),className:'border border-gray-300 rounded px-3 py-1.5 bg-white text-gray-900 w-40 text-sm'},[
+            React.createElement('option',{value:'1'},'1º turno'),
+            React.createElement('option',{value:'2'},'2º turno')
+          ]),
+          (()=>{ const t=(modelConfigs?.[selectedModel]?.ibTarget ?? 90); return React.createElement('span',{className:'text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200 whitespace-nowrap'},`IB Alvo ${String(t)}%`) })(),
+          (()=>{ const ibn=Number(String(ibMedio||'0').replace(/[^0-9]/g,'')); const t=(modelConfigs?.[selectedModel]?.ibTarget ?? 90); const cls = (ibn<=t) ? 'bg-green-100 text-green-700 border-green-200' : 'bg-red-100 text-red-700 border-red-200'; return React.createElement('span',{className:'text-[10px] px-2 py-0.5 rounded-full border whitespace-nowrap '+cls},`IB Atual ${String(ibMedio||'0%')}`) })()
+        ]),
+        React.createElement('div',{className:'flex items-center gap-2'},[
+          React.createElement('div',{className:'relative hidden sm:block'},[
+            React.createElement('button',{onClick:()=>setExportOpen(v=>!v),className:'inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm shadow-sm transition whitespace-nowrap'},'Exportar'),
+            exportOpen ? React.createElement('div',{className:'absolute right-0 mt-1 w-40 rounded-lg border border-gray-200 bg-white shadow-lg z-10'},[
+              React.createElement('button',{onClick:()=>{ setExportOpen(false); exportPng() },className:'block w-full text-left px-3 py-2 hover:bg-gray-50'},'PNG')
+            ]) : null
+          ]),
+          React.createElement('button',{onClick:()=>{ try{ if(chartObj && chartObj._exporting===true) return }catch(_){ } exportPng() },className:'sm:hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm shadow-sm transition whitespace-nowrap'},'Exportar')
+        ])
+      ]),
+      React.createElement('div',{ref:chartBoxRef,className:'h-64 sm:h-72 md:h-80 lg:h-[42vh] overflow-x-auto'},[
+        selectedModel ? React.createElement('canvas',{ref:canvasRef}) : React.createElement('div',{className:'w-full h-full flex items-center justify-center text-sm text-gray-600'},'Selecione o modelo na Matriz de Dados')
+      ]),
+      (()=>{
+        if(!selectedModel){ return null }
+        const cfg=(modelConfigs||{})[selectedModel]||{};
+        const src=Array.isArray(rows)? rows : [];
+        const turnoVal = turnoSel==='2' ? '2º' : '1º';
+        const srcByTurno = turnoSel ? src.filter(r=> String(r.turno||'')===turnoVal) : src;
+        const quota=(typeof cfg.quadro==='number' && cfg.quadro>0)? Math.min(cfg.quadro, srcByTurno.length) : srcByTurno.length;
+        const viewRows = srcByTurno.slice(0,quota);
+        const options = viewRows.map(r=>({ idx:src.indexOf(r), posto:String(r.posto||'').padStart(2,'0'), nome:(r.nome||'') }));
+        const colsCount = (typeof window!=='undefined' && window.innerWidth<768) ? 4 : (window.innerWidth<1024 ? 8 : 12);
+        const columns = Array.from({length:colsCount},(_,i)=> options.filter((_,idx)=> idx%colsCount===i));
+        const currentIdx = selIdx>=0 ? selIdx : -1;
+        return React.createElement('div',{className:'bg-white rounded-xl p-4 shadow-lg'},[
+          React.createElement('div',{className:'text-xl font-bold mb-2 text-gray-900'},'Posto'),
+          React.createElement('div',{className:'grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-3'},
+            columns.map((col,i)=> React.createElement('div',{key:'col-'+i,className:'flex flex-col items-center gap-2'},
+              col.map(o=>{
+                const active = o.idx===currentIdx;
+                const cls = 'inline-flex items-center justify-center w-8 h-8 rounded-lg border-2 text-sm '+(active? 'bg-green-200 text-green-800 border-green-400' : 'bg-green-100 text-green-700 border-green-300');
+                return React.createElement('button',{key:o.idx,className:cls,onClick:()=>{ if(selIdx===o.idx){ setSelIdx(-1); setPromptKotei(null); return } setSelIdx(o.idx); try{ const arr = Array.isArray(koteisByModel?.[selectedModel])? koteisByModel[selectedModel] : []; const found = arr.find(f=> f?.meta && String(f.meta.posto||'')===String(o.posto||'')); if(found){ setPromptKotei({ url: found.url, posto: found.meta.posto, nome: found.meta.nome }) } else { setPromptKotei(null) } }catch(_){ setPromptKotei(null) } },onDoubleClick:()=>{ setSelIdx(-1); setPromptKotei(null) },title:o.nome},o.posto)
+              })
+            )))
+        ])
+      })()
+      ])
+    ]),
+    React.createElement(Modal,{open:!!promptKotei,onClose:()=>setPromptKotei(null),backdrop:false,position:'bottom'},[
+      React.createElement('div',{className:'text-lg font-bold mb-2'},'Visualizar Kotei'),
+      React.createElement('div',{className:'text-sm text-gray-700 mb-3'},`Deseja visualizar o Kotei do posto ${String(promptKotei?.posto||'')} ${String(promptKotei?.nome||'')}?`),
+      React.createElement('div',{className:'flex items-center justify-end gap-2'},[
+        React.createElement('button',{onClick:()=>setPromptKotei(null),className:'px-3 py-2 rounded bg-gray-200 hover:bg-gray-300'},'Não'),
+        React.createElement('button',{onClick:()=>{ setFullPdf(String(promptKotei?.url||'')); setPromptKotei(null) },className:'px-3 py-2 rounded bg-blue-600 text-white'},'Sim')
+      ])
+    ]),
+    (fullPdf? React.createElement('div',{className:'fixed inset-0 bg-black/90 z-[60]'},[
+      React.createElement('div',{className:'absolute top-3 right-3'},[
+        React.createElement('button',{onClick:()=>{ try{ setFullPdf('') }catch(_){ } },className:'px-3 py-2 rounded bg-white text-black'},'Fechar')
+      ]),
+      React.createElement('iframe',{src:fullPdf,className:'w-full h-full'})
+    ]) : null)
+  ])
+}
+// removed duplicate useState destructuring
+const optionsAreasApp=['MOCOM 1','MOCOM 2','MOCOM 3','MOCOM 4','LM 1','LM 2','LM 3','LM 4','FILTRO DE AR']
+const optionsTurnosApp=['1º','2º']
+const initialModelConfigs={ K3H:{ max:118, objective:106.2, ibTarget:90, quadro:44 }, K3W:{ max:118, objective:106.2, ibTarget:90, quadro:44 }, MLR:{ max:174, objective:156.2, ibTarget:90, quadro:44 }, MKY:{ max:184, objective:165.6, ibTarget:90, quadro:44 }, MKW:{ max:194, objective:174.6, ibTarget:90, quadro:44 }, MLC:{ max:226, objective:203.4, ibTarget:90, quadro:44 }, MLN:{ max:null, objective:null, ibTarget:90, quadro:44 }, MLL:{ max:null, objective:null, ibTarget:90, quadro:44 } }
+const providedOperatorsData=[ ['PEDRO','82,97'],['RUI','108,53'],['SÉRGIO','110,02'],['ADELAR','110,29'],['GABRIEL','122,25'],['BRENO','93,30'],['ROBERT','130,92'],['EDCARLOS','102,45'],['BONICK','110,56'],['MARINALDO','97,30'],['LUCAS MAIA','98,21'],['RODRIGO','90,32'],['WILLIAM','93,20'],['MARCUS VINICIUS','120,29'],['SANDALO','117,29'],['FERNANDO','108,29'],['RAUNEY','110,20'],['DIEGO LIRA','102,52'],['JANILSON','105,63'],['ELISANDRO','91,20'],['FABRICIO','89,55'],['EVANILSON','131,78'],['BRUNO','131,81'],['ANDRESSON','97,17'],['ASSUNÇÃO','80,91'],['GEDEAN','84,99'],['GILBERTO','88,19'],['AURÉLIO','101,29'],['JOZEMBERG','96,46'],['LUCAS','120,12'],['MATHEUS','130,21'],['CLÉVIS','106,72'],['NAÍLSON','94,98'],['KEYSSERSON','120,32'],['AURÉLIO','109,03'],['CAIO','102,77'],['JAILSON','105,85'],['YALC','98,48'],['ANDRÉ','96,32'],['GABRIEL','86,23'],['NICOLAS','89,63'],['CHRISTIAN','75,82'],['ADAN','83,34'],['MIKE','83,34'] ]
+function makeProvidedOperatorsApp(cfgs){ const keys = Object.keys(cfgs||{}); return providedOperatorsData.map((pair,idx)=>{ const nome=(pair[0]||'').toUpperCase(); const tempoStr=String(pair[1]||'').trim(); const secs = Number(tempoStr.replace(/\./g,'').replace(/,/g,'.')); const timesByModel = Object.fromEntries(keys.map(k=> [k,{ '1':[], '2':[], '3':[] }])); const arr = Array.isArray(timesByModel['K3H']['1']) ? timesByModel['K3H']['1'] : []; if(secs>0){ arr.push({ ts:Date.now(), dur: Math.round(secs*1000) }) } timesByModel['K3H']['1'] = arr; return { id:idx+1, nome, know:'', af:'LM 3', areas:'', status:'EFETIVO', posto:String(idx+1).padStart(2,'0'), turno:'1º', timesByModel, updatedAt:Date.now() } }) }
+const { useState:useStateO,useMemo,useEffect:useEffectO,useRef:useRefO } = React
+function upperAccentsSpaces(v){ return (v||'').toUpperCase().replace(/[^A-ZÀ-Ÿ\s]/g,'').replace(/\s+/g,' ') }
+function sanitizeNomeLive(v){ return upperAccentsSpaces(v) }
+function sanitizeNomeFinal(v){ return upperAccentsSpaces(v).trim() }
+function sanitizePrefixLive(v){ let val=(v||'').toUpperCase(); if(!val.startsWith('MONT.')) val='MONT. '+val.replace(/^MONT\.?\s*/,''); else val=val.replace(/^MONT\.?\s*/,'MONT. '); const s=val.slice(6); const clean=s.replace(/[^A-ZÀ-Ÿ\s\.]/g,'').replace(/\s+/g,' '); return 'MONT. '+clean }
+function sanitizePrefixFinal(v){ let val=sanitizePrefixLive(v); return val.trim() }
+function sanitizeAfLive(v){ return sanitizePrefixLive(v) }
+function sanitizeAfFinal(v){ return sanitizePrefixFinal(v) }
+function sanitizePrefixLiveFlex(v){ let val=(v||'').toUpperCase(); if(!val.startsWith('MONT.')) val='MONT. '+val.replace(/^MONT\.?\s*/,''); else val=val.replace(/^MONT\.?\s*/,'MONT. '); const s=val.slice(6); const clean=s.replace(/[^A-ZÀ-Ÿ\s\.,-]/g,'').replace(/\s+/g,' '); return 'MONT. '+clean }
+function sanitizePrefixFinalFlex(v){ let val=sanitizePrefixLiveFlex(v); return val.trim() }
+function sanitizePosto(v){ return (v||'').replace(/[^0-9]/g,'').slice(0,3) }
+function formatTime(ms){ const m=Math.floor(ms/60000); const s=Math.floor((ms%60000)/1000); const msr=Math.floor(ms%1000); return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(msr).padStart(3,'0')}` }
+function Operadores({rows:rowsProp,setRows:setRowsProp,selectedModel,setSelectedModel,modelConfigs}){
+  const localState = useState(()=> makeProvidedOperatorsApp(initialModelConfigs))
+  const rows = rowsProp ?? localState[0]
+  const setRows = setRowsProp ?? localState[1]
+  const [open,setOpen] = useState(false)
+  const [editing,setEditing] = useState(null)
+  const [form,setForm] = useState({ nome:'', know:'', af:'MONT. ', areas:'', status:'EFETIVO', posto:'', turno:'1º' })
+  const [page,setPage] = useState(1)
+  const [pageSize,setPageSize] = useState(5)
+  const [view,setView] = useState(null)
+  const [query,setQuery] = useState('')
+  const [turnoFilter,setTurnoFilter] = useState('')
+  const [conflict,setConflict] = useState(null)
+  const [isMobile,setIsMobile] = useState(false)
+  useEffect(()=>{ if(!open) setForm({ nome:'', know:'', af:'MONT. ', areas:'', status:'EFETIVO', posto:'', turno:'1º' }) },[open])
+  useEffect(()=>{ const mq=window.matchMedia('(max-width: 640px)'); const apply=()=> setIsMobile(mq.matches); apply(); mq.addEventListener('change',apply); return ()=> mq.removeEventListener('change',apply) },[])
+  function nextId(){ return (rows.length? Math.max(...rows.map(r=> Number(r.id)||0)) : 0) + 1 }
+  function onSubmit(e){ e.preventDefault(); const nome=sanitizeNomeFinal(form.nome); const know=sanitizePrefixFinalFlex(form.know); const af=sanitizePrefixFinalFlex(form.af); const areas=form.areas; const status=form.status; const posto=sanitizePosto(form.posto); const turno=form.turno; const base = editing!=null ? (rows[editing]||{}) : {}; const allModels = Object.keys(modelConfigs||{}); const timesByModelBase = base.timesByModel && typeof base.timesByModel==='object' ? base.timesByModel : {}; const timesByModel = Object.fromEntries(allModels.map(k=>{ const cfg = (modelConfigs||{})[k]||{}; const existing = timesByModelBase[k]; if(existing) return [k, existing]; return [k, (cfg.max!=null ? { '1':[], '2':[], '3':[] } : [])]; })); const row={ ...base, id: base.id ?? nextId(), nome, know, af, areas, status, posto, turno, timesByModel, updatedAt:Date.now() }; const dupIdx = posto ? rows.findIndex((r,idx)=> String(r.posto||'')===String(posto) && idx!==editing ) : -1; if(dupIdx>=0){ setConflict({ idx: dupIdx, newRow: row }); return } if(editing!=null){ const next=[...rows]; next[editing]=row; setRows(next) } else { setRows(prev=>[...prev,row]) } setOpen(false); setEditing(null) }
+  function onEdit(i){ setEditing(i); const r=rows[i]; setForm({ nome:r.nome, know:r.know, af:r.af, areas:r.areas, status:r.status, posto:r.posto, turno:r.turno||'1º' }); setOpen(true) }
+  function onDelete(i){ setRows(rows.filter((_,idx)=>idx!==i)) }
+  const filtered = (Array.isArray(rows)? rows : []).filter(r=>{ const q=(query||'').trim().toLowerCase(); const byQuery = q ? ((r.nome||'').toLowerCase().includes(q) || String(r.posto||'').includes(q)) : true; const byTurno = turnoFilter ? (String(r.turno||'')===turnoFilter) : true; return byQuery && byTurno })
+  const total = filtered.length
+  const startIdx = (page-1)*pageSize
+  const pageRows = filtered.slice(startIdx, startIdx+pageSize)
+  useEffect(()=>{ const pages=Math.max(1,Math.ceil(total/pageSize)); if(page>pages) setPage(pages) },[total,pageSize])
+  return React.createElement('div',{className:'space-y-4'},[
+    React.createElement('div',{className:'flex items-center justify-end'},[
+      React.createElement('button',{onClick:()=>{ setEditing(null); setOpen(true) },className:'inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0a0f1c] text-white hover:bg-[#0b1220] shadow-md hover:shadow-lg active:scale-[.98] transition whitespace-nowrap'},[
+        React.createElement('span',{className:'inline-flex items-center justify-center w-6 h-6 rounded-lg bg-white/10'},'+'),
+        React.createElement('span',null,'Novo Operador')
+      ])
+    ]),
+    React.createElement('div',{className:'grid grid-cols-2 sm:grid-cols-4 gap-3'},[
+      React.createElement('div',{className:'bg-white rounded-xl p-3 flex items-center gap-3 shadow-lg'},[
+        React.createElement('span',{className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600'},
+          React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5 text-white'},[
+            React.createElement('circle',{cx:12,cy:8,r:3,key:'c'}),
+            React.createElement('path',{d:'M5 20a7 7 0 0114 0',key:'p'})
+          ])
+        ),
+        React.createElement('div',null,[
+          React.createElement('div',{className:'text-sm text-gray-600'},'TOTAL DE OPERADORES'),
+          React.createElement('div',{className:'text-2xl font-bold'},rows.length)
+        ])
+      ]),
+      React.createElement('div',{className:'bg-white rounded-xl p-3 flex items-center gap-3 shadow-lg'},[
+        React.createElement('span',{className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-600'},
+          React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5 text-white'},[
+            React.createElement('circle',{cx:12,cy:8,r:3,key:'c'}),
+            React.createElement('path',{d:'M5 20a7 7 0 0114 0',key:'p'})
+          ])
+        ),
+        React.createElement('div',null,[
+          React.createElement('div',{className:'text-sm text-gray-600'},'EFETIVOS'),
+          React.createElement('div',{className:'text-2xl font-bold'},rows.filter(r=>r.status==='EFETIVO').length)
+        ])
+      ]),
+      React.createElement('div',{className:'bg-white rounded-xl p-3 flex items-center gap-3 shadow-lg'},[
+        React.createElement('span',{className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-red-600'},
+          React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5 text-white'},[
+            React.createElement('circle',{cx:12,cy:8,r:3,key:'c'}),
+            React.createElement('path',{d:'M5 20a7 7 0 0114 0',key:'p'})
+          ])
+        ),
+        React.createElement('div',null,[
+          React.createElement('div',{className:'text-sm text-gray-600'},'TEMPORÁRIOS'),
+          React.createElement('div',{className:'text-2xl font-bold'},rows.filter(r=>r.status==='TEMPORÁRIO').length)
+        ])
+      ]),
+      React.createElement('div',{className:'bg-white rounded-xl p-3 flex items-center gap-3 shadow-lg'},[
+        React.createElement('span',{className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-orange-500'},
+          React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5 text-white'},[
+            React.createElement('circle',{cx:12,cy:8,r:3,key:'c'}),
+            React.createElement('path',{d:'M5 20a7 7 0 0114 0',key:'p'})
+          ])
+        ),
+        React.createElement('div',null,[
+          React.createElement('div',{className:'text-sm text-gray-600'},'RL'),
+          React.createElement('div',{className:'text-2xl font-bold'},rows.filter(r=>r.status==='RL').length)
+        ])
+      ])
+    ]),
+    React.createElement('div',{className:'grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 items-center'},[
+      React.createElement('input',{value:query,onChange:e=>setQuery(e.target.value),placeholder:'Buscar por nome ou posto...',className:'w-full max-w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base'}),
+      React.createElement('select',{value:turnoFilter,onChange:e=>{ setTurnoFilter(e.target.value); setPage(1) },className:'shrink-0 w-full sm:w-44 md:w-48 border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-base'},[
+        React.createElement('option',{value:''},'Todos Turnos'),
+        optionsTurnosApp.map(t=> React.createElement('option',{key:t,value:t},t))
+      ])
+    ]),
+    (isMobile ? React.createElement('div',{className:'space-y-2'},[
+      pageRows.map((r,i)=> React.createElement('div',{key:startIdx+i,className:'bg-white rounded-xl p-3 shadow-lg flex items-center justify-between'},[
+        React.createElement('div',{className:'flex items-center gap-3'},[
+          React.createElement('div',{className:'inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gray-100 border border-gray-200 font-bold'},String(r.posto||'').padStart(2,'0')),
+          React.createElement('div',null,[
+            React.createElement('div',{className:'font-semibold'},r.nome),
+            React.createElement('div',{className:'text-xs text-gray-600'},(r.areas||'-')+' • '+(r.turno||'-'))
+          ])
+        ]),
+        React.createElement('div',{className:'flex items-center gap-2 flex-wrap'},[
+          React.createElement('div',null,React.createElement(StatusPill,{status:r.status})),
+          React.createElement('button',{title:'Visualizar',className:'inline-flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-blue-600 text-white hover:bg-blue-500',onClick:()=>setView(r)},
+            React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+              React.createElement('path',{d:'M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7'}),
+              React.createElement('circle',{cx:12,cy:12,r:3})
+            ])
+          ),
+          React.createElement('button',{title:'Editar',className:'inline-flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-orange-500 text-white hover:bg-orange-400',onClick:()=>onEdit(startIdx+i)},
+            React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+              React.createElement('path',{d:'M12 20h9'}),
+              React.createElement('path',{d:'M16.5 3.5l4 4-11 11H5.5v-4z'})
+            ])
+          ),
+          React.createElement('button',{title:'Excluir',className:'inline-flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-red-500 text-white hover:bg-red-400',onClick:()=>onDelete(startIdx+i)},
+            React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+              React.createElement('path',{d:'M3 6h18'}),
+              React.createElement('path',{d:'M8 6V4h8v2'}),
+              React.createElement('path',{d:'M19 6l-1 14H6L5 6'})
+            ])
+          )
+        ])
+      ]))
+    ]) : React.createElement('div',{className:'bg-white rounded-xl p-3 shadow-lg'},[
+      React.createElement('table',{className:'w-full text-sm table-fixed'},[
+        React.createElement('thead',null,React.createElement('tr',null,[
+          React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'POSTO'),
+          React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'NOME COMPLETO'),
+          React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'KNOW ROW'),
+          React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'ÁREAS'),
+          React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'AF'),
+          React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'STATUS'),
+          React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'TURNO'),
+          React.createElement('th',{className:'text-left py-2 px-2 text-gray-600'},'TEMPO'),
+          React.createElement('th',{className:'text-right py-2 px-2 text-gray-600 w-28 md:w-32'},'AÇÕES')
+        ])),
+        React.createElement('tbody',null,pageRows.map((r,i)=>React.createElement('tr',{key:startIdx+i,className:'border-none align-middle'},[
+          React.createElement('td',{className:'py-2 px-2 text-left'},String(r.posto||'').padStart(2,'0')),
+          React.createElement('td',{className:'py-2 px-2 text-left'},r.nome),
+          React.createElement('td',{className:'py-2 px-2 text-left'},r.know||'-'),
+          React.createElement('td',{className:'py-2 px-2 text-left'},r.areas||'-'),
+          React.createElement('td',{className:'py-2 px-2 text-left'},r.af||'-'),
+          React.createElement('td',{className:'py-2 px-2 text-left'},React.createElement(StatusPill,{status:r.status})),
+          React.createElement('td',{className:'py-2 px-2 text-left'},r.turno||'-'),
+          React.createElement('td',{className:'py-2 px-2 text-left'},(()=>{ const v=(r.timesByModel&&r.timesByModel[selectedModel]); if(Array.isArray(v)){ return v.length? formatTime(v[v.length-1].dur) : '-' } if(v&&typeof v==='object'){ const vals=['1','2','3'].map(k=>{ const a=v[k]; const last=(Array.isArray(a)&&a.length)? a[a.length-1].dur : 0; return last }).filter(x=>x>0); const avgMs = vals.length? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0; return avgMs>0? formatTime(avgMs) : '-' } return '-' })()),
+          React.createElement('td',{className:'py-2 px-2 text-right'},
+            React.createElement('div',{className:'inline-flex items-center justify-end gap-1 md:gap-2 flex-nowrap whitespace-nowrap'},[
+              React.createElement('button',{title:'Visualizar',className:'inline-flex items-center justify-center w-7 h-7 md:w-8 md:h-8 rounded-lg bg-blue-600 text-white hover:bg-blue-500',onClick:()=>setView(r)},
+                React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+                  React.createElement('path',{d:'M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7'}),
+                  React.createElement('circle',{cx:12,cy:12,r:3})
+                ])
+              ),
+              React.createElement('button',{title:'Editar',className:'inline-flex items-center justify-center w-7 h-7 md:w-8 md:h-8 rounded-lg bg-orange-500 text-white hover:bg-orange-400',onClick:()=>onEdit(startIdx+i)},
+                React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+                  React.createElement('path',{d:'M12 20h9'}),
+                  React.createElement('path',{d:'M16.5 3.5l4 4-11 11H5.5v-4z'})
+                ])
+              ),
+              React.createElement('button',{title:'Excluir',className:'inline-flex items-center justify-center w-7 h-7 md:w-8 md:h-8 rounded-lg bg-red-500 text-white hover:bg-red-400',onClick:()=>onDelete(startIdx+i)},
+                React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+                  React.createElement('path',{d:'M3 6h18'}),
+                  React.createElement('path',{d:'M8 6V4h8v2'}),
+                  React.createElement('path',{d:'M19 6l-1 14H6L5 6'})
+                ])
+              )
+            ])
+          )
+        ])))
+      ])
+    ])),
+    React.createElement(Pagination,{ total, page, pageSize, onPageChange:setPage, onPageSizeChange:setPageSize }),
+    React.createElement(Modal,{open,onClose:()=>setOpen(false)},[
+      React.createElement('div',{className:'text-black'},[
+        React.createElement('div',{className:'text-lg font-bold mb-3'},'Novo Operador'),
+        React.createElement('form',{onSubmit:onSubmit,className:'space-y-3'},[
+          React.createElement('div',null,[
+            React.createElement('label',{className:'text-sm text-gray-600'},'Nome Completo'),
+            React.createElement('input',{value:form.nome,onChange:e=>setForm({...form,nome:sanitizeNomeLive(e.target.value)}),placeholder:'Digite o nome completo',className:'w-full border rounded px-3 py-2'})
+          ]),
+          React.createElement('div',{className:'grid grid-cols-2 gap-3'},[
+            React.createElement('div',null,[
+              React.createElement('label',{className:'text-sm text-gray-600'},'Know Row'),
+              React.createElement('input',{value:form.know,onChange:e=>setForm({...form,know:sanitizePrefixLiveFlex(e.target.value)}),className:'w-full border rounded px-3 py-2'})
+            ]),
+            React.createElement('div',null,[
+              React.createElement('label',{className:'text-sm text-gray-600'},'AF'),
+              React.createElement('input',{value:form.af,onChange:e=>setForm({...form,af:sanitizePrefixLiveFlex(e.target.value)}),className:'w-full border rounded px-3 py-2'})
+            ])
+          ]),
+          React.createElement('div',null,[
+            React.createElement('label',{className:'text-sm text-gray-600'},'Áreas Anteriores'),
+            React.createElement('select',{value:form.areas,onChange:e=>setForm({...form,areas:e.target.value}),className:'w-full border rounded px-3 py-2'},[
+              React.createElement('option',{value:''},'Selecione...'),
+              optionsAreasApp.map(a=>React.createElement('option',{key:a,value:a},a))
+            ])
+          ]),
+          React.createElement('div',null,[
+            React.createElement('label',{className:'text-sm text-gray-600'},'Nº Posto'),
+            React.createElement('input',{value:form.posto,onChange:e=>setForm({...form,posto:sanitizePosto(e.target.value)}),placeholder:'123',className:'w-full border rounded px-3 py-2'})
+          ]),
+          React.createElement('div',null,[
+            React.createElement('label',{className:'text-sm text-gray-600'},'Turno'),
+            React.createElement('select',{value:form.turno,onChange:e=>setForm({...form,turno:e.target.value}),className:'w-full border rounded px-3 py-2'},[
+              optionsTurnosApp.map(t=> React.createElement('option',{key:t,value:t},t))
+            ])
+          ]),
+          React.createElement('div',null,[
+            React.createElement('label',{className:'text-sm text-gray-600'},'Status'),
+            React.createElement('select',{value:form.status,onChange:e=>setForm({...form,status:e.target.value}),className:'w-full border rounded px-3 py-2'},[
+              React.createElement('option',null,'EFETIVO'),
+              React.createElement('option',null,'TEMPORÁRIO'),
+              React.createElement('option',null,'RL')
+            ])
+          ]),
+          React.createElement('div',{className:'flex justify-end gap-2'},[
+            React.createElement('button',{type:'button',onClick:()=>setOpen(false),className:'px-3 py-2 rounded bg-gray-200'},'Cancelar'),
+            React.createElement('button',{type:'submit',className:'px-3 py-2 rounded bg-blue-600 text-white'},'Cadastrar')
+          ])
+        ])
+      ])
+    ]),
+    React.createElement(Modal,{open:!!view,onClose:()=>setView(null)},[
+      view? React.createElement('div',null,[
+        React.createElement('div',{className:'bg-[#0a0f1c] text-white rounded-xl px-4 py-3 mb-3'},`Operador: ${view.nome||''}`),
+        React.createElement('div',{className:'bg-white rounded-xl p-4 border border-gray-200 shadow-sm'},[
+          React.createElement('div',{className:'text-sm font-semibold text-gray-700 mb-2'},'Dados do Operador'),
+          React.createElement('div',{className:'grid grid-cols-2 gap-3'},[
+            React.createElement('div',null,[React.createElement('div',{className:'text-xs text-gray-600'},'Nome'),React.createElement('div',null,view.nome||'-')]),
+            React.createElement('div',null,[React.createElement('div',{className:'text-xs text-gray-600'},'Status'),React.createElement('div',null,view.status||'-')]),
+            React.createElement('div',null,[React.createElement('div',{className:'text-xs text-gray-600'},'Know Row'),React.createElement('div',null,view.know||'-')]),
+            React.createElement('div',null,[React.createElement('div',{className:'text-xs text-gray-600'},'AF'),React.createElement('div',null,view.af||'-')]),
+            React.createElement('div',null,[React.createElement('div',{className:'text-xs text-gray-600'},'Área'),React.createElement('div',null,view.areas||'-')]),
+            React.createElement('div',null,[React.createElement('div',{className:'text-xs text-gray-600'},'Posto'),React.createElement('div',null,view.posto? String(view.posto) : '-')]),
+            React.createElement('div',null,[React.createElement('div',{className:'text-xs text-gray-600'},'Turno'),React.createElement('div',null,view.turno||'-')])
+          ])
+        ]),
+        React.createElement('div',{className:'flex justify-end mt-3'},[
+          React.createElement('button',{onClick:()=>setView(null),className:'px-3 py-2 rounded bg-gray-200 hover:bg-gray-300'},'Fechar')
+        ])
+      ]) : null
+    ]),
+    React.createElement(Modal,{open:!!conflict,onClose:()=>setConflict(null)},[
+      conflict? React.createElement('div',null,[
+        React.createElement('div',{className:'text-lg font-bold mb-2'},'Posto já cadastrado'),
+        React.createElement('div',{className:'text-sm text-gray-700 mb-3'},`O Nº Posto ${rows[conflict.idx]?.posto||''} já está associado a ${(rows[conflict.idx]?.nome||'')}. Deseja substituir?`),
+        React.createElement('div',{className:'flex justify-end gap-2'},[
+          React.createElement('button',{onClick:()=>{ setConflict(null) },className:'px-3 py-2 rounded bg-gray-200'},'Mudar Nº do posto'),
+          React.createElement('button',{onClick:()=>{ const i=conflict.idx; const existing=rows[i]||{}; const merged={ ...existing, ...conflict.newRow, id: existing.id, timesByModel: existing.timesByModel || conflict.newRow.timesByModel, updatedAt:Date.now() }; const next=[...rows]; next[i]=merged; setRows(next); setConflict(null); setOpen(false); setEditing(null) },className:'px-3 py-2 rounded bg-blue-600 text-white'},'Substituir')
+        ])
+      ]) : null
+    ])
+  ])
+}
+function ModelsPage2({modelConfigs,selectedModel,setSelectedModel,setModelConfigs}){
+  const entries = Object.entries(modelConfigs||{});
+  const [query,setQuery] = React.useState('');
+  const [open,setOpen] = React.useState(false);
+  const [form,setForm] = React.useState({ codigo:'', nome:'', tact:'', quadro:'' });
+  const [view,setView] = React.useState(null);
+  const [edit,setEdit] = React.useState(null);
+  const [confirm,setConfirm] = React.useState(null);
+  function upAlnum(v){ return (v||'').toUpperCase().replace(/[^A-Z0-9]/g,'') }
+  function digits(v){ return (v||'').replace(/[^0-9]/g,'') }
+  function upAlnumSpace(v){ return (v||'').toUpperCase().replace(/[^A-Z0-9\s]/g,'') }
+  function onSubmit(e){
+    e.preventDefault();
+    const codigo=upAlnum(form.codigo);
+    const nome=upAlnumSpace(form.nome).replace(/\s+/g,' ').trim();
+    const tactNum=digits(form.tact);
+    const quadroNum=digits(form.quadro);
+    if(!codigo || !nome || !tactNum || !quadroNum) return;
+    const maxV=Number(tactNum);
+    const objV = Math.round(maxV*0.9*10)/10;
+    const quadV = Number(quadroNum);
+    setModelConfigs(prev=> ({ ...prev, [codigo]: { max:maxV, objective:objV, ibTarget:90, quadro:quadV, display:nome } }));
+    setOpen(false);
+    setForm({ codigo:'', nome:'', tact:'', quadro:'' });
+  }
+  const filtered = entries.filter(([m])=> m.toLowerCase().includes((query||'').toLowerCase()));
+  const total = entries.length;
+  const ativos = entries.filter(([_,c])=> c.max!=null).length;
+  return React.createElement('div',{className:'space-y-4'},[
+    React.createElement('div',{className:'flex items-start justify-end gap-3 flex-wrap'},[
+      React.createElement('div',{className:'mt-2 sm:mt-0'},[
+        React.createElement('button',{onClick:()=>setOpen(true),className:'inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0a0f1c] text-white hover:bg-[#0b1220] shadow-md hover:shadow-lg active:scale-[.98] transition whitespace-nowrap'},[
+          React.createElement('span',{className:'inline-flex items-center justify-center w-6 h-6 rounded-lg bg-white/10'},'+'),
+          React.createElement('span',null,'Novo Modelo')
+        ])
+      ])
+    ]),
+    React.createElement('div',{className:'grid grid-cols-2 gap-3'},[
+      React.createElement('div',{className:'bg-white rounded-xl p-3 shadow-lg flex items-center gap-3'},[
+        React.createElement('div',{className:'w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center'},
+          React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+            React.createElement('rect',{x:3,y:3,width:18,height:14,rx:2}),
+            React.createElement('path',{d:'M7 7h10M7 11h10'})
+          ])
+        ),
+        React.createElement('div',null,[
+          React.createElement('div',{className:'text-sm text-gray-600'},'Total de Modelos'),
+          React.createElement('div',{className:'text-2xl font-bold'},String(total))
+        ])
+      ]),
+      React.createElement('div',{className:'bg-white rounded-xl p-3 shadow-lg flex items-center gap-3'},[
+        React.createElement('div',{className:'w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center'},
+          React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+            React.createElement('circle',{cx:12,cy:12,r:9}),
+            React.createElement('path',{d:'M12 7v5l3 3'})
+          ])
+        ),
+        React.createElement('div',null,[
+          React.createElement('div',{className:'text-sm text-gray-600'},'Com TACT'),
+          React.createElement('div',{className:'text-2xl font-bold'},String(ativos))
+        ])
+      ])
+    ]),
+    React.createElement('div',{className:'flex items-center'},[
+      React.createElement('input',{value:query,onChange:e=>setQuery(e.target.value),placeholder:'Buscar por modelo...',className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'})
+    ]),
+    React.createElement('div',{className:'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3'},
+      filtered.map(([m,c])=> React.createElement('div',{key:m,className:'bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition'},[
+        React.createElement('div',{className:'flex items-center justify-between mb-2'},[
+          React.createElement('div',null,[
+            React.createElement('div',{className:'font-bold flex items-center gap-2'},[
+              m,
+              React.createElement('span',{className:'text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200'},'IB '+String(c.ibTarget??90)+'%')
+            ]),
+            React.createElement('div',{className:'text-xs text-gray-600'},c.display||'')
+          ]),
+          React.createElement('div',{className:'flex items-center gap-2'},[
+            React.createElement('button',{onClick:()=>setView({ key:m, data:c }),title:'Ver',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600 text-white hover:bg-blue-500'},
+              React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+                React.createElement('path',{d:'M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7'}),
+                React.createElement('circle',{cx:12,cy:12,r:3})
+              ])
+            ),
+            React.createElement('button',{onClick:()=>setEdit({ key:m, codigo:m, nome:(c.display||''), tact:String(c.max||''), quadro:String(c.quadro||'') }),title:'Editar',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-orange-500 text-white hover:bg-orange-400'},
+              React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+                React.createElement('path',{d:'M12 20h9'}),
+                React.createElement('path',{d:'M16.5 3.5l4 4-11 11H5.5v-4z'})
+              ])
+            ),
+            React.createElement('button',{onClick:()=>setConfirm({ key:m }),title:'Remover',className:'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-red-500 text-white hover:bg-red-400'},
+              React.createElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,className:'w-5 h-5'},[
+                React.createElement('path',{d:'M3 6h18'}),
+                React.createElement('path',{d:'M8 6V4h8v2'}),
+                React.createElement('path',{d:'M19 6l-1 14H6L5 6'})
+              ])
+            )
+          ])
+        ]),
+        React.createElement('div',{className:'grid grid-cols-3 gap-2 mb-3'},[
+          React.createElement('div',null,[
+            React.createElement('div',{className:'text-xs text-gray-600 mb-1'},'TACT (s)'),
+            React.createElement('div',{className:'px-3 py-2 rounded bg-gray-100'},c.max!=null? String(c.max):'-')
+          ]),
+          React.createElement('div',null,[
+            React.createElement('div',{className:'text-xs text-gray-600 mb-1'},'META (s)'),
+            React.createElement('div',{className:'px-3 py-2 rounded bg-gray-100'},c.objective!=null? String(c.objective):'-')
+          ]),
+          React.createElement('div',null,[
+            React.createElement('div',{className:'text-xs text-gray-600 mb-1'},'QUADRO'),
+            React.createElement('div',{className:'px-3 py-2 rounded bg-gray-100'},c.quadro!=null? String(c.quadro):'-')
+          ])
+        ])
+      ]))
+    ),
+    React.createElement(Modal,{open,onClose:()=>setOpen(false)},[
+      React.createElement('div',null,[
+        React.createElement('div',{className:'text-lg font-bold mb-3'},'Novo Modelo'),
+        React.createElement('form',{onSubmit:onSubmit,className:'grid grid-cols-2 gap-3'},[
+          React.createElement('div',null,[
+            React.createElement('label',{className:'text-sm text-gray-600'},'Código do Modelo'),
+            React.createElement('input',{value:form.codigo,onChange:e=>setForm({...form,codigo:upAlnum(e.target.value)}),placeholder:'Ex.: K3H',className:'w-full border border-gray-300 rounded px-3 py-2'})
+          ]),
+          React.createElement('div',null,[
+            React.createElement('label',{className:'text-sm text-gray-600'},'Nome do Modelo'),
+            React.createElement('input',{value:form.nome,onChange:e=>setForm({...form,nome:upAlnumSpace(e.target.value)}),placeholder:'Ex.: K3H',className:'w-full border border-gray-300 rounded px-3 py-2'})
+          ]),
+          React.createElement('div',null,[
+            React.createElement('label',{className:'text-sm text-gray-600'},'TACT (s)'),
+            React.createElement('input',{value:form.tact,onChange:e=>setForm({...form,tact:digits(e.target.value)}),placeholder:'Ex.: 118',className:'w-full border border-gray-300 rounded px-3 py-2'})
+          ]),
+          React.createElement('div',null,[
+            React.createElement('label',{className:'text-sm text-gray-600'},'Quadro (qtd. de pessoas)'),
+            React.createElement('input',{value:form.quadro,onChange:e=>setForm({...form,quadro:digits(e.target.value)}),placeholder:'Ex.: 48',className:'w-full border border-gray-300 rounded px-3 py-2'})
+          ]),
+          
+          React.createElement('div',{className:'col-span-2 flex items-center justify-end gap-2 mt-2'},[
+            React.createElement('button',{type:'button',onClick:()=>{ setOpen(false); setForm({ codigo:'', nome:'', tact:'', quadro:'' }) },className:'px-3 py-2 rounded bg-gray-200 hover:bg-gray-300'},'Cancelar'),
+            React.createElement('button',{type:'submit',className:'px-3 py-2 rounded bg-blue-600 text-white'},'Cadastrar Modelo')
+          ])
+        ])
+      ])
+    ]),
+    React.createElement(Modal,{open:!!view,onClose:()=>setView(null)},[
+      view? React.createElement('div',null,[
+        React.createElement('div',{className:'text-lg font-bold mb-3'},'Detalhes do Modelo'),
+        React.createElement('div',{className:'space-y-2'},[
+          React.createElement('div',null,[React.createElement('div',{className:'text-sm text-gray-600'},'Código'),React.createElement('div',null,(view.key||''))]),
+          React.createElement('div',null,[React.createElement('div',{className:'text-sm text-gray-600'},'Nome'),React.createElement('div',null,(view.data?.display||''))]),
+          React.createElement('div',null,[React.createElement('div',{className:'text-sm text-gray-600'},'TACT (s)'),React.createElement('div',null,String(view.data?.max??'-'))]),
+          React.createElement('div',null,[React.createElement('div',{className:'text-sm text-gray-600'},'META (s)'),React.createElement('div',null,String(view.data?.objective??'-'))]),
+          
+          React.createElement('div',null,[React.createElement('div',{className:'text-sm text-gray-600'},'Quadro'),React.createElement('div',null,String(view.data?.quadro??'-'))])
+        ]),
+        React.createElement('div',{className:'flex justify-end mt-3'},[
+          React.createElement('button',{onClick:()=>setView(null),className:'px-3 py-2 rounded bg-gray-200'},'Fechar')
+        ])
+      ]) : null
+    ]),
+    React.createElement(Modal,{open:!!edit,onClose:()=>setEdit(null)},[
+      edit? React.createElement('div',null,[
+        React.createElement('div',{className:'text-lg font-bold mb-3'},'Editar Modelo'),
+        React.createElement('form',{onSubmit:(e)=>{ e.preventDefault(); const oldKey=edit.key; const codigo=upAlnum(edit.codigo||''); const newKey=codigo||oldKey; const nomeRaw=(edit.nome||''); const tactRaw=(edit.tact||''); const quadroRaw=(edit.quadro||''); const hasNome=!!nomeRaw.trim(); const hasTact=!!tactRaw.trim(); const hasQuadro=!!quadroRaw.trim(); const changedKey = newKey!==oldKey; if(!hasNome && !hasTact && !hasQuadro && !changedKey) return; const nome=hasNome? upAlnumSpace(nomeRaw).replace(/\s+/g,' ').trim() : undefined; const tact=hasTact? digits(tactRaw) : undefined; const quadro=hasQuadro? digits(quadroRaw) : undefined; setModelConfigs(prev=>{ const prevCfg=prev[oldKey]||{}; const nextMax = (tact!=null && tact!=='') ? Number(tact) : prevCfg.max; const nextObj = (nextMax!=null) ? Math.round(nextMax*0.9*10)/10 : prevCfg.objective; const nextDisplay = hasNome? nome : prevCfg.display; const nextQuadro = (quadro!=null && quadro!=='') ? Number(quadro) : prevCfg.quadro; let next = { ...prev }; if(changedKey){ delete next[oldKey] } next[newKey] = { ...prevCfg, display: nextDisplay, max: nextMax, objective: nextObj, quadro: nextQuadro }; return next }); if(changedKey && typeof setSelectedModel==='function'){ if(selectedModel===oldKey) setSelectedModel(newKey) } setEdit(null) },className:'grid grid-cols-2 gap-3'},[
+          React.createElement('div',null,[React.createElement('label',{className:'text-sm text-gray-600'},'Código do Modelo'),React.createElement('input',{value:edit.codigo||edit.key,onChange:e=>setEdit({...edit,codigo:upAlnum(e.target.value)}),className:'w-full border rounded px-3 py-2'})]),
+          React.createElement('div',null,[React.createElement('label',{className:'text-sm text-gray-600'},'Nome'),React.createElement('input',{value:edit.nome,onChange:e=>setEdit({...edit,nome:upAlnumSpace(e.target.value)}),className:'w-full border rounded px-3 py-2'})]),
+          React.createElement('div',null,[React.createElement('label',{className:'text-sm text-gray-600'},'TACT (s)'),React.createElement('input',{value:edit.tact,onChange:e=>setEdit({...edit,tact:digits(e.target.value)}),className:'w-full border rounded px-3 py-2'})]),
+          React.createElement('div',null,[React.createElement('label',{className:'text-sm text-gray-600'},'Quadro (qtd. de pessoas)'),React.createElement('input',{value:edit.quadro,onChange:e=>setEdit({...edit,quadro:digits(e.target.value)}),className:'w-full border rounded px-3 py-2'})]),
+          
+          React.createElement('div',{className:'col-span-2 flex items-center justify-end gap-2 mt-2'},[
+            React.createElement('button',{type:'button',onClick:()=>setEdit(null),className:'px-3 py-2 rounded bg-gray-200'},'Cancelar'),
+            React.createElement('button',{type:'submit',className:'px-3 py-2 rounded bg-blue-600 text-white'},'Salvar')
+          ])
+        ])
+      ]) : null
+    ]),
+    React.createElement(Modal,{open:!!confirm,onClose:()=>setConfirm(null)},[
+      confirm? React.createElement('div',null,[
+        React.createElement('div',{className:'text-lg font-bold mb-3'},'Remover Modelo'),
+        React.createElement('div',null,'Tem certeza que deseja remover este modelo?'),
+        React.createElement('div',{className:'flex justify-end gap-2 mt-3'},[
+          React.createElement('button',{onClick:()=>setConfirm(null),className:'px-3 py-2 rounded bg-gray-200'},'Cancelar'),
+          React.createElement('button',{onClick:()=>{ const k=confirm.key; setModelConfigs(prev=>{ const next={ ...prev }; delete next[k]; return next }); if(selectedModel===k) setSelectedModel(''); setConfirm(null) },className:'px-3 py-2 rounded bg-red-600 text-white'},'Remover')
+        ])
+      ]) : null
+    ])
+  ])
+}
+ModelsPage = ModelsPage2;
+function KoteiPage({rows,modelConfigs,setSelectedModel,setPage,koteisByModel,setKoteisByModel}){
+  const entries = Object.entries(modelConfigs||{})
+  const [query,setQuery] = React.useState('')
+  const [selModel,setSelModel] = React.useState('')
+  const [inDetail,setInDetail] = React.useState(false)
+  const [selectedFileUrl,setSelectedFileUrl] = React.useState('')
+  const [columnsPreview,setColumnsPreview] = React.useState({ rows:[] })
+  const fileRef = React.useRef(null)
+  const [newOpen,setNewOpen] = React.useState(false)
+  const [newForm,setNewForm] = React.useState({ posto:'', nome:'', files:[] })
+  const newFileRef = React.useRef(null)
+  const postoOptions = (Array.isArray(rows)? rows : []).map(r=>({ posto:String(r.posto||'').padStart(2,'0'), nome:(r.nome||'') }))
+  const [createKoteiOpen,setCreateKoteiOpen] = React.useState(false)
+  const [createKoteiStep,setCreateKoteiStep] = React.useState(1)
+  const [createKoteiForm,setCreateKoteiForm] = React.useState({
+    nomeTreinador:'',
+    modelo:'',
+    linha:'',
+    posto:'',
+    colab1Turno:'',
+    colab2Turno:'',
+    nomeProcesso:'',
+    linhasPlanilha:[]
+  })
+  const [editIndex,setEditIndex] = React.useState(null)
+  const [commentOpenIdx,setCommentOpenIdx] = React.useState(null)
+  const [commentDraft,setCommentDraft] = React.useState('')
+  const [editingCommentIdx,setEditingCommentIdx] = React.useState(null)
+  const [confirmDelIdx,setConfirmDelIdx] = React.useState(null)
+  const [activeRowIdx,setActiveRowIdx] = React.useState(null)
+  const [selectedFileName,setSelectedFileName] = React.useState('')
+  const gradeOptions = ['A','B','C']
+  React.useEffect(()=>{ const list = Array.isArray(koteisByModel[selModel])? koteisByModel[selModel] : []; const first=list[0]; setSelectedFileUrl(first? (first.url||'') : ''); setSelectedFileName(first? (first.name||'') : ''); setColumnsPreview(first? (first.columns||{rows:[]}) : {rows:[]}) },[selModel,koteisByModel])
+  const filtered = entries.filter(([k,v])=>{
+    const q=(query||'').toLowerCase()
+    return k.toLowerCase().includes(q) || String(v.display||'').toLowerCase().includes(q)
+  })
+  async function ensurePdfJs(){
+    if(window.pdfjsLib) return
+    await new Promise((resolve)=>{ const s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'; s.onload=resolve; s.onerror=resolve; document.head.appendChild(s) })
+  }
+  async function ensureJsPdf(){
+    if(window.jspdf && window.jspdf.jsPDF) return
+    await new Promise((resolve)=>{ const s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'; s.onload=resolve; s.onerror=resolve; document.head.appendChild(s) })
+  }
+  async function extractPdfColumns(file){
+    try{
+      await ensurePdfJs()
+      if(!window.pdfjsLib) return { rows:[] }
+      const buf = await file.arrayBuffer()
+      const pdf = await window.pdfjsLib.getDocument({data:buf}).promise
+      const allRows=[]
+      for(let p=1;p<=pdf.numPages;p++){
+        const page = await pdf.getPage(p)
+        const view = page.getViewport({scale:1})
+        const w = view.width||1000
+        const content = await page.getTextContent()
+        const items = (content.items||[]).map(i=>({ str:i.str||'', x:(i.transform&&i.transform[4])||0, y:(i.transform&&i.transform[5])||0 }))
+        items.sort((a,b)=> (a.y===b.y? a.x-b.x : b.y-a.y))
+        const numAnchors = items.filter(it=> it.x < w*0.25 && /^\d{1,3}$/.test((it.str||'').trim()))
+        const leftNoMaxX = numAnchors.length? Math.max(...numAnchors.map(it=>it.x)) : w*0.12
+        const gradeCandidates = items.filter(it=> /^[ABC]$/.test((it.str||'').trim()))
+        const gradeMinX = gradeCandidates.length? Math.min(...gradeCandidates.map(it=>it.x)) : w*0.78
+        const gradeMaxX = gradeCandidates.length? Math.max(...gradeCandidates.map(it=>it.x)) : w*0.84
+        const tempoCandidates = items.filter(it=> /\b\d+(?:[.,]\d+)\b/.test((it.str||'').trim()))
+        const tempoMinX = tempoCandidates.length? Math.min(...tempoCandidates.map(it=>it.x)) : w*0.84
+        const descMinX = Math.max(leftNoMaxX + 6, w*0.10)
+        const descMaxX = Math.min(gradeMinX - 6, w*0.74)
+        const grauMinX = Math.min(gradeMinX, w*0.74)
+        const grauMaxX = Math.max(gradeMaxX, w*0.84)
+        const tempoMinBandX = Math.max(tempoMinX, w*0.84)
+        const lines=[]; let cur=[]; let lastY=null
+        for(const it of items){ if(lastY==null || Math.abs(it.y - lastY) < 4){ cur.push(it); lastY = it.y } else { lines.push(cur); cur=[it]; lastY=it.y } }
+        if(cur.length) lines.push(cur)
+        const lineObjs = lines.map(l=>({ y: (l[0]?.y||0), items: l }))
+        const anchors = lineObjs.filter(lo=> lo.items.some(it=> it.x <= leftNoMaxX && /^\d{1,3}$/.test((it.str||'').trim())) )
+        if(anchors.length>=2){
+          for(let ai=0; ai<anchors.length; ai++){
+            const topY = anchors[ai].y
+            const nextY = (anchors[ai+1]?.y ?? -Infinity)
+            let rowDescParts=[]; let rowGrau=''; let rowTempo=''
+            for(const lo of lineObjs){
+              if(lo.y <= topY && lo.y > nextY){
+                const descItems = lo.items.filter(it=> it.x >= descMinX && it.x <= descMaxX)
+                const hasLetters = descItems.some(it=> /[A-Za-zÁ-Úá-ú]/.test(it.str||''))
+                let desc = descItems.map(it=>it.str).join(' ').trim()
+                if(/^DESCRIÇÃO DA ATIVIDADE$/i.test(desc) || /^GRAU$/i.test(desc) || /^TEMPO$/i.test(desc)) continue
+                desc = desc.replace(/\s*(LM\s*\d{5}|R\d{2}-\d{2})\s*$/,'').trim()
+                const grauTxt = lo.items.filter(it=> it.x > grauMinX && it.x <= grauMaxX).map(it=>it.str).join(' ').trim()
+                const tempoTxt = lo.items.filter(it=> it.x > tempoMinBandX).map(it=>it.str).join(' ').trim()
+                let tempoMatch = (tempoTxt.match(/\b(\d+(?:[.,]\d+))\b/)||[])[1]||''
+                let grauMatch = (grauTxt.match(/\b[ABC]\b/)||[])[0]||''
+                if(!tempoMatch){ const m = desc.match(/\b([ABC])?\s*(\d+(?:[.,]\d+))\b$/); if(m){ tempoMatch = m[2]; if(!grauMatch && m[1]) grauMatch = m[1]; desc = desc.replace(m[0],'').trim() } }
+                if(!tempoMatch){ const m2 = desc.match(/\b(\d+(?:[.,]\d+))\b\s*([ABC])\b$/); if(m2){ tempoMatch = m2[1]; if(!grauMatch && m2[2]) grauMatch = m2[2]; desc = desc.replace(m2[0],'').trim() } }
+                if(hasLetters && desc){ rowDescParts.push(desc) }
+                if(grauMatch && !rowGrau) rowGrau = grauMatch
+                if(tempoMatch){ rowTempo = tempoMatch }
+              }
+            }
+            const finalDesc = rowDescParts.join(' ').replace(/\s+/g,' ').trim()
+            if(finalDesc && rowTempo){ allRows.push({ descricao:finalDesc, grau:rowGrau, tempo:rowTempo }) }
+          }
+        } else {
+          let curRow = { descParts:[], grau:'', tempo:'' }
+          for(const lo of lineObjs){
+            const descItems = lo.items.filter(it=> it.x >= descMinX && it.x <= descMaxX)
+            const descTxt = descItems.map(it=>it.str).join(' ').trim()
+            const grauTxt = lo.items.filter(it=> it.x > grauMinX && it.x <= grauMaxX).map(it=>it.str).join(' ').trim()
+            const tempoTxt = lo.items.filter(it=> it.x > tempoMinBandX).map(it=>it.str).join(' ').trim()
+            const hasLetters = descItems.some(it=> /[A-Za-zÁ-Úá-ú]/.test(it.str||''))
+            let desc = descTxt
+            if(/^DESCRIÇÃO DA ATIVIDADE$/i.test(desc) || /^GRAU$/i.test(desc) || /^TEMPO$/i.test(desc)) continue
+            desc = desc.replace(/\s*(LM\s*\d{5}|R\d{2}-\d{2})\s*$/,'').trim()
+            let tempoMatch = (tempoTxt.match(/\b(\d+(?:[.,]\d+))\b/)||[])[1]||''
+            let grauMatch = (grauTxt.match(/\b[ABC]\b/)||[])[0]||''
+            if(!tempoMatch){ const m = desc.match(/\b([ABC])?\s*(\d+(?:[.,]\d+))\b$/); if(m){ tempoMatch = m[2]; if(!grauMatch && m[1]) grauMatch = m[1]; desc = desc.replace(m[0],'').trim() } }
+            if(!tempoMatch){ const m2 = desc.match(/\b(\d+(?:[.,]\d+))\b\s*([ABC])\b$/); if(m2){ tempoMatch = m2[1]; if(!grauMatch && m2[2]) grauMatch = m2[2]; desc = desc.replace(m2[0],'').trim() } }
+            if(hasLetters && desc){ curRow.descParts.push(desc) }
+            if(grauMatch && !curRow.grau) curRow.grau = grauMatch
+            if(tempoMatch){
+              curRow.tempo = tempoMatch
+              const finalDesc = curRow.descParts.join(' ').replace(/\s+/g,' ').trim()
+              if(finalDesc && curRow.tempo){ allRows.push({ descricao:finalDesc, grau:curRow.grau, tempo:curRow.tempo }) }
+              curRow = { descParts:[], grau:'', tempo:'' }
+            }
+          }
+        }
+      }
+      return { rows: allRows }
+    }catch(_){ return { rows:[] } }
+  }
+  async function addFilesTo(code, files, meta){
+    const c = code || selModel || (entries[0] && entries[0][0]) || ''
+    if(!c) return
+    const arr = Array.from(files||[]).filter(f=> f && (f.type==='application/pdf' || /\.pdf$/i.test(f.name)))
+    if(arr.length===0) return
+    const nextAdded = []
+    for(const f of arr){ const cols = await extractPdfColumns(f); nextAdded.push({ name:f.name, size:f.size, url: URL.createObjectURL(f), columns: cols, meta: meta||null }) }
+    setKoteisByModel(prev=>{ const cur = Array.isArray(prev[c])? prev[c] : []; const next = { ...prev, [c]: [...cur, ...nextAdded] }; return next })
+    setSelModel(m=> m || c)
+    try{ setSelectedModel?.(c) }catch(_){ }
+    setSelectedFileUrl(u=> u || (nextAdded[0]?.url||u))
+    setColumnsPreview(prev=> (nextAdded[0]?.columns || { rows:[] }))
+  }
+  function addPlanilhaRow(){ setCreateKoteiForm(prev=> ({ ...prev, linhasPlanilha: [...prev.linhasPlanilha, { descricao:'', tempo:'', running:false, startAt:0, elapsedMs:0 }] })) }
+  function saveComment(idx){ const d=String(commentDraft||'').trim(); if(!d) return; setKoteisByModel(prev=>{ const cur = Array.isArray(prev[selModel])? [...prev[selModel]] : []; if(!(idx>=0 && idx<cur.length)) return prev; const it = { ...(cur[idx]||{}) }; const meta = it.meta && typeof it.meta==='object'? { ...it.meta } : {}; const arr = Array.isArray(meta.comments)? [...meta.comments] : []; if(typeof editingCommentIdx==='number' && editingCommentIdx>=0 && editingCommentIdx<arr.length){ arr[editingCommentIdx] = { text:d, at:Date.now() } } else { arr.push({ text:d, at:Date.now() }) } meta.comments = arr; it.meta = meta; cur[idx] = it; return { ...prev, [selModel]: cur }; }); setCommentOpenIdx(null); setCommentDraft(''); setEditingCommentIdx(null) }
+  function fmtMinSecDec(ms){ const t = Math.max(0, ms); const m = Math.floor(t/60000); const s = Math.floor((t%60000)/1000); const d = Math.floor((t%1000)/100); return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(d)}` }
+  function parseTempoMs(str){ const v = String(str||'').trim(); if(!v) return 0; if(/^\d{1,2}:\d{2}(?:\.\d)?$/.test(v)){ const [mm,rest] = v.split(':'); const [ss,dd] = rest.split('.'); const m = Number(mm||0); const s = Number(ss||0); const d = Number(dd||0); return m*60000 + s*1000 + d*100 }
+    const num = Number(v.replace(',','.')); if(!isNaN(num)) return Math.round(num*1000); return 0 }
+  function startCronometro(idx){ setCreateKoteiForm(prev=>{ const rows=[...prev.linhasPlanilha]; const r={ ...(rows[idx]||{}) }; const base = Number(r.elapsedMs||0); r.startAt = Date.now()-base; r.running = true; rows[idx]=r; return { ...prev, linhasPlanilha: rows } }) }
+  function pauseCronometro(idx){ setCreateKoteiForm(prev=>{ const rows=[...prev.linhasPlanilha]; const r={ ...(rows[idx]||{}) }; const add = r.running ? (Date.now()-Number(r.startAt||Date.now())) : 0; const total = Number(r.elapsedMs||0) + add; r.elapsedMs = total; r.running = false; r.startAt = 0; r.tempo = fmtMinSecDec(total); rows[idx]=r; return { ...prev, linhasPlanilha: rows } }) }
+  function registrarCronometro(idx){ setCreateKoteiForm(prev=>{ const rows=[...prev.linhasPlanilha]; const r={ ...(rows[idx]||{}) }; const add = r.running ? (Date.now()-Number(r.startAt||Date.now())) : 0; const total = Number(r.elapsedMs||0) + add; r.elapsedMs = total; r.running = false; r.startAt = 0; r.tempo = fmtMinSecDec(total); rows[idx]=r; return { ...prev, linhasPlanilha: rows } }) }
+  function refazerCronometro(idx){ setCreateKoteiForm(prev=>{ const rows=[...prev.linhasPlanilha]; const r={ ...(rows[idx]||{}) }; r.elapsedMs=0; r.startAt=0; r.running=false; r.tempo=''; rows[idx]=r; return { ...prev, linhasPlanilha: rows } }) }
+  React.useEffect(()=>{ if(!createKoteiOpen || createKoteiStep!==2) return; const id = setInterval(()=>{ try{ setCreateKoteiForm(prev=>{ const rows = Array.isArray(prev.linhasPlanilha)? prev.linhasPlanilha.map(r=>{ if(r && r.running){ const now = Date.now(); const base = Number(r.elapsedMs||0); const cur = base + (now - Number(r.startAt||now)); return { ...r, tempo: fmtMinSecDec(cur) } } return r }) : []; return { ...prev, linhasPlanilha: rows } }) }catch(_){ } }, 100); return ()=> clearInterval(id) },[createKoteiOpen,createKoteiStep])
+  function removePlanilhaRow(idx){ setCreateKoteiForm(prev=> ({ ...prev, linhasPlanilha: prev.linhasPlanilha.filter((_,i)=> i!==idx) })) }
+  function handlePlanilhaChange(idx, field, value){ setCreateKoteiForm(prev=> { const newRows=[...prev.linhasPlanilha]; newRows[idx] = { ...newRows[idx], [field]: value }; return { ...prev, linhasPlanilha: newRows } }) }
+  function handleCreateKoteiSubmit(){
+    const modelo = createKoteiForm.modelo || selModel
+    const nomeProc = String(createKoteiForm.nomeProcesso||'').trim()
+    const treinador = String(createKoteiForm.nomeTreinador||'').trim()
+    const rowsPlan = Array.isArray(createKoteiForm.linhasPlanilha)? createKoteiForm.linhasPlanilha : []
+    if(!modelo || rowsPlan.length===0) return
+    const normalizedRows = rowsPlan.map(r=> ({ descricao:String(r.descricao||'').trim(), tempo:String(r.tempo||'').trim() })).filter(r=> r.descricao && r.tempo)
+    if(normalizedRows.length===0) return
+    const columns = { rows: normalizedRows }
+    const nomeProcFinal = nomeProc || 'Sem T&P'
+    const meta = { treinador, nomeTP: nomeProcFinal, nomeProcesso:nomeProcFinal }
+    const title = `Kotei ${modelo}`
+    const html = `<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1" /><title>${title}</title><style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;margin:0;padding:16px;background:#fff;color:#111827} .hdr{font-weight:700;font-size:18px;margin-bottom:8px} table{width:100%;border-collapse:collapse;font-size:14px} th,td{border:1px solid #e5e7eb;padding:8px;text-align:left} th{background:#f9fafb} .meta{margin-bottom:8px;font-size:12px;color:#374151}</style></head><body><div class="hdr">${title}</div><div class="meta">T&P: ${nomeProcFinal || '-'} • Treinador: ${treinador || '-'}</div><table><thead><tr><th>DESCRIÇÃO DA ATIVIDADE</th><th>TEMPO</th></tr></thead><tbody>${normalizedRows.map(r=> `<tr><td>${r.descricao.replace(/</g,'&lt;')}</td><td>${r.tempo}</td></tr>`).join('')}</tbody></table></body></html>`
+    const blob = new Blob([html],{ type:'text/html' })
+    const url = URL.createObjectURL(blob)
+    setKoteisByModel(prev=>{ const cur = Array.isArray(prev[modelo])? prev[modelo] : []; const nextItem = { name: title, size: html.length, url, columns, meta }; if(typeof editIndex==='number'){ try{ URL.revokeObjectURL(cur[editIndex]?.url||'') }catch(_){ } const next = cur.map((it,i)=> i===editIndex ? nextItem : it); return { ...prev, [modelo]: next } } return { ...prev, [modelo]: [...cur, nextItem] } })
+    setSelModel(m=> m || modelo)
+    try{ setSelectedModel?.(modelo) }catch(_){ }
+    setSelectedFileUrl(url)
+    setColumnsPreview(columns)
+    setCreateKoteiOpen(false)
+    setCreateKoteiStep(1)
+    setCreateKoteiForm({ nomeTreinador:'', modelo:'', linha:'', posto:'', colab1Turno:'', colab2Turno:'', nomeProcesso:'', linhasPlanilha:[] })
+    setEditIndex(null)
+  }
+  return React.createElement('div',{className:'space-y-4'},[
+    React.createElement('div',{className:'flex items-start justify-end gap-3 flex-wrap'},[
+      (inDetail? React.createElement('div',null,
+        React.createElement('button',{onClick:()=>{ setInDetail(false) },className:'px-3 py-2 rounded bg-gray-200 hover:bg-gray-300'},'Voltar')
+      ) : null)
+    ]),
+    React.createElement('input',{ref:fileRef,type:'file',accept:'application/pdf',multiple:true,style:{display:'none'},onChange:(e)=>{ try{ addFilesTo(null, e.target.files||[]) }catch(_){} }}),
+    (!inDetail? React.createElement('div',{className:'flex items-center'},[
+      React.createElement('input',{value:query,onChange:e=>setQuery(e.target.value),placeholder:'Buscar modelo...',className:'w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900'})
+    ]) : null),
+    (!inDetail? React.createElement('div',{className:'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3'},
+      filtered.map(([k,v])=> React.createElement('button',{key:k,onClick:()=>{ try{ setSelModel(k); setSelectedModel?.(k); setInDetail(true) }catch(_){} },className:'text-left bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition border border-gray-200'},[
+        React.createElement('div',{className:'text-sm text-gray-600 mb-1'},'Código'),
+        React.createElement('div',{className:'text-xl font-bold'},k),
+        React.createElement('div',{className:'text-sm text-gray-700 mt-1'},String(v.display||''))
+      ]))
+    ) : null),
+    (inDetail && selModel? React.createElement('div',{className:'bg-white rounded-xl p-4 shadow-lg border border-gray-200'},[
+      React.createElement('div',{className:'flex items-center justify-between gap-2 mb-3'},[
+        React.createElement('div',null,[
+          React.createElement('div',{className:'text-xs text-gray-600'},'Modelo selecionado'),
+          React.createElement('div',{className:'text-lg font-bold'},selModel)
+        ]),
+        React.createElement('div',{className:'flex gap-2'},[
+          React.createElement('button',{onClick:()=>{ setNewOpen(true) },className:'px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-500'},'Importar Koutei'),
+          React.createElement('button',{onClick:()=>{ setCreateKoteiOpen(true); setCreateKoteiForm(prev=> ({ ...prev, modelo: selModel })) },className:'px-3 py-2 rounded bg-green-600 text-white hover:bg-green-500'},'Criar Koutei')
+        ])
+      ]),
+      React.createElement('div',{className:'grid grid-cols-1 md:grid-cols-2 gap-3 mt-3'},[
+        React.createElement('div',{className:'space-y-2'},[
+          React.createElement('div',{className:'text-sm font-semibold'},'Arquivos'),
+          React.createElement('div',{className:'space-y-1'},[
+            ...((Array.isArray(koteisByModel[selModel])? koteisByModel[selModel] : []).map((f,idx)=> [
+              React.createElement('div',{key:'file-'+String(idx),className:'flex items-center justify-between gap-2 border border-gray-200 rounded px-2 py-1 bg-white'},[
+                React.createElement('div',{className:'truncate'},[
+                  React.createElement('div',null,f.name),
+                  f.meta? React.createElement('div',{className:'text-[10px] text-gray-500'},(f.meta?.nomeTP? `T&P ${String(f.meta.nomeTP)}` : (f.meta?.posto? `Posto ${String(f.meta.posto||'')} ${String(f.meta.nome||'')}` : ''))) : null
+                ]),
+                React.createElement('div',{className:'inline-flex items-center gap-2'},[
+                  React.createElement('button',{title:'Visualizar',className:'w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center hover:bg-blue-500',onClick:()=>{ try{ setSelectedFileUrl(f.url||''); setSelectedFileName(f.name||''); setColumnsPreview(f.columns||{rows:[]}); setCommentOpenIdx(null) }catch(_){ } }},
+                    React.createElement('span',null,'👁️')
+                  ),
+                  (()=>{ const nm=String(f.name||''); const isPdf=/\.pdf$/i.test(nm) || !!(f.meta&&f.meta.posto); return isPdf
+                    ? React.createElement('button',{title:'Comentar',className:'w-8 h-8 rounded-lg bg-orange-500 text-white flex items-center justify-center hover:bg-orange-400',onClick:()=>{ try{ setCommentOpenIdx(idx); setEditingCommentIdx(null); setSelectedFileUrl(f.url||''); setSelectedFileName(f.name||''); setColumnsPreview(f.columns||{rows:[]}) }catch(_){ } }},
+                        React.createElement('span',null,'✎')
+                      )
+                    : React.createElement('button',{title:'Editar',className:'w-8 h-8 rounded-lg bg-orange-500 text-white flex items-center justify-center hover:bg-orange-400',onClick:()=>{ try{ setEditIndex(idx); setCreateKoteiOpen(true); setCreateKoteiStep(2); setCreateKoteiForm({ nomeTreinador:String(f.meta?.treinador||''), modelo: selModel, linha:'', posto:'', colab1Turno:'', colab2Turno:'', nomeProcesso:String((f.meta?.nomeTP||f.meta?.nomeProcesso||'')), linhasPlanilha: (Array.isArray(f.columns?.rows)? f.columns.rows : []).map(r=> ({ descricao:String(r.descricao||''), tempo:String(r.tempo||''), running:false, startAt:0, elapsedMs:0 })) }) }catch(_){ } }},
+                        React.createElement('span',null,'✎')
+                      )
+                  })(),
+                  React.createElement('button',{title:'Remover',className:'w-8 h-8 rounded-lg bg-red-600 text-white flex items-center justify-center hover:bg-red-500',onClick:()=>{ try{ URL.revokeObjectURL(f.url) }catch(_){ } setKoteisByModel(prev=>{ const cur = Array.isArray(prev[selModel])? prev[selModel] : []; const next = cur.filter((_,i)=> i!==idx); return { ...prev, [selModel]: next } }); if(selectedFileUrl===f.url){ setSelectedFileUrl(''); setSelectedFileName(''); setColumnsPreview({ rows:[] }) } }},
+                    React.createElement('span',null,'🗑️')
+                  )
+                ])
+              ]),
+              (()=>{ const nm=String(f.name||''); const isPdf=/\.pdf$/i.test(nm) || !!(f.meta&&f.meta.posto); const comments = Array.isArray(f.meta?.comments)? f.meta.comments : []; return (isPdf && comments.length)? React.createElement('div',{key:'cmts-list-'+String(idx),className:'mt-1 space-y-1'},[
+                React.createElement('div',{className:'text-[11px] text-gray-600'},'Comentários'),
+                ...comments.map((c,i)=> React.createElement('div',{key:String(c.at||i),className:'text-xs text-gray-700 bg-gray-100 border border-gray-200 rounded px-2 py-1 flex items-center justify-between cursor-pointer',onClick:()=>{ setCommentOpenIdx(idx); setEditingCommentIdx(i); setCommentDraft(String(c.text||'')) }},[
+                  React.createElement('div',{className:'pr-2 break-words'},String(c.text||'')),
+                  React.createElement('div',{className:'text-[10px] text-gray-500 whitespace-nowrap'},(()=>{ try{ const d=new Date(Number(c.at||Date.now())); return d.toLocaleString('pt-BR') }catch(_){ return '' } })())
+                ]))
+              ]) : null })(),
+              (commentOpenIdx===idx? React.createElement('div',{key:'cmt-'+String(idx),className:'mt-2 p-2 bg-gray-50 rounded'},[
+                React.createElement('div',{className:'text-xs text-gray-600 mb-1'},(typeof editingCommentIdx==='number'?'Editar comentário':'Adicionar comentário')),
+                React.createElement('textarea',{value:commentDraft,onChange:e=>setCommentDraft(e.target.value),rows:2,className:'w-full border rounded px-2 py-1'}),
+                React.createElement('div',{className:'flex items-center justify-end gap-2 mt-2'},[
+                  React.createElement('button',{onClick:()=>{ setCommentOpenIdx(null); setCommentDraft(''); setEditingCommentIdx(null) },className:'px-2 py-1 rounded bg-gray-200 hover:bg-gray-300'},'Cancelar'),
+                  React.createElement('button',{onClick:()=>saveComment(idx),className:'px-2 py-1 rounded bg-blue-600 text-white'},'Salvar')
+                ])
+              ]) : null)
+            ]))
+          ])
+        ]),
+        React.createElement('div',{className:'space-y-2'},[
+          React.createElement('div',{className:'text-sm font-semibold'},'Preview'),
+          React.createElement('div',{className:'border border-gray-200 rounded overflow-hidden bg-white'},[
+            (()=>{ const list = Array.isArray(koteisByModel[selModel])? koteisByModel[selModel] : []; const url = selectedFileUrl || (list[0]?.url||''); const name = selectedFileName || (list[0]?.name||'kotei.html'); const rowsPrev = Array.isArray(columnsPreview?.rows)? columnsPreview.rows : []; const totalMsPrev = rowsPrev.reduce((acc,r)=> acc + parseTempoMs(r.tempo||''), 0); const stText = rowsPrev.length? `ST ${fmtMinSecDec(totalMsPrev)}` : ''; return url? React.createElement('div',null,[
+              React.createElement('div',{className:'flex items-center justify-end gap-2 p-2 border-b border-gray-200 bg-gray-50'},[
+                stText? React.createElement('span',{className:'text-xs font-semibold text-gray-700'},stText) : null,
+                React.createElement('button',{className:'px-3 py-1.5 rounded bg-blue-600 text-white hover:bg-blue-500',onClick:async()=>{ try{ const rows=Array.isArray(columnsPreview?.rows)? columnsPreview.rows : []; if(rows.length){ await ensureJsPdf(); if(window.jspdf && window.jspdf.jsPDF){ const doc=new window.jspdf.jsPDF({unit:'pt',format:'a4'}); const margin=40; let y=margin; const outName=String(name||'kotei.pdf').replace(/\.[^.]*$/,'.pdf'); doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text(String(name||'Kotei'), margin, y); y+=12; doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.text('DESCRIÇÃO DA ATIVIDADE', margin, y); doc.text('TEMPO', 520, y, {align:'right'}); y+=12; doc.setFont('helvetica','normal'); for(const r of rows){ const lines=doc.splitTextToSize(String(r.descricao||''), 460); for(let i=0;i<lines.length;i++){ if(y>770){ doc.addPage(); y=margin } doc.text(lines[i], margin, y); if(i===0){ doc.text(String(r.tempo||''), 520, y, {align:'right'}) } y+=12 } } const totalMs = rows.reduce((acc,r)=> acc + parseTempoMs(r.tempo||''), 0); const stText = `ST ${fmtMinSecDec(totalMs)}`; if(y>770){ doc.addPage(); y=margin } doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.text(stText, 520, y+10, {align:'right'}); doc.save(outName) } else { const a=document.createElement('a'); a.href=url; a.download=String(name||'kotei.html'); document.body.appendChild(a); a.click(); document.body.removeChild(a) } } else { const a=document.createElement('a'); a.href=url; a.download=String(name||'arquivo.pdf'); document.body.appendChild(a); a.click(); document.body.removeChild(a) } }catch(_){ } }},'Exportar')
+              ]),
+              React.createElement('iframe',{src:url,style:{width:'100%',height:'420px'},title:'PDF Preview'})
+            ]) : React.createElement('div',{className:'p-4 text-sm text-gray-600'},'Nenhum PDF selecionado') })()
+          ])
+        ])
+      ])
+    ]) : null)
+    ,React.createElement(Modal,{open:newOpen,onClose:()=>setNewOpen(false)},[
+      React.createElement('div',{className:'text-lg font-bold mb-3'},'Importar Koutei'),
+      React.createElement('form',{onSubmit:(e)=>{ e.preventDefault(); const posto=(newForm.posto||'').trim(); const nome=(newForm.nome||'').trim(); const files=Array.isArray(newForm.files)? newForm.files : []; if(!selModel || !posto || files.length===0){ return } addFilesTo(selModel, files, { posto, nome }); setNewOpen(false); setNewForm({ posto:'', nome:'', files:[] }) },className:'space-y-3'},[
+        React.createElement('div',{className:'grid grid-cols-2 gap-3'},[
+          React.createElement('div',null,[ React.createElement('div',{className:'text-sm text-gray-600 mb-1'},'Modelo'), React.createElement('div',{className:'font-semibold'},selModel) ]),
+          React.createElement('div',null,[ React.createElement('div',{className:'text-sm text-gray-600 mb-1'},'Nº Posto'), React.createElement('select',{value:newForm.posto,onChange:e=>{ const val=e.target.value; const opt=postoOptions.find(o=> o.posto===val); setNewForm({...newForm,posto:val,nome:opt?opt.nome:''}) },className:'w-full border rounded px-3 py-2 bg-white'},[
+            React.createElement('option',{value:''},'Selecione o posto...'),
+            ...postoOptions.map(o=> React.createElement('option',{key:o.posto,value:o.posto},`${o.posto}`))
+          ]) ])
+        ]),
+        React.createElement('div',null,[ React.createElement('div',{className:'text-sm text-gray-600 mb-1'},'nome do oparador'), React.createElement('input',{value:newForm.nome,readOnly:true,placeholder:'Será preenchido ao escolher o posto',className:'w-full border rounded px-3 py-2 bg-gray-100'}) ]),
+        React.createElement('div',{className:'text-sm text-gray-600 mb-1'},'Arquivos (PDF)'),
+        React.createElement('input',{ref:newFileRef,type:'file',accept:'application/pdf',multiple:true,style:{display:'none'},onChange:(e)=>{ const fs=Array.from(e.target.files||[]); setNewForm(f=> ({ ...f, files: fs })) }}),
+        React.createElement('div',{onDragOver:(e)=>{ e.preventDefault() },onDrop:(e)=>{ e.preventDefault(); const fs=Array.from(e.dataTransfer?.files||[]).filter(f=> f.type==='application/pdf'); setNewForm(f=> ({ ...f, files: fs })) },className:'border border-dashed border-gray-300 rounded-lg p-4 text-center bg-gray-50'},[
+          React.createElement('div',null,'Arraste PDFs aqui'),
+          React.createElement('div',{className:'mt-2'},React.createElement('button',{type:'button',onClick:()=> newFileRef.current?.click(),className:'px-3 py-1.5 rounded bg-gray-200 hover:bg-gray-300'},'Selecionar arquivos'))
+        ]),
+        React.createElement('div',{className:'space-y-1'},[
+          ...((Array.isArray(newForm.files)? newForm.files : []).map((f,i)=> React.createElement('div',{key:String(i),className:'text-sm text-gray-700'},f.name)))
+        ]),
+        React.createElement('div',{className:'flex items-center justify-end gap-2'},[
+          React.createElement('button',{type:'button',onClick:()=>{ setNewOpen(false); setNewForm({ posto:'', nome:'', files:[] }) },className:'px-3 py-2 rounded bg-gray-200 hover:bg-gray-300'},'Cancelar'),
+          React.createElement('button',{type:'submit',className:'px-3 py-2 rounded bg-blue-600 text-white'},'Cadastrar')
+        ])
+      ])
+    ])
+    ,React.createElement(Modal,{open:createKoteiOpen,onClose:()=>{ setCreateKoteiOpen(false); setCreateKoteiStep(1) }},[
+      React.createElement('div',{className:'text-lg font-bold mb-3'},createKoteiStep===1? 'Criar Koutei' : 'Planilha de Atividades'),
+      createKoteiStep===1? React.createElement('form',{onSubmit:(e)=>{ e.preventDefault(); setCreateKoteiStep(2) },className:'space-y-3'},[
+        React.createElement('div',{className:'grid grid-cols-2 gap-3'},[
+          React.createElement('div',null,[
+            React.createElement('div',{className:'text-sm text-gray-600 mb-1'},'Nome do Treinador'),
+            React.createElement('input',{value:createKoteiForm.nomeTreinador,onChange:e=>setCreateKoteiForm({...createKoteiForm,nomeTreinador:e.target.value}),className:'w-full border rounded px-3 py-2'})
+          ]),
+          React.createElement('div',null,[
+            React.createElement('div',{className:'text-sm text-gray-600 mb-1'},'Modelo'),
+            React.createElement('input',{value:(selModel||createKoteiForm.modelo||''),readOnly:true,className:'w-full border rounded px-3 py-2 bg-gray-100'})
+          ])
+        ]),
+        
+        React.createElement('div',null,[
+          React.createElement('div',{className:'text-sm text-gray-600 mb-1'},'Nome do T&P'),
+          React.createElement('input',{value:createKoteiForm.nomeProcesso,onChange:e=>setCreateKoteiForm({...createKoteiForm,nomeProcesso:e.target.value}),className:'w-full border rounded px-3 py-2'})
+        ]),
+        React.createElement('div',{className:'flex items-center justify-end gap-2'},[
+          React.createElement('button',{type:'button',onClick:()=>{ setCreateKoteiOpen(false); setCreateKoteiStep(1) },className:'px-3 py-2 rounded bg-gray-200 hover:bg-gray-300'},'Cancelar'),
+          React.createElement('button',{type:'submit',className:'px-3 py-2 rounded bg-blue-600 text-white'},'Avançar')
+        ])
+      ]) : React.createElement('div',{className:'space-y-3'},[
+        React.createElement('div',{className:'flex justify-end'},[
+          React.createElement('button',{onClick:addPlanilhaRow,className:'px-3 py-1.5 rounded bg-green-600 text-white'},'Adicionar Atividade')
+        ]),
+        React.createElement('div',{className:'border border-gray-200 rounded overflow-hidden'},[
+          React.createElement('table',{className:'w-full text-sm'},[
+            React.createElement('thead',null,[
+              React.createElement('tr',null,[
+                React.createElement('th',{className:'text-left px-2 py-1 border-b bg-gray-50'},'DESCRIÇÃO DA ATIVIDADE'),
+                React.createElement('th',{className:'text-left px-2 py-1 border-b bg-gray-50 w-40'},'TEMPO'),
+                React.createElement('th',{className:'text-left px-2 py-1 border-b bg-gray-50 w-10'},'')
+              ])
+            ]),
+            React.createElement('tbody',null,[
+              ...createKoteiForm.linhasPlanilha.map((r,idx)=> React.createElement('tr',{key:String(idx)},[
+                React.createElement('td',{className:'px-2 py-1 border-b align-top'},[
+                  React.createElement('textarea',{value:r.descricao,onChange:e=>handlePlanilhaChange(idx,'descricao',e.target.value),onFocus:()=>setActiveRowIdx(idx),rows:3,className:'w-full border rounded px-2 py-1 resize-y'})
+                ]),
+                        React.createElement('td',{className:'px-2 py-1 border-b align-top'},[
+                          React.createElement('div',{className:'flex items-center gap-2'},[
+                            React.createElement('input',{value:r.tempo,onChange:e=>handlePlanilhaChange(idx,'tempo',e.target.value),className:'w-24 border rounded px-2 py-1'}),
+                          React.createElement('div',{className:'inline-flex items-center gap-1'},[
+                              React.createElement('button',{onClick:()=>startCronometro(idx),className:'px-2 py-1 rounded bg-blue-600 text-white'},'Iniciar'),
+                              React.createElement('button',{onClick:()=>registrarCronometro(idx),className:'px-2 py-1 rounded bg-green-600 text-white'},'Média'),
+                              React.createElement('button',{onClick:()=>refazerCronometro(idx),className:'px-2 py-1 rounded bg-orange-500 text-white'},'Refazer')
+                            ])
+                          ])
+                        ]),
+                        React.createElement('td',{className:'px-2 py-1 border-b align-top text-right'},[
+                          (activeRowIdx===idx? React.createElement('button',{onClick:()=>setConfirmDelIdx(idx),className:'px-2 py-1 rounded bg-red-600 text-white'},'X') : null)
+                        ])
+              ]))
+            ])
+          ])
+        ]),
+        (function(){
+          const totalMs = (Array.isArray(createKoteiForm.linhasPlanilha)? createKoteiForm.linhasPlanilha : []).reduce((acc,r)=>{
+            if(!r) return acc
+            if(r.running){ return acc + Number(r.elapsedMs||0) + (Date.now()-Number(r.startAt||Date.now())) }
+            return acc + parseTempoMs(r.tempo||'')
+          },0)
+          const text = `ST ${fmtMinSecDec(totalMs)}`
+          return React.createElement('div',{className:'text-black font-bold text-sm text-right mt-2'},text)
+        })(),
+        React.createElement(Modal,{open:confirmDelIdx!=null,onClose:()=>setConfirmDelIdx(null)},[
+          React.createElement('div',{className:'text-lg font-bold mb-3'},'Excluir atividade'),
+          React.createElement('div',{className:'text-sm mb-4'},'Deseja excluir o campo selecionado?'),
+          React.createElement('div',{className:'flex items-center justify-end gap-2'},[
+            React.createElement('button',{onClick:()=>setConfirmDelIdx(null),className:'px-3 py-2 rounded bg-gray-200 hover:bg-gray-300'},'Não'),
+            React.createElement('button',{onClick:()=>{ const idx = confirmDelIdx; setConfirmDelIdx(null); if(typeof idx==='number'){ removePlanilhaRow(idx) } },className:'px-3 py-2 rounded bg-red-600 text-white'},'Sim')
+          ])
+        ]),
+        React.createElement('div',{className:'flex items-center justify-end gap-2'},[
+          React.createElement('button',{type:'button',onClick:()=>setCreateKoteiStep(1),className:'px-3 py-2 rounded bg-gray-200 hover:bg-gray-300'},'Voltar'),
+          React.createElement('button',{onClick:handleCreateKoteiSubmit,className:'px-3 py-2 rounded bg-blue-600 text-white'},'Salvar')
+        ])
+      ])
+    ])
+  ])
+}
+function App(){ const [page,setPage] = useState('dashboard'); const [modelConfigs,setModelConfigs] = useState(initialModelConfigs); const [rows,setRows] = useState(()=> makeProvidedOperatorsApp(initialModelConfigs)); const [selectedModel,setSelectedModel] = useState(''); const [drawerOpen,setDrawerOpen] = useState(false); const [logged,setLogged] = useState(false); const [koteisByModel,setKoteisByModel] = useState({}); if(!logged){ return React.createElement(LoginPage,{onSuccess:()=>{ setLogged(true); setPage('dashboard') }}) } return React.createElement('div',{className:'min-h-screen overflow-x-hidden'},[ React.createElement(Sidebar,{page,setPage,open:drawerOpen,setOpen:setDrawerOpen,onLogout:()=>{ setLogged(false); setDrawerOpen(false); setPage('dashboard') },key:'sidebar'}), drawerOpen ? React.createElement('div',{onClick:()=>setDrawerOpen(false),className:'fixed inset-0 bg-black/40 z-40',key:'backdrop'}) : null, React.createElement('div',{className:'p-4'},[ React.createElement(Header,{onToggleDrawer:()=>setDrawerOpen(v=>!v),page, key:'header'}), page==='dashboard' ? React.createElement(Dashboard,{key:'dash',rows,setRows,selectedModel,setSelectedModel,modelConfigs,koteisByModel}) : (page==='operadores' ? React.createElement(Operadores,{key:'ops',rows,setRows,selectedModel,setSelectedModel,modelConfigs}) : (page==='kotei' ? React.createElement(KoteiPage,{key:'kotei',rows,modelConfigs,setSelectedModel,setPage,koteisByModel,setKoteisByModel}) : React.createElement(ModelsPage,{key:'mods',modelConfigs,selectedModel,setSelectedModel,setModelConfigs}))) ]) ]) }
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App))
+  </script>
 </body>
 </html>
