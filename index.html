@@ -1245,7 +1245,7 @@ function KoteiPage({rows,modelConfigs,setSelectedModel,setPage,koteisByModel,set
     const nomeProcFinal = nomeProc || 'Sem T&P'
     const meta = { treinador, nomeTP: nomeProcFinal, nomeProcesso:nomeProcFinal }
     const title = `Kotei ${modelo}`
-    const html = `<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1" /><title>${title}</title><style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;margin:0;padding:16px;background:#fff;color:#111827} .hdr{font-weight:700;font-size:18px;margin-bottom:8px} table{width:100%;border-collapse:collapse;font-size:14px} th,td{border:1px solid #e5e7eb;padding:8px;text-align:left} th{background:#f9fafb} .meta{margin-bottom:8px;font-size:12px;color:#374151}</style></head><body><div class="hdr">${title}</div><div class="meta">T&P: ${nomeProcFinal || '-'} • Treinador: ${treinador || '-'}</div><table><thead><tr><th>DESCRIÇÃO DA ATIVIDADE</th><th>TEMPO</th></tr></thead><tbody>${normalizedRows.map(r=> `<tr><td>${r.descricao.replace(/</g,'&lt;')}</td><td>${r.tempo} ST</td></tr>`).join('')}</tbody></table></body></html>`
+    const html = `<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1" /><title>${title}</title><style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;margin:0;padding:16px;background:#fff;color:#111827} .hdr{font-weight:700;font-size:18px;margin-bottom:8px} table{width:100%;border-collapse:collapse;font-size:14px} th,td{border:1px solid #e5e7eb;padding:8px;text-align:left} th{background:#f9fafb} .meta{margin-bottom:8px;font-size:12px;color:#374151}</style></head><body><div class="hdr">${title}</div><div class="meta">T&P: ${nomeProcFinal || '-'} • Treinador: ${treinador || '-'}</div><table><thead><tr><th>DESCRIÇÃO DA ATIVIDADE</th><th>TEMPO<div style="font-size:12px">ST</div></th></tr></thead><tbody>${normalizedRows.map(r=> `<tr><td>${r.descricao.replace(/</g,'&lt;')}</td><td>${r.tempo}</td></tr>`).join('')}</tbody></table></body></html>`
     const blob = new Blob([html],{ type:'text/html' })
     const url = URL.createObjectURL(blob)
     setKoteisByModel(prev=>{ const cur = Array.isArray(prev[modelo])? prev[modelo] : []; const nextItem = { name: title, size: html.length, url, columns, meta }; if(typeof editIndex==='number'){ try{ URL.revokeObjectURL(cur[editIndex]?.url||'') }catch(_){ } const next = cur.map((it,i)=> i===editIndex ? nextItem : it); return { ...prev, [modelo]: next } } return { ...prev, [modelo]: [...cur, nextItem] } })
@@ -1336,7 +1336,7 @@ function KoteiPage({rows,modelConfigs,setSelectedModel,setPage,koteisByModel,set
           React.createElement('div',{className:'border border-gray-200 rounded overflow-hidden bg-white'},[
             (()=>{ const list = Array.isArray(koteisByModel[selModel])? koteisByModel[selModel] : []; const url = selectedFileUrl || (list[0]?.url||''); const name = selectedFileName || (list[0]?.name||'kotei.html'); return url? React.createElement('div',null,[
               React.createElement('div',{className:'flex items-center justify-end gap-2 p-2 border-b border-gray-200 bg-gray-50'},[
-                React.createElement('button',{className:'px-3 py-1.5 rounded bg-blue-600 text-white hover:bg-blue-500',onClick:async()=>{ try{ const rows=Array.isArray(columnsPreview?.rows)? columnsPreview.rows : []; if(rows.length){ await ensureJsPdf(); if(window.jspdf && window.jspdf.jsPDF){ const doc=new window.jspdf.jsPDF({unit:'pt',format:'a4'}); const margin=40; let y=margin; const outName=String(name||'kotei.pdf').replace(/\.[^.]*$/,'.pdf'); doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text(String(name||'Kotei'), margin, y); y+=12; doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.text('DESCRIÇÃO DA ATIVIDADE', margin, y); doc.text('TEMPO (ST)', 520, y, {align:'right'}); y+=12; doc.setFont('helvetica','normal'); for(const r of rows){ const lines=doc.splitTextToSize(String(r.descricao||''), 460); for(let i=0;i<lines.length;i++){ if(y>770){ doc.addPage(); y=margin } doc.text(lines[i], margin, y); if(i===0){ doc.text(String(r.tempo||'')+' ST', 520, y, {align:'right'}) } y+=12 } } doc.save(outName) } else { const a=document.createElement('a'); a.href=url; a.download=String(name||'kotei.html'); document.body.appendChild(a); a.click(); document.body.removeChild(a) } } else { const a=document.createElement('a'); a.href=url; a.download=String(name||'arquivo.pdf'); document.body.appendChild(a); a.click(); document.body.removeChild(a) } }catch(_){ } }},'Exportar')
+                React.createElement('button',{className:'px-3 py-1.5 rounded bg-blue-600 text-white hover:bg-blue-500',onClick:async()=>{ try{ const rows=Array.isArray(columnsPreview?.rows)? columnsPreview.rows : []; if(rows.length){ await ensureJsPdf(); if(window.jspdf && window.jspdf.jsPDF){ const doc=new window.jspdf.jsPDF({unit:'pt',format:'a4'}); const margin=40; let y=margin; const outName=String(name||'kotei.pdf').replace(/\.[^.]*$/,'.pdf'); doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text(String(name||'Kotei'), margin, y); y+=12; doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.text('DESCRIÇÃO DA ATIVIDADE', margin, y); doc.text('TEMPO', 520, y, {align:'right'}); y+=12; doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.text('ST', 520, y, {align:'right'}); y+=10; doc.setFont('helvetica','normal'); for(const r of rows){ const lines=doc.splitTextToSize(String(r.descricao||''), 460); for(let i=0;i<lines.length;i++){ if(y>770){ doc.addPage(); y=margin } doc.text(lines[i], margin, y); if(i===0){ doc.text(String(r.tempo||''), 520, y, {align:'right'}) } y+=12 } } doc.save(outName) } else { const a=document.createElement('a'); a.href=url; a.download=String(name||'kotei.html'); document.body.appendChild(a); a.click(); document.body.removeChild(a) } } else { const a=document.createElement('a'); a.href=url; a.download=String(name||'arquivo.pdf'); document.body.appendChild(a); a.click(); document.body.removeChild(a) } }catch(_){ } }},'Exportar')
               ]),
               React.createElement('object',{data:url,type:'application/pdf',style:{width:'100%',height:'420px'}},
                 React.createElement('div',{style:{width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center'}},
@@ -1405,7 +1405,7 @@ function KoteiPage({rows,modelConfigs,setSelectedModel,setPage,koteisByModel,set
             React.createElement('thead',null,[
               React.createElement('tr',null,[
                 React.createElement('th',{className:'text-left px-2 py-1 border-b bg-gray-50'},'DESCRIÇÃO DA ATIVIDADE'),
-                React.createElement('th',{className:'text-left px-2 py-1 border-b bg-gray-50 w-40'},'TEMPO (ST)'),
+                React.createElement('th',{className:'text-left px-2 py-1 border-b bg-gray-50 w-40'},'TEMPO'),
                 React.createElement('th',{className:'text-left px-2 py-1 border-b bg-gray-50 w-10'},'')
               ])
             ]),
@@ -1415,9 +1415,11 @@ function KoteiPage({rows,modelConfigs,setSelectedModel,setPage,koteisByModel,set
                   React.createElement('textarea',{value:r.descricao,onChange:e=>handlePlanilhaChange(idx,'descricao',e.target.value),onFocus:()=>setActiveRowIdx(idx),rows:3,className:'w-full border rounded px-2 py-1 resize-y'})
                 ]),
                         React.createElement('td',{className:'px-2 py-1 border-b align-top'},[
-                          React.createElement('div',{className:'flex items-center gap-2'},[
-                            React.createElement('input',{value:r.tempo,onChange:e=>handlePlanilhaChange(idx,'tempo',e.target.value),className:'w-24 border rounded px-2 py-1'}),
-                            React.createElement('span',{className:'text-xs text-gray-600'},'ST'),
+                          React.createElement('div',{className:'flex items-start gap-3'},[
+                            React.createElement('div',{className:'flex flex-col items-start'},[
+                              React.createElement('input',{value:r.tempo,readOnly:true,className:'w-24 border rounded px-2 py-1 bg-gray-100'}),
+                              React.createElement('div',{className:'text-[10px] text-gray-600 mt-1'},'ST')
+                            ]),
                           React.createElement('div',{className:'inline-flex items-center gap-1'},[
                               React.createElement('button',{onClick:()=>startCronometro(idx),className:'px-2 py-1 rounded bg-blue-600 text-white'},'Iniciar'),
                               React.createElement('button',{onClick:()=>registrarCronometro(idx),className:'px-2 py-1 rounded bg-green-600 text-white'},'Média'),
@@ -1438,7 +1440,7 @@ function KoteiPage({rows,modelConfigs,setSelectedModel,setPage,koteisByModel,set
             if(r.running){ return acc + Number(r.elapsedMs||0) + (Date.now()-Number(r.startAt||Date.now())) }
             return acc + parseTempoMs(r.tempo||'')
           },0)
-          const text = fmtMinSecDec(totalMs)+' ST'
+          const text = 'ST '+fmtMinSecDec(totalMs)
           return React.createElement('div',{className:'text-black font-bold text-sm text-right mt-2',style:{whiteSpace:'nowrap'}},text)
         })(),
         React.createElement(Modal,{open:confirmDelIdx!=null,onClose:()=>setConfirmDelIdx(null)},[
