@@ -1416,10 +1416,7 @@ function KoteiPage({rows,modelConfigs,setSelectedModel,setPage,koteisByModel,set
                 ]),
                         React.createElement('td',{className:'px-2 py-1 border-b align-top'},[
                           React.createElement('div',{className:'flex items-start gap-3'},[
-                            React.createElement('div',{className:'flex flex-col items-start'},[
-                              React.createElement('input',{value:r.tempo,readOnly:true,className:'w-24 border rounded px-2 py-1 bg-gray-100'}),
-                              React.createElement('div',{className:'text-[10px] text-gray-600 mt-1'},'ST')
-                            ]),
+                            React.createElement('input',{value:r.tempo,disabled:true,className:'w-24 border rounded px-2 py-1 bg-gray-100'}),
                           React.createElement('div',{className:'inline-flex items-center gap-1'},[
                               React.createElement('button',{onClick:()=>startCronometro(idx),className:'px-2 py-1 rounded bg-blue-600 text-white'},'Iniciar'),
                               React.createElement('button',{onClick:()=>registrarCronometro(idx),className:'px-2 py-1 rounded bg-green-600 text-white'},'Média'),
