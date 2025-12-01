@@ -6,7 +6,8 @@
   <title>LM FUN - Protótipo</title>
   <style>
     html,body{height:100%}
-    body{margin:0;background:#f3f4f6;color:#111827;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial}
+    body{margin:0;background:#f3f4f6;color:#111827;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;text-transform:uppercase}
+    input,textarea,select,button,label,table,th,td,a,h1,h2,h3,h4,h5,h6,p,span,div{ text-transform:inherit }
     .p-4{padding:1rem}
     .flex-center{display:flex;align-items:center;justify-content:center}
     .login-container{min-height:100vh;background:linear-gradient(135deg,#0a0f1c 0%,#0e1627 100%);padding:16px}
@@ -171,6 +172,7 @@ function Sidebar({page,setPage,open,setOpen,onLogout}){
   const logoCandidates = [ new URL('./frontend/img/LOGO.svg', document.baseURI).toString(), new URL('./img/LOGO.svg', document.baseURI).toString() ]
   const logoSrc = logoCandidates[0]
   const fallbackSvg = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#ffffff"/><text x="50" y="110" font-size="44" fill="#0b1220" font-family="Arial, Helvetica, sans-serif">LMFUN</text></svg>')
+  React.useEffect(()=>{ function onKey(e){ try{ if(e.key==='Escape' && open){ setOpen(false) } }catch(_){} } window.addEventListener('keydown', onKey); return ()=> window.removeEventListener('keydown', onKey) },[open])
   return React.createElement('aside',{className:(open?'translate-x-0 ':'-translate-x-full ')+'fixed inset-y-0 left-0 w-64 z-50 bg-[#0a0f1c] text-white border-r border-white/10 p-4 transform transition-transform'},[
     React.createElement('div',{className:'flex items-center justify-between mb-6'},[
       React.createElement('div',{className:'flex items-center gap-4'},[
@@ -181,8 +183,7 @@ function Sidebar({page,setPage,open,setOpen,onLogout}){
           React.createElement('span',{className:'text-red-500'},'LM'),
           React.createElement('span',null,'FUN')
         ])
-      ]),
-      React.createElement('button',{onClick:()=>setOpen(false),className:'px-3 py-2 rounded bg-white/10 hover:bg-white/20'},'✕')
+      ])
     ]),
     React.createElement('div',{className:'space-y-2'},[
       React.createElement('button',{onClick:()=>{ setPage('dashboard'); setOpen(false) },className:(page==='dashboard'?'bg-white/10 ':'')+'w-full flex items-center gap-3 text-left px-3 py-2 rounded hover:bg-white/10 group'},[
@@ -1246,7 +1247,7 @@ function KoteiPage({rows,modelConfigs,setSelectedModel,setPage,koteisByModel,set
     const nomeProcFinal = nomeProc || 'Sem T&P'
     const meta = { treinador, nomeTP: nomeProcFinal, nomeProcesso:nomeProcFinal }
     const title = `Kotei ${modelo}`
-    const html = `<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1" /><title>${title}</title><style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;margin:0;padding:16px;background:#fff;color:#111827} .hdr{font-weight:700;font-size:18px;margin-bottom:8px} table{width:100%;border-collapse:collapse;font-size:14px} th,td{border:1px solid #e5e7eb;padding:8px;text-align:left} th{background:#f9fafb} .meta{margin-bottom:8px;font-size:12px;color:#374151}</style></head><body><div class="hdr">${title}</div><div class="meta">T&P: ${nomeProcFinal || '-'} • Treinador: ${treinador || '-'}</div><table><thead><tr><th>DESCRIÇÃO DA ATIVIDADE</th><th>TEMPO</th></tr></thead><tbody>${normalizedRows.map(r=> `<tr><td>${r.descricao.replace(/</g,'&lt;')}</td><td>${r.tempo}</td></tr>`).join('')}</tbody></table><div class="meta">ST: ${fmtMinSecDec(totalMsExport)}</div></body></html>`
+    const html = `<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1" /><title>${title}</title><style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;margin:0;padding:16px;background:#fff;color:#111827;text-transform:uppercase} .hdr{font-weight:700;font-size:18px;margin-bottom:8px} table{width:100%;border-collapse:collapse;font-size:14px} th,td{border:1px solid #e5e7eb;padding:8px;text-align:left} th{background:#f9fafb} .meta{margin-bottom:8px;font-size:12px;color:#374151}</style></head><body><div class="hdr">${title}</div><div class="meta">T&P: ${nomeProcFinal || '-'} • Treinador: ${treinador || '-'}</div><table><thead><tr><th>DESCRIÇÃO DA ATIVIDADE</th><th>TEMPO</th></tr></thead><tbody>${normalizedRows.map(r=> `<tr><td>${r.descricao.replace(/</g,'&lt;')}</td><td>${r.tempo}</td></tr>`).join('')}</tbody></table><div class="meta">ST: ${fmtMinSecDec(totalMsExport)}</div></body></html>`
     const blob = new Blob([html],{ type:'text/html' })
     const url = URL.createObjectURL(blob)
     setKoteisByModel(prev=>{ const cur = Array.isArray(prev[modelo])? prev[modelo] : []; const nextItem = { name: title, size: html.length, url, columns, meta }; if(typeof editIndex==='number'){ try{ URL.revokeObjectURL(cur[editIndex]?.url||'') }catch(_){ } const next = cur.map((it,i)=> i===editIndex ? nextItem : it); return { ...prev, [modelo]: next } } return { ...prev, [modelo]: [...cur, nextItem] } })
