@@ -130,7 +130,9 @@ function Modal({open,onClose,children,backdrop=true,position='center'}){
   const wrapperCls = (open?'block':'hidden')+' fixed inset-0 z-50 '+(backdrop?'':'pointer-events-none')
   const contentWrapper = position==='bottom'
     ? { className:'absolute bottom-28 left-1/2 -translate-x-1/2 w-full max-w-lg px-6 pointer-events-auto' }
-    : { className:'absolute inset-0 flex items-center justify-center px-4 pointer-events-auto' }
+    : (position==='bottom-right'
+      ? { className:'absolute bottom-24 right-6 w-full max-w-md px-6 pointer-events-auto' }
+      : { className:'absolute inset-0 flex items-center justify-center px-4 pointer-events-auto' })
   return React.createElement('div',{className:wrapperCls},[
     backdrop? React.createElement('div',{className:'absolute inset-0',onClick:()=> onClose?.()}) : null,
     React.createElement('div',contentWrapper,
@@ -605,7 +607,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs,kot
       })()
       ])
     ]),
-    React.createElement(Modal,{open:!!promptKotei,onClose:()=>setPromptKotei(null),backdrop:false,position:'bottom'},[
+    React.createElement(Modal,{open:!!promptKotei,onClose:()=>setPromptKotei(null),backdrop:false,position:'bottom-right'},[
       React.createElement('div',{className:'text-sm text-gray-700 mb-4'},`Deseja visualizar o Kotei do posto ${String(promptKotei?.posto||'')} ${String(promptKotei?.nome||'')}?`),
       React.createElement('div',{className:'flex items-center justify-end gap-3'},[
         React.createElement('button',{onClick:()=>setPromptKotei(null),className:'px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 shadow-sm'},'Não'),
