@@ -129,7 +129,7 @@ function Modal({open,onClose,children,backdrop=true,position='center'}){
   },[open])
   const wrapperCls = (open?'block':'hidden')+' fixed inset-0 z-50 '+(backdrop?'':'pointer-events-none')
   const contentWrapper = position==='bottom'
-    ? { className:'absolute bottom-20 left-1/2 -translate-x-1/2 w-full max-w-lg px-6 pointer-events-auto' }
+    ? { className:'absolute bottom-28 left-1/2 -translate-x-1/2 w-full max-w-lg px-6 pointer-events-auto' }
     : { className:'absolute inset-0 flex items-center justify-center px-4 pointer-events-auto' }
   return React.createElement('div',{className:wrapperCls},[
     backdrop? React.createElement('div',{className:'absolute inset-0',onClick:()=> onClose?.()}) : null,
