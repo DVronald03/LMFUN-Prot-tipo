@@ -15,7 +15,7 @@
     @media (min-width:1024px){ .login-card{grid-template-columns:1fr 1fr} }
     .login-left{padding:24px}
     @media (min-width:640px){ .login-left{padding:28px} }
-    @media (min-width:768px){ .login-left{padding:32px} }
+    @media (min-width:768px){ .login-left{padding:32px} }B
     @media (min-width:1024px){ .login-left{padding:40px} }
     .login-title{font-weight:700;font-size:20px;margin-bottom:12px}
     .login-left label{display:block;font-size:12px;color:#6b7280;margin-bottom:6px}
@@ -134,7 +134,7 @@ function Modal({open,onClose,children,backdrop=true,position='center'}){
       ? { className:'absolute bottom-24 right-6 w-full max-w-md px-6 pointer-events-auto' }
       : { className:'absolute inset-0 flex items-center justify-center px-4 pointer-events-auto' })
   return React.createElement('div',{className:wrapperCls},[
-    backdrop? React.createElement('div',{className:'absolute inset-0',onClick:()=> onClose?.()}) : null,
+    backdrop? React.createElement('div',{className:'absolute inset-0 bg-black/60',onClick:()=> onClose?.()}) : null,
     React.createElement('div',contentWrapper,
       React.createElement('div',{className:'bg-white text-black rounded-2xl p-5 w-full shadow-xl border border-gray-200'},children)
     )
@@ -592,19 +592,38 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs,kot
         const quota=(typeof cfg.quadro==='number' && cfg.quadro>0)? Math.min(cfg.quadro, srcByTurno.length) : srcByTurno.length;
         const viewRows = srcByTurno.slice(0,quota);
         const options = viewRows.map(r=>({ idx:src.indexOf(r), posto:String(r.posto||'').padStart(2,'0'), nome:(r.nome||'') }));
-        const colsCount = (typeof window!=='undefined' && window.innerWidth<768) ? 4 : (window.innerWidth<1024 ? 8 : 12);
-        const columns = Array.from({length:colsCount},(_,i)=> options.filter((_,idx)=> idx%colsCount===i));
+        const isMobile = (typeof window!=='undefined' && window.innerWidth<768);
+        let columns = [];
+        if(!isMobile){
+          const colsCount = (typeof window!=='undefined' && window.innerWidth<1024) ? 8 : 12;
+          columns = Array.from({length:colsCount},(_,i)=> options.filter((_,idx)=> idx%colsCount===i));
+        }
         const currentIdx = selIdx>=0 ? selIdx : -1;
-        return React.createElement('div',{className:'bg-white rounded-xl p-4 shadow-lg'},[
-          React.createElement('div',{className:'text-xl font-bold mb-2 text-gray-900'},'Posto'),
-          React.createElement('div',{className:'grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-3'},
+        let postoListEl;
+        if(isMobile){
+          postoListEl = React.createElement('div',{className:'overflow-x-auto'},[
+            React.createElement('div',{className:'flex items-center gap-2 pb-2'},
+              options.map(o=>{
+                const active = o.idx===currentIdx;
+                const cls = 'inline-flex items-center justify-center w-8 h-8 rounded-lg border-2 text-sm shrink-0 '+(active? 'bg-green-200 text-green-800 border-green-400' : 'bg-green-100 text-green-700 border-green-300');
+                return React.createElement('button',{key:o.idx,className:cls,onClick:()=>{ if(selIdx===o.idx){ setSelIdx(-1); setPromptKotei(null); return } setSelIdx(o.idx); try{ const arr = Array.isArray(koteisByModel?.[selectedModel])? koteisByModel[selectedModel] : []; const found = arr.find(f=> f?.meta && String(f.meta.posto||'')===String(o.posto||'')); if(found){ setPromptKotei({ url: found.url, posto: found.meta.posto, nome: found.meta.nome, treinador: found.meta.treinador, nomeTP: (found.meta.nomeTP || found.meta.nomeProcesso || '') }) } else { setPromptKotei(null) } }catch(_){ setPromptKotei(null) } },onDoubleClick:()=>{ setSelIdx(-1); setPromptKotei(null) },title:o.nome},o.posto)
+              })
+            )
+          ])
+        } else {
+          postoListEl = React.createElement('div',{className:'grid grid-cols-8 lg:grid-cols-12 gap-3'},[
             columns.map((col,i)=> React.createElement('div',{key:'col-'+i,className:'flex flex-col items-center gap-2 mb-6'},
               col.map(o=>{
                 const active = o.idx===currentIdx;
                 const cls = 'inline-flex items-center justify-center w-8 h-8 rounded-lg border-2 text-sm '+(active? 'bg-green-200 text-green-800 border-green-400' : 'bg-green-100 text-green-700 border-green-300');
                 return React.createElement('button',{key:o.idx,className:cls,onClick:()=>{ if(selIdx===o.idx){ setSelIdx(-1); setPromptKotei(null); return } setSelIdx(o.idx); try{ const arr = Array.isArray(koteisByModel?.[selectedModel])? koteisByModel[selectedModel] : []; const found = arr.find(f=> f?.meta && String(f.meta.posto||'')===String(o.posto||'')); if(found){ setPromptKotei({ url: found.url, posto: found.meta.posto, nome: found.meta.nome, treinador: found.meta.treinador, nomeTP: (found.meta.nomeTP || found.meta.nomeProcesso || '') }) } else { setPromptKotei(null) } }catch(_){ setPromptKotei(null) } },onDoubleClick:()=>{ setSelIdx(-1); setPromptKotei(null) },title:o.nome},o.posto)
               })
-            )))
+            ))
+          ])
+        }
+        return React.createElement('div',{className:'bg-white rounded-xl p-4 shadow-lg'},[
+          React.createElement('div',{className:'text-xl font-bold mb-2 text-gray-900'},'Posto'),
+          postoListEl
         ])
       })()
       ])
@@ -617,10 +636,16 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs,kot
       ])
     ]),
     (fullPdf? React.createElement('div',{className:'fixed inset-0 bg-black/90 z-[60]'},[
-      React.createElement('div',{className:'absolute top-3 right-3'},[
+      React.createElement('div',{className:'absolute top-3 right-3 z-[80]'},[
         React.createElement('button',{onClick:()=>{ try{ setFullPdf('') }catch(_){ } },className:'px-3 py-2 rounded bg-white text-black'},'Fechar')
       ]),
-      React.createElement('iframe',{src:fullPdf,className:'w-full h-full'})
+      React.createElement('div',{className:'absolute inset-0 p-4 z-[70]'},[
+        React.createElement('object',{data:fullPdf,type:'application/pdf',className:'w-full h-full'},
+          React.createElement('div',{className:'w-full h-full flex items-center justify-center'},
+            React.createElement('a',{href:fullPdf,target:'_blank',rel:'noopener noreferrer',className:'px-4 py-2 rounded-lg bg-white text-black'},'Abrir')
+          )
+        )
+      ])
     ]) : null)
   ])
 }
@@ -1160,7 +1185,7 @@ function KoteiPage({rows,modelConfigs,setSelectedModel,setPage,koteisByModel,set
         doc.text(tempo, tableX+descW+timeW-rowPadX, y + rowPadY + lineH, {align:'right'})
         y += rowH
       }
-      return doc.output('bloburl')
+      return doc.output('datauristring')
     }catch(_){ return '' }
   }
   async function extractPdfColumns(file){
