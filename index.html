@@ -344,6 +344,7 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs,kot
   const startAtRef = useRef(0)
   const [promptKotei,setPromptKotei] = useState(null)
   const [fullPdf,setFullPdf] = useState('')
+  useEffect(()=>{ try{ if(!fullPdf) return; function onKey(e){ try{ if(e.key==='Escape'){ e.preventDefault(); setFullPdf('') } }catch(_){} } document.addEventListener('keydown', onKey); return ()=>{ try{ document.removeEventListener('keydown', onKey) }catch(_){ } } }catch(_){ } },[fullPdf])
   function statusColor(r){ const s=String(r.status||'').toUpperCase(); if(s==='EFETIVO') return { bg:'#dcfce7', border:'#16a34a', text:'#166534' }; if(s==='TEMPORÁRIO') return { bg:'#fee2e2', border:'#dc2626', text:'#991b1b' }; if(s==='RL') return { bg:'#ffedd5', border:'#f97316', text:'#9a3412' }; return { bg:'#f3f4f6', border:'#9ca3af', text:'#374151' } }
   function fmt(ms){ const m=Math.floor(ms/60000); const s=Math.floor((ms%60000)/1000); const t=Math.floor((ms%1000)/100); return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${t}` }
   function colorForSeconds(sec,max){ if(!max || sec===0) return '#60a5fa'; const ib=(sec/max)*100; if(ib>90) return '#ef4444'; if(ib>=85) return '#22c55e'; return '#f59e0b' }
@@ -636,9 +637,6 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs,kot
       ])
     ]),
     (fullPdf? React.createElement('div',{className:'fixed inset-0 bg-black/90 z-[60]'},[
-      React.createElement('div',{className:'absolute top-3 right-3 z-[80]'},[
-        React.createElement('button',{onClick:()=>{ try{ setFullPdf('') }catch(_){ } },className:'px-3 py-2 rounded bg-white text-black'},'Fechar')
-      ]),
       React.createElement('div',{className:'absolute inset-0 p-4 z-[70]'},[
         React.createElement('object',{data:fullPdf,type:'application/pdf',className:'w-full h-full'},
           React.createElement('div',{className:'w-full h-full flex items-center justify-center'},
