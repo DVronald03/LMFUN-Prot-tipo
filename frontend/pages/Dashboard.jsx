@@ -181,7 +181,6 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
     const bgColors = colors.map((c,i)=> i===selectedIdxInView ? darkenColor(c) : c)
     const borderColors = colors.map((c,i)=> i===selectedIdxInView ? '#2563eb' : c)
     const borderWidths = colors.map((_,i)=> i===selectedIdxInView ? 3 : 0)
-    if(selectedIdxInView>=0){ chartObj.setActiveElements([{ datasetIndex:0, index:selectedIdxInView }]) } else { chartObj.setActiveElements([]) }
     const ib = tempos.map(t=> (max? Math.round(t/max*100) : 0))
     chartObj.data.labels = labels
     chartObj._names = names
@@ -210,6 +209,15 @@ function Dashboard({rows,setRows,selectedModel,setSelectedModel,modelConfigs}){
       if(typeof chartObj.resize==='function'){ chartObj.resize(targetW, boxH) }
     }catch(_){}
     chartObj.update()
+    try{
+      const meta = typeof chartObj.getDatasetMeta==='function' ? chartObj.getDatasetMeta(0) : null
+      const hasEl = !!meta && Array.isArray(meta.data) && selectedIdxInView>=0 && !!meta.data[selectedIdxInView]
+      if(typeof chartObj.setActiveElements==='function'){
+        if(hasEl){ chartObj.setActiveElements([{ datasetIndex:0, index:selectedIdxInView }]) }
+        else { chartObj.setActiveElements([]) }
+      }
+    }catch(_){}
+    if(typeof chartObj.update==='function'){ chartObj.update() }
     const valid = ib.filter(v=> v>0)
     const media = valid.length? Math.round(valid.reduce((a,b)=>a+b,0)/valid.length) : 0
     setIbMedio(media+'%')
